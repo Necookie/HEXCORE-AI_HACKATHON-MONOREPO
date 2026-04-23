@@ -1,0 +1,192 @@
+---
+---
+
+<section class="section quiz-section">
+      <div class="section-label">Assessment Engine</div>
+      <h2 class="section-title">
+        Recall tested.<br /><span class="grad-text">Knowledge confirmed.</span>
+      </h2>
+      <p class="section-sub">
+        Three AI-generated question types, instant scoring, and streak
+        multipliers on every correct answer.
+      </p>
+
+      <div class="quiz-types">
+        <div class="quiz-type-card">
+          <div class="qt-header">
+            <span class="qt-badge">MCQ</span>
+            <span class="qt-label">Multiple Choice</span>
+          </div>
+          <p class="qt-question">
+            Which organelle is primarily responsible for ATP synthesis via
+            oxidative phosphorylation?
+          </p>
+          <div class="qt-options">
+            <div class="qt-opt correct">A. Mitochondria ✓</div>
+            <div class="qt-opt">B. Ribosome</div>
+            <div class="qt-opt">C. Nucleus</div>
+            <div class="qt-opt">D. Golgi Apparatus</div>
+          </div>
+        </div>
+
+        <div class="quiz-type-card">
+          <div class="qt-header">
+            <span class="qt-badge" style="--badge-clr:#8b5cf6">ENUM</span>
+            <span class="qt-label">Enumeration</span>
+          </div>
+          <p class="qt-question">
+            List the 4 phases of mitosis in correct order.
+          </p>
+          <div class="qt-enum-answers">
+            <div class="qt-enum">1. Prophase</div>
+            <div class="qt-enum">2. Metaphase</div>
+            <div class="qt-enum">3. Anaphase</div>
+            <div class="qt-enum">4. Telophase</div>
+          </div>
+        </div>
+
+        <div class="quiz-type-card">
+          <div class="qt-header">
+            <span class="qt-badge" style="--badge-clr:#a855f7">ID</span>
+            <span class="qt-label">Identification</span>
+          </div>
+          <p class="qt-question">
+            Identify: "The stage where chromosomes align at the cell's
+            equatorial plane."
+          </p>
+          <div class="qt-id-answer">
+            <span class="qt-id-label">Answer:</span>
+            <span class="qt-id-val">Metaphase</span>
+            <span class="qt-id-correct">+85 ELO ⚡</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<style>
+/* ── QUIZ ── */
+  .quiz-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .quiz-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .quiz-type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.4s,
+      transform 0.4s,
+      border-color 0.3s;
+  }
+
+  .quiz-type-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .quiz-type-card:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+  }
+
+  .qt-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .qt-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--badge-clr, var(--indigo));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
+
+  .qt-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .qt-question {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .qt-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .qt-opt {
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--surface-2);
+  }
+
+  .qt-opt.correct {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+  }
+
+  .qt-enum-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .qt-enum {
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+
+  .qt-id-answer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(99, 102, 241, 0.07);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 0.5rem;
+  }
+
+  .qt-id-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .qt-id-val {
+    font-family: "Syne", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #818cf8;
+  }
+  .qt-id-correct {
+    font-size: 0.75rem;
+    color: #a3e635;
+  }
+</style>

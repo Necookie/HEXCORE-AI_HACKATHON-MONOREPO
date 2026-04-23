@@ -1,0 +1,304 @@
+---
+---
+
+<header class="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="grid-lines"></div>
+      </div>
+
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        iSITE AI Hackathon 2026 · n8n Powered
+      </div>
+
+      <h1 class="hero-title">
+        Stop <em>planning</em> to study.<br />
+        <span class="grad-text">Start executing.</span>
+      </h1>
+
+      <p class="hero-sub">
+        StudyBearer automates the entire cognitive overhead of academic
+        life—scheduling, chunking, and testing—so you can focus on the only
+        thing that matters: <strong>discovery.</strong>
+      </p>
+
+      <div class="hero-actions">
+        <a href="/signup" class="btn-primary btn-lg">
+          Initialize Pipeline
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+          >
+        </a>
+        <a href="#pipeline" class="btn-ghost btn-lg">View the Pipeline</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">< 30s</span>
+          <span class="stat-label">PDF → Calendar</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">3 modes</span>
+          <span class="stat-label">MCQ · Enum · ID</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">8 Ranks</span>
+          <span class="stat-label">Iron → Mythic</span>
+        </div>
+      </div>
+
+      <!-- Mock dashboard card -->
+      <div class="hero-dashboard" aria-hidden="true">
+        <div class="dash-header">
+          <span class="dash-title">Current Pipeline</span>
+          <span class="dash-streak">🔥 Combo ×7</span>
+        </div>
+        <div class="dash-modules">
+          <div class="module done">
+            <span class="mod-icon">✓</span>
+            <span class="mod-label">Chapter 2 — Cell Biology</span>
+            <span class="mod-pts">+120 ELO</span>
+          </div>
+          <div class="module active">
+            <span class="mod-icon pulse-dot"></span>
+            <span class="mod-label">Chapter 3 — Mitosis</span>
+            <span class="mod-pts">Executing…</span>
+          </div>
+          <div class="module locked">
+            <span class="mod-icon">🔒</span>
+            <span class="mod-label">Chapter 4 — Meiosis</span>
+            <span class="mod-pts">Locked</span>
+          </div>
+          <div class="module locked">
+            <span class="mod-icon">🔒</span>
+            <span class="mod-label">Chapter 5 — DNA Replication</span>
+            <span class="mod-pts">Locked</span>
+          </div>
+        </div>
+        <div class="dash-footer">
+          <div class="rank-badge">
+            <span class="rank-icon">⚡</span>
+            <span>Gold Rank</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:62%"></div>
+            </div>
+            <span class="progress-label">62% to Platinum</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+<style>
+/* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 1.5rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+  }
+
+  .orb-1 {
+    width: 500px;
+    height: 500px;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-60%);
+    background: radial-gradient(
+      circle,
+      rgba(99, 102, 241, 0.4) 0%,
+      transparent 70%
+    );
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+
+  .orb-2 {
+    width: 350px;
+    height: 350px;
+    bottom: 0;
+    right: 10%;
+    background: radial-gradient(
+      circle,
+      rgba(139, 92, 246, 0.3) 0%,
+      transparent 70%
+    );
+    animation: drift 10s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes drift {
+    from {
+      transform: translateX(-60%) translateY(0);
+    }
+    to {
+      transform: translateX(-60%) translateY(-30px);
+    }
+  }
+
+  .grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 40%,
+      black 30%,
+      transparent 100%
+    );
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--indigo);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+    background: rgba(99, 102, 241, 0.06);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--indigo);
+    box-shadow: 0 0 6px var(--indigo);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.7);
+    }
+  }
+
+  .hero-title {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    color: var(--muted);
+  }
+
+  .grad-text {
+    background: linear-gradient(
+      135deg,
+      #fff 0%,
+      var(--indigo) 50%,
+      var(--violet) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.4s ease both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    display: block;
+    font-family: "Syne", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border);
+  }
+</style>
