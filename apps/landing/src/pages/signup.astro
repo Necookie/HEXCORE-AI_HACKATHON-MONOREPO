@@ -1,9 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { supabaseClient } from "../lib/supabase";
+import "../styles/auth.css";
 
 const supabase = supabaseClient(Astro.cookies);
-
 let error = "";
 
 if (Astro.request.method === "POST") {
@@ -12,16 +12,9 @@ if (Astro.request.method === "POST") {
   const password = data.get("password")?.toString();
 
   if (email && password) {
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (signUpError) {
-      error = signUpError.message;
-    } else {
-      return Astro.redirect("http://localhost:4322/");
-    }
+    const { error: signUpError } = await supabase.auth.signUp({ email, password });
+    if (signUpError) error = signUpError.message;
+    else return Astro.redirect("http://localhost:4322/");
   } else {
     error = "Email and password are required.";
   }
@@ -29,71 +22,33 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout title="Sign Up - StudyBearer">
-  <main class="login-main">
-    <div class="login-card">
+  <main class="auth-main">
+    <div class="auth-card">
       <div class="glow-blob" aria-hidden="true"></div>
-
-      <div class="login-header">
-        <h1 class="hero-title">
-          Join <span class="text-neon">StudyBearer</span>
-        </h1>
-        <p class="subtitle">Eradicate the cognitive load of studying.</p>
+      <div class="auth-header">
+        <h1 class="auth-title">Join <span class="text-neon">StudyBearer</span></h1>
+        <p class="auth-subtitle">Eradicate the cognitive load of studying.</p>
       </div>
 
-      {
-        error && (
-          <div class="error-banner" role="alert">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <>
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </>
-            </svg>
-            {error}
-          </div>
-        )
-      }
+      {error && (
+        <div class="error-banner" role="alert">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {error}
+        </div>
+      )}
 
-      <form method="post" class="login-form" novalidate>
+      <form method="post" class="auth-form" novalidate>
         <div class="field-group">
           <label for="email" class="field-label">Email address</label>
           <div class="input-wrapper">
             <span class="input-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect width="20" height="16" x="2" y="4" rx="2"></rect><path
-                  d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </svg>
             </span>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              autocomplete="email"
-              placeholder="you@example.com"
-              class="field-input"
-            />
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" class="field-input" />
           </div>
         </div>
 
@@ -101,124 +56,40 @@ if (Astro.request.method === "POST") {
           <label for="password" class="field-label">Password</label>
           <div class="input-wrapper">
             <span class="input-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"
-                ></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
             </span>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              autocomplete="new-password"
-              placeholder="••••••••"
-              class="field-input"
-              id="password"
-            />
-            <button
-              type="button"
-              class="eye-toggle"
-              id="togglePassword"
-              aria-label="Show password"
-              tabindex="0"
-            >
-              <svg
-                id="eye-open"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
-                ></path><circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <svg
-                id="eye-closed"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                style="display:none;"
-              >
-                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
-                  d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
-                ></path><path
-                  d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
-                ></path><line x1="2" y1="2" x2="22" y2="22"></line>
-              </svg>
+            <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="••••••••" class="field-input" />
+            <button type="button" class="eye-toggle" id="togglePassword" aria-label="Show password">
+              <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
             </button>
           </div>
-
-          <!-- Password strength meter -->
-          <div class="strength-meter" id="strengthMeter" aria-live="polite">
-            <div class="strength-bars">
-              <span class="bar" id="bar1"></span>
-              <span class="bar" id="bar2"></span>
-              <span class="bar" id="bar3"></span>
-              <span class="bar" id="bar4"></span>
-            </div>
+          <div class="strength-meter" id="strengthMeter">
+            <div class="strength-bars"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
             <span class="strength-label" id="strengthLabel"></span>
           </div>
         </div>
 
         <button type="submit" class="btn-submit">
           <span>Create Account</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
           </svg>
         </button>
 
-        <p class="terms-note">
-          By creating an account, you agree to our
-          <a href="/terms">Terms of Service</a> and <a href="/privacy"
-            >Privacy Policy</a
-          >.
-        </p>
+        <p class="terms-note">By creating an account, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy</a>.</p>
       </form>
 
-      <p class="signup-link">
-        Already have an account?
-        <a href="/login">Sign in</a>
-      </p>
+      <p class="auth-footer-link">Already have an account? <a href="/login">Sign in</a></p>
     </div>
   </main>
 </Layout>
 
 <script>
-  // Eye toggle
-  const toggle = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password") as HTMLInputElement;
+  const toggle = document.getElementById("togglePassword");
   const eyeOpen = document.getElementById("eye-open");
   const eyeClosed = document.getElementById("eye-closed");
 
@@ -227,353 +98,25 @@ if (Astro.request.method === "POST") {
     passwordInput.type = isPassword ? "text" : "password";
     eyeOpen!.style.display = isPassword ? "none" : "block";
     eyeClosed!.style.display = isPassword ? "block" : "none";
-    toggle.setAttribute(
-      "aria-label",
-      isPassword ? "Hide password" : "Show password",
-    );
   });
 
-  // Password strength
-  const bars = [
-    document.getElementById("bar1"),
-    document.getElementById("bar2"),
-    document.getElementById("bar3"),
-    document.getElementById("bar4"),
-  ];
+  const bars = document.querySelectorAll(".bar");
   const strengthLabel = document.getElementById("strengthLabel");
   const meter = document.getElementById("strengthMeter");
-
-  const levels = [
-    { label: "Too short", color: "#ef4444" },
-    { label: "Weak", color: "#f97316" },
-    { label: "Fair", color: "#eab308" },
-    { label: "Strong", color: "#22c55e" },
-  ];
-
-  function getStrength(pw: string): number {
-    if (pw.length < 6) return 0;
-    let score = 1;
-    if (pw.length >= 10) score++;
-    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
-    return Math.min(score, 4);
-  }
+  const levels = [{ label: "Too short", color: "#ef4444" }, { label: "Weak", color: "#f97316" }, { label: "Fair", color: "#eab308" }, { label: "Strong", color: "#22c55e" }];
 
   passwordInput?.addEventListener("input", () => {
     const val = passwordInput.value;
-    if (!val) {
-      meter!.style.opacity = "0";
-      return;
-    }
-    meter!.style.opacity = "1";
-    const score = getStrength(val); // 0–4
-    const idx = Math.max(score - 1, 0);
-    const { label, color } = levels[idx];
-
-    bars.forEach((bar, i) => {
-      if (bar) {
-        bar.style.background = i < score ? color : "rgba(255,255,255,0.1)";
-      }
-    });
+    if (!val) { (meter as HTMLElement).style.opacity = "0"; return; }
+    (meter as HTMLElement).style.opacity = "1";
+    let score = val.length < 6 ? 0 : 1;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+    if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+    score = Math.min(score, 4);
+    const { label, color } = levels[Math.max(score - 1, 0)];
+    bars.forEach((bar, i) => { (bar as HTMLElement).style.background = i < score ? color : "rgba(255,255,255,0.1)"; });
     strengthLabel!.textContent = label;
     strengthLabel!.style.color = color;
   });
 </script>
-
-<style>
-  .login-main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 1.5rem;
-    box-sizing: border-box;
-  }
-
-  .login-card {
-    position: relative;
-    width: 100%;
-    max-width: 420px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1.25rem;
-    padding: clamp(1.5rem, 5vw, 2.5rem);
-    overflow: hidden;
-    backdrop-filter: blur(12px);
-    box-shadow:
-      0 0 0 1px rgba(0, 240, 255, 0.04),
-      0 32px 64px rgba(0, 0, 0, 0.4);
-  }
-
-  .glow-blob {
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(
-      circle,
-      rgba(0, 240, 255, 0.15) 0%,
-      transparent 70%
-    );
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  .login-header {
-    margin-bottom: 1.75rem;
-  }
-
-  .hero-title {
-    font-size: clamp(1.6rem, 5vw, 2.1rem);
-    font-weight: 700;
-    margin: 0 0 0.4rem;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-  }
-
-  .text-neon {
-    color: #00f0ff;
-    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-  }
-
-  .subtitle {
-    margin: 0;
-    color: #a1a1aa;
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-  .error-banner {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.25rem;
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 0.6rem;
-    color: #f87171;
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
-
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-  }
-
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-  }
-
-  .field-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #d4d4d8;
-    letter-spacing: 0.01em;
-  }
-
-  .input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .input-icon {
-    position: absolute;
-    left: 0.85rem;
-    color: #71717a;
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-    transition: color 0.2s;
-  }
-
-  .field-input {
-    width: 100%;
-    padding: 0.75rem 2.8rem 0.75rem 2.5rem;
-    border-radius: 0.6rem;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #f4f4f5;
-    font-size: 0.95rem;
-    outline: none;
-    transition:
-      border-color 0.2s,
-      background 0.2s,
-      box-shadow 0.2s;
-    box-sizing: border-box;
-  }
-
-  .field-input::placeholder {
-    color: #52525b;
-  }
-
-  .field-input:focus {
-    border-color: rgba(0, 240, 255, 0.5);
-    background: rgba(0, 240, 255, 0.05);
-    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
-  }
-
-  .input-wrapper:focus-within .input-icon {
-    color: #00f0ff;
-  }
-
-  .eye-toggle {
-    position: absolute;
-    right: 0.75rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #71717a;
-    display: flex;
-    align-items: center;
-    padding: 0.2rem;
-    border-radius: 0.25rem;
-    transition:
-      color 0.2s,
-      background 0.15s;
-    line-height: 0;
-  }
-
-  .eye-toggle:hover {
-    color: #a1a1aa;
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .eye-toggle:focus-visible {
-    outline: 2px solid rgba(0, 240, 255, 0.6);
-    color: #00f0ff;
-  }
-
-  /* ── Strength meter ── */
-  .strength-meter {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: 0.4rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .strength-bars {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-  }
-
-  .bar {
-    flex: 1;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.1);
-    transition: background 0.3s;
-  }
-
-  .strength-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    min-width: 56px;
-    text-align: right;
-    transition: color 0.3s;
-  }
-
-  /* ── Submit ── */
-  .btn-submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    padding: 0.85rem 1.5rem;
-    width: 100%;
-    border: none;
-    border-radius: 0.6rem;
-    background: linear-gradient(135deg, #00f0ff 0%, #0099ff 100%);
-    color: #0a0a0f;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    transition:
-      opacity 0.2s,
-      transform 0.15s,
-      box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.25);
-  }
-
-  .btn-submit:hover {
-    opacity: 0.92;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 28px rgba(0, 240, 255, 0.35);
-  }
-
-  .btn-submit:active {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  .btn-submit:focus-visible {
-    outline: 2px solid #00f0ff;
-    outline-offset: 3px;
-  }
-
-  /* ── Terms note ── */
-  .terms-note {
-    margin: 0;
-    text-align: center;
-    color: #52525b;
-    font-size: 0.78rem;
-    line-height: 1.5;
-  }
-
-  .terms-note a {
-    color: #71717a;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    transition: color 0.2s;
-  }
-
-  .terms-note a:hover {
-    color: #a1a1aa;
-  }
-
-  /* ── Sign in link ── */
-  .signup-link {
-    margin: 1.5rem 0 0;
-    text-align: center;
-    color: #71717a;
-    font-size: 0.875rem;
-  }
-
-  .signup-link a {
-    color: #00f0ff;
-    text-decoration: none;
-    font-weight: 500;
-    margin-left: 0.25rem;
-    transition: opacity 0.2s;
-  }
-
-  .signup-link a:hover {
-    opacity: 0.8;
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 480px) {
-    .login-main {
-      align-items: flex-start;
-      padding-top: 3rem;
-    }
-
-    .login-card {
-      border-radius: 1rem;
-      border-left: none;
-      border-right: none;
-      max-width: 100%;
-    }
-  }
-</style>
