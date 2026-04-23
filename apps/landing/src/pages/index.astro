@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="StudyBearer - Automating the friction of studying.">
+  <main class="landing-main">
+    <nav class="navbar">
+      <div class="logo">StudyBearer</div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="/login" class="btn-primary">Sign In</a>
+      </div>
+    </nav>
+    
+    <header class="hero">
+      <h1 class="hero-title">Automating the friction of <span class="text-neon">studying.</span></h1>
+      <p class="hero-subtitle">Eradicate the cognitive load of academic planning and testing. Focus purely on discovery.</p>
+      <div class="hero-actions">
+        <a href="/signup" class="btn-primary">Get Started</a>
+        <a href="#demo" class="btn-secondary">View Demo</a>
+      </div>
+    </header>
+
+    <section id="features" class="features">
+      <div class="feature-card">
+        <h3>AI Orchestration</h3>
+        <p>Upload a PDF. Let our n8n pipeline chunk your curriculum into daily objectives.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Calendar Sync</h3>
+        <p>Your automated study roadmap is pushed directly to your Google Calendar.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Gamified Quizzes</h3>
+        <p>Complete scheduled blocks to unlock dynamic quizzes and build your streak.</p>
+      </div>
+    </section>
+  </main>
+</Layout>

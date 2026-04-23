@@ -1,0 +1,162 @@
+Product Requirements Document: StudyBearer 
+Hackathon Track: iSITE AI Hackathon 2026 - AI in Education (Theme 1: Learning... Without 
+'Learning') 
+App Name: StudyBearer 
+Core Philosophy: Automating the friction of studying so students can focus on the learning. 
+ 
+1. Executive Summary 
+Students are frequently handed massive PDF modules and left to their own devices, leading to 
+poor time management, overwhelming anxiety, and a high risk of falling behind in complex 
+subjects. StudyBearer transforms passive documents into active, gamified learning journeys. By 
+uploading a PDF and defining their availability, students receive an automated, AI-chunked 
+study roadmap integrated directly into their Google Calendar, followed by gamified quizzes. 
+StudyBearer makes education feel effortless by completely automating the "planning" and 
+"testing" phases, leaving only the "discovering" phase for the user. 
+ 
+2. Problem Statement & Empathy (User-Centric Design) 
+Traditional studying demands high executive function: breaking down chapters, scheduling 
+study blocks, and creating practice tests. 
+• The Pain: Students dealing with punctuality issues, poor attendance records, or the 
+weight of previously failed classes (like heavy technical subjects such as Data Structures) 
+often struggle not because they lack capability, but because they lack a structured, 
+automated roadmap. A 100-page PDF is intimidating; a 30-minute scheduled block on 
+"Looping Constructs" is approachable. 
+• The Need: A system that empathetically holds the student's hand, integrating seamlessly 
+into the tools they already use daily (Google Calendar) rather than forcing them to adopt 
+a completely new ecosystem. 
+ 
+3. Key Features & User Flow 
+3.1. Onboarding & Auth 
+• Simple, frictionless authentication using Google OAuth to tie directly into the user's 
+calendar ecosystem. 
+3.2. The Intake (Upload & Parameters) 
+• User uploads course materials (PDF format). 
+• User inputs their available study hours and a target completion date. 
+3.3. The AI Orchestration (n8n Magic) 
+• The system parses the document, extracting key learning objectives. 
+• It segments the material into logical, bite-sized daily modules (e.g., Monday: Linked Lists, 
+Wednesday: Binary Trees). 
+3.4. Calendar Sync 
+• The segmented roadmap is automatically pushed to the user’s Google Calendar as 
+scheduled events, removing the friction of manual time management. 
+3.5. Gamified Recall (The Quizzes) 
+• At the end of a scheduled study block, the app unlocks a highly engaging, AI-generated 
+quiz specific to that day's topic. 
+• Formats include Multiple Choice, Enumeration, and Identification. 
+3.6. Progression Engine (Streaks & Achievements) 
+• Consistency Combos (Streaks): Completing the daily scheduled study block and passing 
+the quiz increases the user's "Combo." Missing a scheduled day breaks the combo, 
+creating strong loss-aversion. 
+• Ranked Milestones & Achievements: Users climb ranks and unlock premium profile 
+banners. 
+o First Blood: Complete the very first AI-generated study block. 
+o Flawless Victory: Score 100% on a post-study quiz. 
+o Competitive Ladder: Users accumulate Elo points based on quiz accuracy and 
+streak multipliers, climbing from base tiers up to elite statuses like Mythic, or 
+grinding to hit a 2000+ Elo rating. This turns a semester-long subject into a 
+competitive grind. 
+ 
+4. Design & Aesthetics 
+To distance the app from the sterile, boring look of traditional academic portals, StudyBearer 
+utilizes a dark-toned, cinematic, and moody visual aesthetic. 
+• The Vibe: This premium, sleek interface feels more akin to a modern developer tool or a 
+high-end gaming interface, reducing the cognitive dread associated with "school 
+software." 
+• Unlock Animations: Earning an achievement features sleek, high-contrast animations 
+(e.g., subtle neon glows against a dark background). 
+• Customization: Unlocked achievements grant the user equipable titles and dark-mode 
+avatar borders, making their dashboard feel like a customized player card. 
+ 
+5. Technical Architecture 
+The application is built for extreme performance on the frontend, relying heavily on automated 
+workflow orchestration for the heavy lifting. 
+5.1. Web Application Stack 
+• Framework: Astro (Islands architecture allows for a blazing-fast static shell with 
+interactive React components only where necessary, like the quiz interface). 
+• UI Library: React (for complex state management in the dashboard and quiz engine). 
+• Backend & Auth: Supabase (PostgreSQL database, secure file storage for PDFs, and 
+instant Google Auth). 
+• ORM: Prisma (for rapid, type-safe database queries, ensuring high velocity during the 
+hackathon). 
+• Database Schema: Includes a UserStats model to track current_streak, longest_streak, 
+total_points, and a relational UserAchievements table. 
+5.2. The n8n AI Engine (Core Focus - 20% Rubric) 
+Because the usage of n8n is a heavily graded criterion, the web app functions essentially as a 
+beautiful terminal. n8n acts as the absolute central nervous system of StudyBearer. 
+n8n Workflow Trigger Execution Steps (Nodes) 
+PDF Processing & 
+Roadmap 
+Supabase Webhook 
+(on file upload) 
+1. HTTP Node: Fetch PDF from Supabase. 
+ 
+ 
+2. Document Parser: Extract text. 
+ 
+ 
+3. AI Agent (Gemini/OpenAI): Chunks text into a 
+JSON roadmap. 
+ 
+ 
+4. Postgres Node: Save roadmap to Supabase. 
+Calendar 
+Orchestration 
+Triggered post-
+Roadmap creation 
+1. Data Transformer: Iterates through JSON array. 
+ 
+ 
+2. Google Calendar API Node: Creates calendar 
+events for each topic. 
+Quiz Generation Webhook (User clicks 
+"Start Quiz") 
+1. Postgres Node: Retrieves topic. 
+ 
+ 
+2. AI Agent: Generates structured JSON quiz 
+(MCQ, Enumeration, ID). 
+ 
+ 
+3. Webhook Response: Returns JSON to React 
+frontend. 
+Gamification & 
+Evaluation 
+Webhook (User 
+submits Quiz) 1. Postgres Node: Retrieve streak data. 
+n8n Workflow Trigger Execution Steps (Nodes) 
+ 
+ 
+2. Logic Node: Check if submission is within the 
+24h window (increment or reset streak). 
+ 
+ 
+3. Condition Node: Check for milestone/perfect 
+score. 
+ 
+ 
+4. Postgres Node: Update UserStats & 
+UserAchievements. 
+ 
+ 
+5. Webhook Response: Return unlock_events to 
+frontend for cinematic animations. 
+ 
+6. Hackathon Rubric Alignment 
+• Impact & Relevance (30%): Directly answers Theme 1 by shifting the burden of 
+"planning" to an AI. Education becomes an act of discovery guided by the app, 
+eliminating the friction of "traditional studying." 
+• Feasibility & Execution (20%): The Astro + Supabase + Prisma stack allows for rapid 
+frontend development. Abstracting the complex API calls (LLMs, Calendar, parsing, logic 
+loops) into n8n drastically reduces backend coding time, ensuring a practical, working 
+prototype. 
+• User-Centric Design (10%): Grounded in the real-world struggles of students facing 
+academic burnout. It validates the psychological need for immediate gratification 
+through gaming mechanics. The Google Calendar integration respects existing habits, 
+and the dark-mode aesthetic reduces eye strain. 
+• Presentation & Pitch (20%): The pitch writes itself: "We don't just give you a summary of 
+a PDF. We organize your life, schedule your week, and quiz you like a personal tutor, all 
+while you sleep." 
+• Usage of N8N Platform (20%): n8n is not just an API wrapper; it is the entire backend 
+brain and rules engine. It manages multi-step AI orchestration, 3rd party API integration, 
+and complex streak/achievement logic. 
+ 
