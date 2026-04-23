@@ -1,5 +1,14 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { supabaseClient } from '../lib/supabase';
+
+const supabase = supabaseClient(Astro.cookies);
+
+const { data: { user } } = await supabase.auth.getUser();
+
+if (!user) {
+  return Astro.redirect('http://localhost:4321/login');
+}
 ---
 
 <DashboardLayout title="StudyBearer | Dashboard">
