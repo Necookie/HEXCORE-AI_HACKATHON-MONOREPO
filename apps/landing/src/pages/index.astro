@@ -1,40 +1,1896 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="StudyBearer - Automating the friction of studying.">
-  <main class="landing-main">
-    <nav class="navbar">
-      <div class="logo">StudyBearer</div>
+<Layout title="StudyBearer — Automating the friction of studying.">
+  <main class="sb-root">
+    <!-- ── NOISE OVERLAY ── -->
+    <div class="noise" aria-hidden="true"></div>
+
+    <!-- ── NAVBAR ── -->
+    <nav class="navbar" id="navbar">
+      <a href="/" class="logo" aria-label="StudyBearer home">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 28 28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <circle cx="14" cy="14" r="5" stroke="#6366f1" stroke-width="1.5"
+          ></circle>
+          <path
+            d="M14 2C14 2 22 6 22 14C22 22 14 26 14 26"
+            stroke="#6366f1"
+            stroke-width="1.5"
+            stroke-linecap="round"></path>
+          <path
+            d="M14 2C14 2 6 6 6 14C6 22 14 26 14 26"
+            stroke="#8b5cf6"
+            stroke-width="1.5"
+            stroke-linecap="round"></path>
+          <circle cx="14" cy="2" r="1.5" fill="#6366f1"></circle>
+          <circle cx="14" cy="26" r="1.5" fill="#8b5cf6"></circle>
+          <circle cx="22" cy="14" r="1.5" fill="#6366f1"></circle>
+          <circle cx="6" cy="14" r="1.5" fill="#8b5cf6"></circle>
+        </svg>
+        <span>StudyBearer</span>
+      </a>
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#how-it-works">How It Works</a>
-        <a href="/login" class="btn-primary">Sign In</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#ranks">Ranks</a>
+        <a href="#stack">Stack</a>
       </div>
+      <div class="nav-cta">
+        <a href="/login" class="nav-signin">Sign In</a>
+        <a href="/signup" class="btn-primary">Deploy Now</a>
+      </div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
     </nav>
-    
+    <div class="nav-mobile" id="navMobile">
+      <a href="#features">Features</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#ranks">Ranks</a>
+      <a href="#stack">Stack</a>
+      <a href="/login">Sign In</a>
+      <a href="/signup" class="btn-primary">Deploy Now</a>
+    </div>
+
+    <!-- ── HERO ── -->
     <header class="hero">
-      <h1 class="hero-title">Automating the friction of <span class="text-neon">studying.</span></h1>
-      <p class="hero-subtitle">Eradicate the cognitive load of academic planning and testing. Focus purely on discovery.</p>
+      <div class="hero-bg" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="grid-lines"></div>
+      </div>
+
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        iSITE AI Hackathon 2026 · n8n Powered
+      </div>
+
+      <h1 class="hero-title">
+        Stop <em>planning</em> to study.<br />
+        <span class="grad-text">Start executing.</span>
+      </h1>
+
+      <p class="hero-sub">
+        StudyBearer automates the entire cognitive overhead of academic
+        life—scheduling, chunking, and testing—so you can focus on the only
+        thing that matters: <strong>discovery.</strong>
+      </p>
+
       <div class="hero-actions">
-        <a href="/signup" class="btn-primary">Get Started</a>
-        <a href="#demo" class="btn-secondary">View Demo</a>
+        <a href="/signup" class="btn-primary btn-lg">
+          Initialize Pipeline
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+          >
+        </a>
+        <a href="#pipeline" class="btn-ghost btn-lg">View the Pipeline</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">< 30s</span>
+          <span class="stat-label">PDF → Calendar</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">3 modes</span>
+          <span class="stat-label">MCQ · Enum · ID</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">8 Ranks</span>
+          <span class="stat-label">Iron → Mythic</span>
+        </div>
+      </div>
+
+      <!-- Mock dashboard card -->
+      <div class="hero-dashboard" aria-hidden="true">
+        <div class="dash-header">
+          <span class="dash-title">Current Pipeline</span>
+          <span class="dash-streak">🔥 Combo ×7</span>
+        </div>
+        <div class="dash-modules">
+          <div class="module done">
+            <span class="mod-icon">✓</span>
+            <span class="mod-label">Chapter 2 — Cell Biology</span>
+            <span class="mod-pts">+120 ELO</span>
+          </div>
+          <div class="module active">
+            <span class="mod-icon pulse-dot"></span>
+            <span class="mod-label">Chapter 3 — Mitosis</span>
+            <span class="mod-pts">Executing…</span>
+          </div>
+          <div class="module locked">
+            <span class="mod-icon">🔒</span>
+            <span class="mod-label">Chapter 4 — Meiosis</span>
+            <span class="mod-pts">Locked</span>
+          </div>
+          <div class="module locked">
+            <span class="mod-icon">🔒</span>
+            <span class="mod-label">Chapter 5 — DNA Replication</span>
+            <span class="mod-pts">Locked</span>
+          </div>
+        </div>
+        <div class="dash-footer">
+          <div class="rank-badge">
+            <span class="rank-icon">⚡</span>
+            <span>Gold Rank</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:62%"></div>
+            </div>
+            <span class="progress-label">62% to Platinum</span>
+          </div>
+        </div>
       </div>
     </header>
 
-    <section id="features" class="features">
-      <div class="feature-card">
-        <h3>AI Orchestration</h3>
-        <p>Upload a PDF. Let our n8n pipeline chunk your curriculum into daily objectives.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Calendar Sync</h3>
-        <p>Your automated study roadmap is pushed directly to your Google Calendar.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Gamified Quizzes</h3>
-        <p>Complete scheduled blocks to unlock dynamic quizzes and build your streak.</p>
+    <!-- ── FEATURES ── -->
+    <section id="features" class="section features-section">
+      <div class="section-label">Core Systems</div>
+      <h2 class="section-title">
+        Everything automated.<br /><span class="grad-text"
+          >Nothing manual.</span>
+      </h2>
+      <p class="section-sub">
+        Three orchestrated systems working in parallel so your only job is to
+        show up and execute.
+      </p>
+
+      <div class="features-grid">
+        <div class="feat-card feat-large">
+          <div class="feat-icon-wrap" style="--icon-clr:#6366f1">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path
+                d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+              ></path><polyline points="14 2 14 8 20 8"></polyline><line
+                x1="16"
+                y1="13"
+                x2="8"
+                y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line
+                x1="10"
+                y1="9"
+                x2="8"
+                y2="9"></line></svg
+            >
+          </div>
+          <h3>AI Orchestration</h3>
+          <p>
+            Drop a PDF. Our n8n pipeline extracts every learning objective,
+            chunks it into bite-sized daily modules, and structures a full
+            roadmap — all without a single manual step.
+          </p>
+          <ul class="feat-bullets">
+            <li>Semantic chunking via OpenAI / Gemini</li>
+            <li>Configurable hours-per-day and target date</li>
+            <li>Structured JSON objectives per module</li>
+          </ul>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon-wrap" style="--icon-clr:#8b5cf6">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><rect x="3" y="4" width="18" height="18" rx="2" ry="2"
+              ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line
+                x1="8"
+                y1="2"
+                x2="8"
+                y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg
+            >
+          </div>
+          <h3>Calendar Sync</h3>
+          <p>
+            Your roadmap is automatically pushed to Google Calendar as timed
+            study events with full sub-topic descriptions.
+          </p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon-wrap" style="--icon-clr:#6366f1">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
+              ></polygon></svg
+            >
+          </div>
+          <h3>Gamified Recall</h3>
+          <p>
+            Quizzes auto-unlock after each scheduled event passes. Three
+            question types. Instant feedback. Streak multipliers on every
+            correct answer.
+          </p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon-wrap" style="--icon-clr:#8b5cf6">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+              ></path><circle cx="9" cy="7" r="4"></circle><path
+                d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path
+                d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg
+            >
+          </div>
+          <h3>Progression Engine</h3>
+          <p>
+            Consistency Combos, Elo points, and ranked milestones that climb
+            from Iron all the way to Mythic. Achievement titles unlock as you
+            hit milestones.
+          </p>
+        </div>
       </div>
     </section>
+
+    <!-- ── PIPELINE ── -->
+    <section id="pipeline" class="section pipeline-section">
+      <div class="section-label">The Workflow</div>
+      <h2 class="section-title">
+        From PDF to <span class="grad-text">Mastery</span>
+      </h2>
+      <p class="section-sub">
+        Five automated stages. Zero manual scheduling. One cohesive pipeline.
+      </p>
+
+      <div class="pipeline">
+        <div class="pipeline-line" aria-hidden="true"></div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">01</div>
+          <div class="pipe-content">
+            <h4>Upload & Configure</h4>
+            <p>
+              Upload your PDF to Supabase Storage. Set your available study
+              hours, preferred days, and target completion date. That's your
+              last manual input.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">02</div>
+          <div class="pipe-content">
+            <h4>n8n Webhook Trigger</h4>
+            <p>
+              Upload fires a webhook into n8n. The workflow extracts raw text,
+              passes it to an AI agent, and receives a structured JSON array of
+              daily learning objectives.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">03</div>
+          <div class="pipe-content">
+            <h4>Google Calendar Injection</h4>
+            <p>
+              n8n maps objectives to your available time slots and pushes them
+              as Google Calendar events. Each event carries its full sub-topic
+              description.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">04</div>
+          <div class="pipe-content">
+            <h4>Quiz Unlock & Assessment</h4>
+            <p>
+              When a calendar block ends, its quiz unlocks. n8n generates
+              context-specific MCQ, Enumeration, and Identification questions.
+              Your React frontend renders them with live feedback.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">05</div>
+          <div class="pipe-content">
+            <h4>Progression & Rank Update</h4>
+            <p>
+              Quiz accuracy and streak length feed into Elo calculation. Your
+              rank updates automatically. Missed a 24-hour window? Combo resets
+              — stay consistent or pay the price.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── RANKS ── -->
+    <section id="ranks" class="section ranks-section">
+      <div class="section-label">Progression System</div>
+      <h2 class="section-title">
+        Climb the <span class="grad-text">Ladder</span>
+      </h2>
+      <p class="section-sub">
+        Eight competitive tiers. Each rank unlocks new cosmetics and achievement
+        titles. Mythic is reserved for the relentless.
+      </p>
+
+      <div class="ranks-grid">
+        <div class="rank-card" style="--rank-clr:#71717a">
+          <span class="rank-tier-icon">⬜</span>
+          <span class="rank-name">Iron</span>
+          <span class="rank-desc">Beginning the pipeline</span>
+        </div>
+        <div class="rank-card" style="--rank-clr:#b45309">
+          <span class="rank-tier-icon">🔶</span>
+          <span class="rank-name">Bronze</span>
+          <span class="rank-desc">First combos ignited</span>
+        </div>
+        <div class="rank-card" style="--rank-clr:#9ca3af">
+          <span class="rank-tier-icon">⚪</span>
+          <span class="rank-name">Silver</span>
+          <span class="rank-desc">Consistent execution</span>
+        </div>
+        <div class="rank-card" style="--rank-clr:#d97706">
+          <span class="rank-tier-icon">🌕</span>
+          <span class="rank-name">Gold</span>
+          <span class="rank-desc">Mastery emerging</span>
+        </div>
+        <div class="rank-card" style="--rank-clr:#6366f1">
+          <span class="rank-tier-icon">💠</span>
+          <span class="rank-name">Elite</span>
+          <span class="rank-desc">Peak pipeline discipline</span>
+        </div>
+        <div class="rank-card" style="--rank-clr:#8b5cf6">
+          <span class="rank-tier-icon">✨</span>
+          <span class="rank-name">Master</span>
+          <span class="rank-desc">Flawless streaks</span>
+        </div>
+        <div class="rank-card" style="--rank-clr:#a855f7">
+          <span class="rank-tier-icon">🔮</span>
+          <span class="rank-name">Legend</span>
+          <span class="rank-desc">Untouchable accuracy</span>
+        </div>
+        <div class="rank-card rank-mythic" style="--rank-clr:#e879f9">
+          <span class="rank-tier-icon">👑</span>
+          <span class="rank-name">Mythic</span>
+          <span class="rank-desc">The relentless few</span>
+        </div>
+      </div>
+
+      <div class="achievements-row">
+        <div class="section-label" style="margin-bottom:1.25rem;">
+          Achievement Titles
+        </div>
+        <div class="achievement-tags">
+          <span class="ach-tag">🩸 First Blood</span>
+          <span class="ach-tag">⚡ Flawless Victory</span>
+          <span class="ach-tag">🔥 7-Day Inferno</span>
+          <span class="ach-tag">🎯 Perfect Recall</span>
+          <span class="ach-tag">🚀 Speed Runner</span>
+          <span class="ach-tag">🌙 Night Owl</span>
+          <span class="ach-tag">💀 No-Miss Month</span>
+          <span class="ach-tag ach-locked">??? Mythic Secret</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS (QUIZ DEMO) ── -->
+    <section class="section quiz-section">
+      <div class="section-label">Assessment Engine</div>
+      <h2 class="section-title">
+        Recall tested.<br /><span class="grad-text">Knowledge confirmed.</span>
+      </h2>
+      <p class="section-sub">
+        Three AI-generated question types, instant scoring, and streak
+        multipliers on every correct answer.
+      </p>
+
+      <div class="quiz-types">
+        <div class="quiz-type-card">
+          <div class="qt-header">
+            <span class="qt-badge">MCQ</span>
+            <span class="qt-label">Multiple Choice</span>
+          </div>
+          <p class="qt-question">
+            Which organelle is primarily responsible for ATP synthesis via
+            oxidative phosphorylation?
+          </p>
+          <div class="qt-options">
+            <div class="qt-opt correct">A. Mitochondria ✓</div>
+            <div class="qt-opt">B. Ribosome</div>
+            <div class="qt-opt">C. Nucleus</div>
+            <div class="qt-opt">D. Golgi Apparatus</div>
+          </div>
+        </div>
+
+        <div class="quiz-type-card">
+          <div class="qt-header">
+            <span class="qt-badge" style="--badge-clr:#8b5cf6">ENUM</span>
+            <span class="qt-label">Enumeration</span>
+          </div>
+          <p class="qt-question">
+            List the 4 phases of mitosis in correct order.
+          </p>
+          <div class="qt-enum-answers">
+            <div class="qt-enum">1. Prophase</div>
+            <div class="qt-enum">2. Metaphase</div>
+            <div class="qt-enum">3. Anaphase</div>
+            <div class="qt-enum">4. Telophase</div>
+          </div>
+        </div>
+
+        <div class="quiz-type-card">
+          <div class="qt-header">
+            <span class="qt-badge" style="--badge-clr:#a855f7">ID</span>
+            <span class="qt-label">Identification</span>
+          </div>
+          <p class="qt-question">
+            Identify: "The stage where chromosomes align at the cell's
+            equatorial plane."
+          </p>
+          <div class="qt-id-answer">
+            <span class="qt-id-label">Answer:</span>
+            <span class="qt-id-val">Metaphase</span>
+            <span class="qt-id-correct">+85 ELO ⚡</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STACK ── -->
+    <section id="stack" class="section stack-section">
+      <div class="section-label">Technical Stack</div>
+      <h2 class="section-title">
+        Built to <span class="grad-text">Ship Fast.</span>
+      </h2>
+      <p class="section-sub">
+        A battle-tested combination of modern tooling that lets us move at
+        hackathon speed without sacrificing production quality.
+      </p>
+
+      <div class="stack-grid">
+        <div class="stack-card">
+          <div class="stack-logo">🚀</div>
+          <div class="stack-info">
+            <span class="stack-name">Astro + React</span>
+            <span class="stack-desc"
+              >Islands architecture — static shell, interactive components only
+              where needed. Sub-1.5s initial load.</span
+            >
+          </div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-logo">🗄️</div>
+          <div class="stack-info">
+            <span class="stack-name">Supabase + Prisma</span>
+            <span class="stack-desc"
+              >PostgreSQL with Row-Level Security for PDF storage. Prisma for
+              strict type-checked ORM queries.</span
+            >
+          </div>
+        </div>
+        <div class="stack-card stack-card-highlight">
+          <div class="stack-logo">🧠</div>
+          <div class="stack-info">
+            <span class="stack-name">n8n — The Brain</span>
+            <span class="stack-desc"
+              >Central orchestrator. Handles PDF parsing, AI agent routing,
+              Calendar API, quiz generation, and all gamification logic via
+              visual workflows.</span
+            >
+          </div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-logo">🤖</div>
+          <div class="stack-info">
+            <span class="stack-name">OpenAI / Gemini</span>
+            <span class="stack-desc"
+              >Semantic chunking and dynamic quiz generation. Catch nodes handle
+              hallucinations and rate limits gracefully.</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="cta-section">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="cta-content">
+        <div class="section-label">Ready to Execute?</div>
+        <h2 class="cta-title">
+          We organize your life.<br />Schedule your week.<br /><span
+            class="grad-text">Quiz you while you sleep.</span>
+        </h2>
+        <p class="cta-sub">
+          Initialize your first pipeline in under 60 seconds. Drop a PDF and
+          watch the system take over.
+        </p>
+        <div class="cta-actions">
+          <a href="/signup" class="btn-primary btn-lg">
+            Deploy Your Pipeline
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+            >
+          </a>
+          <a href="/login" class="btn-ghost btn-lg">Already deployed? Sign In</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer class="footer">
+      <div class="footer-logo">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 28 28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <circle cx="14" cy="14" r="5" stroke="#6366f1" stroke-width="1.5"
+          ></circle>
+          <path
+            d="M14 2C14 2 22 6 22 14C22 22 14 26 14 26"
+            stroke="#6366f1"
+            stroke-width="1.5"
+            stroke-linecap="round"></path>
+          <path
+            d="M14 2C14 2 6 6 6 14C6 22 14 26 14 26"
+            stroke="#8b5cf6"
+            stroke-width="1.5"
+            stroke-linecap="round"></path>
+        </svg>
+        <span>StudyBearer</span>
+      </div>
+      <p class="footer-tagline">Automating the friction of studying.</p>
+      <div class="footer-links">
+        <a href="/login">Sign In</a>
+        <a href="/signup">Sign Up</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <p class="footer-copy">
+        © 2026 StudyBearer · iSITE AI Hackathon · Built with n8n, Astro, and
+        Supabase
+      </p>
+    </footer>
   </main>
 </Layout>
+
+<script>
+  // Navbar scroll effect
+  const navbar = document.getElementById("navbar");
+  window.addEventListener("scroll", () => {
+    navbar?.classList.toggle("scrolled", window.scrollY > 40);
+  });
+
+  // Mobile hamburger
+  const ham = document.getElementById("navHamburger");
+  const mobileNav = document.getElementById("navMobile");
+  ham?.addEventListener("click", () => {
+    mobileNav?.classList.toggle("open");
+    ham.classList.toggle("active");
+  });
+
+  // Intersection observer for reveal animations
+  const reveals = document.querySelectorAll(
+    ".feat-card, .pipe-step, .rank-card, .quiz-type-card, .stack-card",
+  );
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("revealed");
+          io.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.12 },
+  );
+  reveals.forEach((el) => io.observe(el));
+</script>
+
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --void: #0a0a0c;
+    --surface: #121216;
+    --surface-2: #18181e;
+    --indigo: #6366f1;
+    --violet: #8b5cf6;
+    --muted: #a1a1aa;
+    --border: rgba(255, 255, 255, 0.07);
+    --glow-indigo: rgba(99, 102, 241, 0.35);
+    --glow-violet: rgba(139, 92, 246, 0.35);
+    --text: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --radius: 1rem;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sb-root {
+    background: var(--void);
+    color: var(--text);
+    font-family: "Syne", "DM Sans", system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Google Fonts */
+  @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap");
+
+  /* ── NOISE ── */
+  .noise {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    transition:
+      background 0.3s,
+      border-color 0.3s,
+      backdrop-filter 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .navbar.scrolled {
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(16px);
+    border-color: var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+  }
+
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .nav-signin {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-signin:hover {
+    color: var(--text);
+  }
+
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--muted);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  .nav-hamburger.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-hamburger.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .nav-mobile {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: rgba(10, 10, 12, 0.97);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1.5rem 2rem;
+    gap: 1.25rem;
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-mobile.open {
+    display: flex;
+  }
+  .nav-mobile a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+  .nav-mobile a:hover {
+    color: var(--text);
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    background: var(--indigo);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition:
+      background 0.2s,
+      transform 0.15s,
+      box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .btn-primary:hover {
+    background: #5254d4;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.45);
+  }
+
+  .btn-primary.btn-lg {
+    padding: 0.85rem 1.75rem;
+    font-size: 0.95rem;
+    border-radius: 0.6rem;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.85rem 1.75rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 1.5rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+  }
+
+  .orb-1 {
+    width: 500px;
+    height: 500px;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-60%);
+    background: radial-gradient(
+      circle,
+      rgba(99, 102, 241, 0.4) 0%,
+      transparent 70%
+    );
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+
+  .orb-2 {
+    width: 350px;
+    height: 350px;
+    bottom: 0;
+    right: 10%;
+    background: radial-gradient(
+      circle,
+      rgba(139, 92, 246, 0.3) 0%,
+      transparent 70%
+    );
+    animation: drift 10s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes drift {
+    from {
+      transform: translateX(-60%) translateY(0);
+    }
+    to {
+      transform: translateX(-60%) translateY(-30px);
+    }
+  }
+
+  .grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 40%,
+      black 30%,
+      transparent 100%
+    );
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--indigo);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+    background: rgba(99, 102, 241, 0.06);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--indigo);
+    box-shadow: 0 0 6px var(--indigo);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.7);
+    }
+  }
+
+  .hero-title {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    color: var(--muted);
+  }
+
+  .grad-text {
+    background: linear-gradient(
+      135deg,
+      #fff 0%,
+      var(--indigo) 50%,
+      var(--violet) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.4s ease both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    display: block;
+    font-family: "Syne", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border);
+  }
+
+  /* ── Dashboard mock ── */
+  .hero-dashboard {
+    width: 100%;
+    max-width: 520px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: left;
+    box-shadow:
+      0 0 0 1px rgba(99, 102, 241, 0.08),
+      0 40px 80px rgba(0, 0, 0, 0.5);
+    animation: fadeUp 0.7s 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-dashboard::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--indigo), transparent);
+  }
+
+  .dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .dash-title {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .dash-streak {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .dash-modules {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .module {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+
+  .module.done {
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+  .module.done .mod-icon {
+    color: var(--indigo);
+  }
+  .module.done .mod-pts {
+    color: var(--indigo);
+  }
+
+  .module.active {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.08);
+  }
+  .module.active .mod-pts {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .module.locked {
+    opacity: 0.4;
+  }
+
+  .mod-label {
+    flex: 1;
+  }
+  .mod-pts {
+    font-size: 0.75rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--indigo);
+    box-shadow: 0 0 8px var(--indigo);
+    animation: pulse-dot 1.5s infinite;
+    flex-shrink: 0;
+  }
+
+  .dash-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+  }
+
+  .rank-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #d97706;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .progress-wrap {
+    flex: 1;
+  }
+  .progress-bar {
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.3rem;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--indigo), var(--violet));
+    border-radius: 2px;
+  }
+  .progress-label {
+    color: var(--muted);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(4rem, 8vw, 7rem) 1.5rem;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 3rem;
+  }
+
+  /* ── FEATURES ── */
+  .features-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto;
+    gap: 1rem;
+  }
+
+  .feat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      transform 0.3s,
+      opacity 0.4s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .feat-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .feat-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 32px rgba(99, 102, 241, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .feat-large {
+    grid-column: 1 / 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .feat-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.6rem;
+    background: rgba(from var(--icon-clr) r g b / 0.12);
+    border: 1px solid rgba(from var(--icon-clr) r g b / 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--icon-clr, var(--indigo));
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+
+  .feat-card h3 {
+    font-family: "Syne", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.01em;
+  }
+
+  .feat-card p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  .feat-bullets {
+    list-style: none;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .feat-bullets li {
+    font-size: 0.83rem;
+    color: var(--muted);
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .feat-bullets li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--indigo);
+  }
+
+  /* ── PIPELINE ── */
+  .pipeline-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .pipeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .pipeline-line {
+    position: absolute;
+    left: 27px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--indigo),
+      var(--violet),
+      transparent
+    );
+    opacity: 0.3;
+  }
+
+  .pipe-step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-16px);
+    transition:
+      opacity 0.5s,
+      transform 0.5s;
+  }
+
+  .pipe-step:last-child {
+    border-bottom: none;
+  }
+  .pipe-step.revealed {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .pipe-num {
+    font-family: "Syne", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: 0.08em;
+    background: var(--surface);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.4rem;
+    width: 54px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pipe-content h4 {
+    font-family: "Syne", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  .pipe-content p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  /* ── RANKS ── */
+  .ranks-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .ranks-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .rank-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: default;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      transform 0.3s,
+      opacity 0.4s;
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  .rank-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .rank-card:hover {
+    border-color: var(--rank-clr);
+    box-shadow: 0 0 20px rgba(from var(--rank-clr) r g b / 0.15);
+    transform: translateY(-3px);
+  }
+
+  .rank-tier-icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .rank-name {
+    display: block;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--rank-clr);
+    margin-bottom: 0.25rem;
+  }
+  .rank-desc {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .rank-mythic {
+    background: linear-gradient(
+      135deg,
+      rgba(168, 85, 247, 0.08),
+      rgba(99, 102, 241, 0.08)
+    );
+    border-color: rgba(168, 85, 247, 0.3);
+  }
+
+  .achievements-row {
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+
+  .achievement-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ach-tag {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--surface);
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .ach-tag:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    color: var(--text);
+  }
+
+  .ach-locked {
+    opacity: 0.4;
+    border-style: dashed;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .quiz-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .quiz-type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.4s,
+      transform 0.4s,
+      border-color 0.3s;
+  }
+
+  .quiz-type-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .quiz-type-card:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+  }
+
+  .qt-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .qt-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--badge-clr, var(--indigo));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
+
+  .qt-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .qt-question {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .qt-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .qt-opt {
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--surface-2);
+  }
+
+  .qt-opt.correct {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+  }
+
+  .qt-enum-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .qt-enum {
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+
+  .qt-id-answer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(99, 102, 241, 0.07);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 0.5rem;
+  }
+
+  .qt-id-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .qt-id-val {
+    font-family: "Syne", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #818cf8;
+  }
+  .qt-id-correct {
+    font-size: 0.75rem;
+    color: #a3e635;
+  }
+
+  /* ── STACK ── */
+  .stack-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .stack-card {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.4s,
+      transform 0.4s,
+      border-color 0.3s;
+  }
+
+  .stack-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .stack-card-highlight {
+    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.04);
+  }
+
+  .stack-card-highlight:hover {
+    box-shadow: 0 0 32px rgba(99, 102, 241, 0.1);
+  }
+
+  .stack-logo {
+    font-size: 1.75rem;
+    flex-shrink: 0;
+  }
+
+  .stack-name {
+    display: block;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .stack-desc {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    position: relative;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: clamp(5rem, 10vw, 9rem) 1.5rem;
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(
+      ellipse,
+      rgba(99, 102, 241, 0.18) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-family: "Syne", sans-serif;
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    margin-bottom: 1.25rem;
+  }
+
+  .cta-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .footer-tagline {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover {
+    color: var(--text);
+  }
+
+  .footer-copy {
+    color: #52525b;
+    font-size: 0.75rem;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .feat-large {
+      grid-column: 1 / 3;
+      grid-template-columns: 1fr;
+    }
+    .ranks-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .quiz-types {
+      grid-template-columns: 1fr;
+    }
+    .stack-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+    .feat-large {
+      grid-column: 1;
+    }
+    .ranks-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .nav-links,
+    .nav-cta {
+      display: none;
+    }
+    .nav-hamburger {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-stats {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .stat-divider {
+      display: none;
+    }
+    .ranks-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .cta-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
