@@ -37,8 +37,8 @@
         <a href="#stack">Stack</a>
       </div>
       <div class="nav-cta">
-        <a href="/login" class="nav-signin">Sign In</a>
-        <a href="/signup" class="btn-primary">Deploy Now</a>
+        <a href="#" class="nav-signin auth-trigger" data-mode="login">Sign In</a>
+        <a href="#" class="btn-primary auth-trigger" data-mode="signup">Deploy Now</a>
       </div>
       <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -49,8 +49,8 @@
       <a href="#pipeline">Pipeline</a>
       <a href="#ranks">Ranks</a>
       <a href="#stack">Stack</a>
-      <a href="/login">Sign In</a>
-      <a href="/signup" class="btn-primary">Deploy Now</a>
+      <a href="#" class="auth-trigger" data-mode="login">Sign In</a>
+      <a href="#" class="btn-primary auth-trigger" data-mode="signup">Deploy Now</a>
     </div>
 
 <script>
@@ -63,6 +63,16 @@ const navbar = document.getElementById('navbar');
   ham?.addEventListener('click', () => {
     mobileNav?.classList.toggle('open');
     ham.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.auth-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const mode = (e.currentTarget as HTMLElement).getAttribute('data-mode') || 'login';
+      window.dispatchEvent(new CustomEvent('open-auth', { detail: { mode } }));
+      mobileNav?.classList.remove('open');
+      ham?.classList.remove('active');
+    });
   });
 </script>
 

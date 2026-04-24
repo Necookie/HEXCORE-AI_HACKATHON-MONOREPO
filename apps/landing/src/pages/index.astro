@@ -9,6 +9,8 @@ import Assessment from "../components/landing/Assessment.astro";
 import Stack from "../components/landing/Stack.astro";
 import CTA from "../components/landing/CTA.astro";
 import Footer from "../components/landing/Footer.astro";
+import Chatbot from "../components/landing/Chatbot.astro";
+import AuthModal from "../components/auth/AuthModal";
 import "../styles/landing-global.css";
 ---
 
@@ -24,6 +26,8 @@ import "../styles/landing-global.css";
     <Stack />
     <CTA />
     <Footer />
+    <Chatbot />
+    <AuthModal client:load />
   </main>
 </Layout>
 
