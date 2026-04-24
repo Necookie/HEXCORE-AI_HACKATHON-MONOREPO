@@ -4,7 +4,7 @@ import { LayoutDashboard, GitMerge, Trophy, Settings, LogOut } from 'lucide-reac
 const Sidebar = () => {
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-    { name: 'The Pipeline', icon: GitMerge, href: '/pipeline' },
+    { name: 'Pipeline', icon: GitMerge, href: '/pipeline' },
     { name: 'Achievements', icon: Trophy, href: '/achievements' },
     { name: 'Settings', icon: Settings, href: '/settings' },
   ];
