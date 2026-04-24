@@ -1,0 +1,14 @@
+---
+// src/pages/platform/dashboard.astro – Learning Dashboard View
+import PlatformLayout from '../../layouts/PlatformLayout.astro';
+import LearningDashboard from '../../components/LearningDashboard';
+
+// TODO: Fetch real DashboardData from Supabase here (server-side):
+// const { data: dashboardData } = await supabase.from('user_progress').select('*').single();
+// Then pass as prop: <LearningDashboard data={dashboardData} client:load />
+---
+
+<PlatformLayout title="Dashboard">
+  <!-- LearningDashboard renders with mock data by default; pass `data` prop to hydrate from Supabase -->
+  <LearningDashboard client:load />
+</PlatformLayout>

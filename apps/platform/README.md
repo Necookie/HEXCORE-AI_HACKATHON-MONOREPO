@@ -1,43 +1,29 @@
-# Astro Starter Kit: Minimal
+# StudyBearer Platform
 
-```sh
-npm create astro@latest -- --template minimal
+AI-powered adaptive learning platform built with Astro, React, and Supabase.
+
+## Stack
+- **Framework**: Astro 6 (SSR / Islands Architecture)
+- **UI**: React 19 + Lucide-React icons
+- **Styling**: Tailwind CSS v4
+- **Auth + DB**: Supabase (SSR)
+- **AI Orchestration**: n8n webhooks (REQ-105)
+
+## Dev
+```bash
+pnpm install
+pnpm dev        # Starts on http://localhost:4322
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Pages
+| Route | File | Description |
+|---|---|---|
+| `/platform` | `pages/platform/index.astro` | Project Intake — PDF upload + schedule config |
+| `/platform/dashboard` | `pages/platform/dashboard.astro` | Learning Dashboard — roadmap + metrics |
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Integration Points
+| Stub | Location | Replace With |
+|---|---|---|
+| `UPLOAD_PDF` | `ProjectIntake.tsx` | Supabase Storage upload |
+| `TRIGGER_N8N` | `ProjectIntake.tsx` | n8n webhook POST |
+| `MOCK` data | `LearningDashboard.tsx` | Supabase query via `dashboard.astro` |
