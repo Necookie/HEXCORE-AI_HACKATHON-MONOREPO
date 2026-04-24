@@ -1,0 +1,121 @@
+---
+---
+
+<section id="stack" class="section stack-section">
+      <div class="section-label">Technical Stack</div>
+      <h2 class="section-title">
+        Built to <span class="grad-text">Ship Fast.</span>
+      </h2>
+      <p class="section-sub">
+        A battle-tested combination of modern tooling that lets us move at
+        hackathon speed without sacrificing production quality.
+      </p>
+
+      <div class="stack-grid">
+        <div class="stack-card">
+          <div class="stack-logo">🚀</div>
+          <div class="stack-info">
+            <span class="stack-name">Astro + React</span>
+            <span class="stack-desc"
+              >Islands architecture — static shell, interactive components only
+              where needed. Sub-1.5s initial load.</span
+            >
+          </div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-logo">🗄️</div>
+          <div class="stack-info">
+            <span class="stack-name">Supabase + Prisma</span>
+            <span class="stack-desc"
+              >PostgreSQL with Row-Level Security for PDF storage. Prisma for
+              strict type-checked ORM queries.</span
+            >
+          </div>
+        </div>
+        <div class="stack-card stack-card-highlight">
+          <div class="stack-logo">🧠</div>
+          <div class="stack-info">
+            <span class="stack-name">n8n — The Brain</span>
+            <span class="stack-desc"
+              >Central orchestrator. Handles PDF parsing, AI agent routing,
+              Calendar API, quiz generation, and all gamification logic via
+              visual workflows.</span
+            >
+          </div>
+        </div>
+        <div class="stack-card">
+          <div class="stack-logo">🤖</div>
+          <div class="stack-info">
+            <span class="stack-name">OpenAI / Gemini</span>
+            <span class="stack-desc"
+              >Semantic chunking and dynamic quiz generation. Catch nodes handle
+              hallucinations and rate limits gracefully.</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+<style>
+/* ── STACK ── */
+  .stack-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .stack-card {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.4s,
+      transform 0.4s,
+      border-color 0.3s;
+  }
+
+  .stack-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .stack-card-highlight {
+    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.04);
+  }
+
+  .stack-card-highlight:hover {
+    box-shadow: 0 0 32px rgba(99, 102, 241, 0.1);
+  }
+
+  .stack-logo {
+    font-size: 1.75rem;
+    flex-shrink: 0;
+  }
+
+  .stack-name {
+    display: block;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .stack-desc {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>

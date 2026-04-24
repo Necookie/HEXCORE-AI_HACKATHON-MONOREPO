@@ -1,0 +1,209 @@
+---
+---
+
+<nav class="navbar" id="navbar">
+      <a href="/" class="logo" aria-label="StudyBearer home">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 28 28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <circle cx="14" cy="14" r="5" stroke="#6366f1" stroke-width="1.5"
+          ></circle>
+          <path
+            d="M14 2C14 2 22 6 22 14C22 22 14 26 14 26"
+            stroke="#6366f1"
+            stroke-width="1.5"
+            stroke-linecap="round"></path>
+          <path
+            d="M14 2C14 2 6 6 6 14C6 22 14 26 14 26"
+            stroke="#8b5cf6"
+            stroke-width="1.5"
+            stroke-linecap="round"></path>
+          <circle cx="14" cy="2" r="1.5" fill="#6366f1"></circle>
+          <circle cx="14" cy="26" r="1.5" fill="#8b5cf6"></circle>
+          <circle cx="22" cy="14" r="1.5" fill="#6366f1"></circle>
+          <circle cx="6" cy="14" r="1.5" fill="#8b5cf6"></circle>
+        </svg>
+        <span>StudyBearer</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#ranks">Ranks</a>
+        <a href="#stack">Stack</a>
+      </div>
+      <div class="nav-cta">
+        <a href="#" class="nav-signin auth-trigger" data-mode="login">Sign In</a>
+        <a href="#" class="btn-primary auth-trigger" data-mode="signup">Deploy Now</a>
+      </div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="nav-mobile" id="navMobile">
+      <a href="#features">Features</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#ranks">Ranks</a>
+      <a href="#stack">Stack</a>
+      <a href="#" class="auth-trigger" data-mode="login">Sign In</a>
+      <a href="#" class="btn-primary auth-trigger" data-mode="signup">Deploy Now</a>
+    </div>
+
+<script>
+const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar?.classList.toggle('scrolled', window.scrollY > 40);
+  });
+  const ham = document.getElementById('navHamburger');
+  const mobileNav = document.getElementById('navMobile');
+  ham?.addEventListener('click', () => {
+    mobileNav?.classList.toggle('open');
+    ham.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.auth-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const mode = (e.currentTarget as HTMLElement).getAttribute('data-mode') || 'login';
+      window.dispatchEvent(new CustomEvent('open-auth', { detail: { mode } }));
+      mobileNav?.classList.remove('open');
+      ham?.classList.remove('active');
+    });
+  });
+</script>
+
+<style>
+/* ── NAVBAR ── */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    transition:
+      background 0.3s,
+      border-color 0.3s,
+      backdrop-filter 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .navbar.scrolled {
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(16px);
+    border-color: var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: "Syne", sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+  }
+
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .nav-signin {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-signin:hover {
+    color: var(--text);
+  }
+
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--muted);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  .nav-hamburger.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-hamburger.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .nav-mobile {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: rgba(10, 10, 12, 0.97);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1.5rem 2rem;
+    gap: 1.25rem;
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-mobile.open {
+    display: flex;
+  }
+  .nav-mobile a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+  .nav-mobile a:hover {
+    color: var(--text);
+  }
+</style>

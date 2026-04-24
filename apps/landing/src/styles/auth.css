@@ -272,3 +272,47 @@
     max-width: 100%;
   }
 }
+
+/* ── Modal Overlay ── */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.auth-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.auth-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  transform: scale(0.95);
+  transition: transform 0.3s;
+}
+.auth-modal-overlay.open .auth-modal-content {
+  transform: scale(1);
+}
+.modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  color: #71717a;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0.5rem;
+}
+.modal-close:hover {
+  color: #fff;
+}

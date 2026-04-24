@@ -1,0 +1,158 @@
+---
+---
+
+<section id="pipeline" class="section pipeline-section">
+      <div class="section-label">The Workflow</div>
+      <h2 class="section-title">
+        From PDF to <span class="grad-text">Mastery</span>
+      </h2>
+      <p class="section-sub">
+        Five automated stages. Zero manual scheduling. One cohesive pipeline.
+      </p>
+
+      <div class="pipeline">
+        <div class="pipeline-line" aria-hidden="true"></div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">01</div>
+          <div class="pipe-content">
+            <h4>Upload & Configure</h4>
+            <p>
+              Upload your PDF to Supabase Storage. Set your available study
+              hours, preferred days, and target completion date. That's your
+              last manual input.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">02</div>
+          <div class="pipe-content">
+            <h4>n8n Webhook Trigger</h4>
+            <p>
+              Upload fires a webhook into n8n. The workflow extracts raw text,
+              passes it to an AI agent, and receives a structured JSON array of
+              daily learning objectives.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">03</div>
+          <div class="pipe-content">
+            <h4>Google Calendar Injection</h4>
+            <p>
+              n8n maps objectives to your available time slots and pushes them
+              as Google Calendar events. Each event carries its full sub-topic
+              description.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">04</div>
+          <div class="pipe-content">
+            <h4>Quiz Unlock & Assessment</h4>
+            <p>
+              When a calendar block ends, its quiz unlocks. n8n generates
+              context-specific MCQ, Enumeration, and Identification questions.
+              Your React frontend renders them with live feedback.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="pipe-num">05</div>
+          <div class="pipe-content">
+            <h4>Progression & Rank Update</h4>
+            <p>
+              Quiz accuracy and streak length feed into Elo calculation. Your
+              rank updates automatically. Missed a 24-hour window? Combo resets
+              — stay consistent or pay the price.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<style>
+/* ── PIPELINE ── */
+  .pipeline-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .pipeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .pipeline-line {
+    position: absolute;
+    left: 27px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--indigo),
+      var(--violet),
+      transparent
+    );
+    opacity: 0.3;
+  }
+
+  .pipe-step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-16px);
+    transition:
+      opacity 0.5s,
+      transform 0.5s;
+  }
+
+  .pipe-step:last-child {
+    border-bottom: none;
+  }
+  .pipe-step.revealed {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .pipe-num {
+    font-family: "Syne", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: 0.08em;
+    background: var(--surface);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.4rem;
+    width: 54px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pipe-content h4 {
+    font-family: "Syne", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  .pipe-content p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+</style>
