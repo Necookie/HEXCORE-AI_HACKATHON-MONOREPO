@@ -1,0 +1,31 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AssessmentChamber from '../../components/AssessmentChamber';
+
+export function getStaticPaths() {
+  // Mock static paths for the demo
+  return [
+    { params: { id: 'demo-module-01' } },
+    { params: { id: 'demo-module-02' } }
+  ];
+}
+
+const { id } = Astro.params;
+---
+
+<Layout title={`Assessment: ${id}`}>
+  <div class="h-full flex flex-col pt-12">
+    <header class="mb-12 flex justify-between items-center opacity-50">
+      <div class="font-mono text-xs text-muted-steel tracking-[0.2em] uppercase">
+        Active Node // {id}
+      </div>
+      <div class="font-mono text-xs text-muted-steel tracking-[0.2em]">
+        Chamber Status: <span class="text-green-500">LIVE</span>
+      </div>
+    </header>
+
+    <div class="flex-1 flex flex-col">
+      <AssessmentChamber client:load />
+    </div>
+  </div>
+</Layout>
