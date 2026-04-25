@@ -1,14 +1,11 @@
 ---
 // /auth/callback — handles cross-domain login and email confirmation
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 
-// On Cloudflare Pages SSR, runtime variables are sometimes found in Astro.locals.runtime.env
-// but import.meta.env works if they were present at build time.
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-    console.error("DEBUG: Supabase keys missing at runtime!");
     return new Response("Server configuration error: Supabase keys missing.", { status: 500 });
 }
 
@@ -17,12 +14,16 @@ const supabase = createServerClient(
   supabaseKey,
   {
     cookies: {
-      getAll: () =>
-        Astro.cookies.getAll().map(({ name, value }) => ({ name, value })),
-      setAll: (cookies) =>
+      getAll: () => {
+        // Bulletproof way to get cookies on Cloudflare: parse the header directly
+        return parseCookieHeader(Astro.request.headers.get("Cookie") ?? "");
+      },
+      setAll: (cookies) => {
+        // Standard Astro way to set cookies
         cookies.forEach(({ name, value, options }) =>
           Astro.cookies.set(name, value, options)
-        ),
+        );
+      },
     },
   }
 );
