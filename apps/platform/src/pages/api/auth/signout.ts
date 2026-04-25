@@ -25,6 +25,13 @@ export const POST: APIRoute = async ({ cookies, redirect, request }) => {
   );
 
   await supabase.auth.signOut();
-  // Redirect to landing page after sign out
-  return redirect('http://localhost:4321/', 302);
+  
+  // Determine where to redirect after sign out
+  const host = request.headers.get('host') || '';
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+  const landingUrl = isLocal ? 'http://localhost:4321/' : 'https://sb.necookie.dev/';
+  
+  console.log(`DEBUG: Signing out from ${host}, redirecting to ${landingUrl}`);
+  
+  return redirect(landingUrl, 302);
 };
