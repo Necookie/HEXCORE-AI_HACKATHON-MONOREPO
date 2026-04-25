@@ -1,12 +1,20 @@
 ---
-// /auth/callback — handles two flows:
-// 1. Email confirmation: Supabase sends ?code= (PKCE)
-// 2. Cross-domain login: landing sends ?access_token=&refresh_token=
+// /auth/callback — handles cross-domain login and email confirmation
 import { createServerClient } from "@supabase/ssr";
 
+// On Cloudflare Pages SSR, runtime variables are sometimes found in Astro.locals.runtime.env
+// but import.meta.env works if they were present at build time.
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.error("DEBUG: Supabase keys missing at runtime!");
+    return new Response("Server configuration error: Supabase keys missing.", { status: 500 });
+}
+
 const supabase = createServerClient(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  supabaseUrl,
+  supabaseKey,
   {
     cookies: {
       getAll: () =>
@@ -23,24 +31,23 @@ const code = Astro.url.searchParams.get("code");
 const accessToken = Astro.url.searchParams.get("access_token");
 const refreshToken = Astro.url.searchParams.get("refresh_token");
 
-if (code) {
-  // Flow 1: email confirmation link (PKCE code exchange)
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (!error) {
-    return Astro.redirect("/platform");
-  }
-} else if (accessToken && refreshToken) {
-  // Flow 2: cross-domain login from landing page
-  // Sets the session on the platform domain and stores it in cookies.
-  const { error } = await supabase.auth.setSession({
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  });
-  if (!error) {
-    return Astro.redirect("/platform");
-  }
+try {
+    if (code) {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) throw error;
+      return Astro.redirect("/platform");
+    } else if (accessToken && refreshToken) {
+      const { error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (error) throw error;
+      return Astro.redirect("/platform");
+    }
+} catch (e: any) {
+    console.error("Auth error:", e.message);
+    return new Response(`Auth Error: ${e.message}`, { status: 500 });
 }
 
-// Fallback — no valid params, back to landing
 return Astro.redirect("/");
 ---
