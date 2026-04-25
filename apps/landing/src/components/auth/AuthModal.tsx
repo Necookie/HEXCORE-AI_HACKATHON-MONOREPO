@@ -29,6 +29,9 @@ export default function AuthModal() {
     setError('');
 
     const supabase = supabaseBrowserClient();
+    // Platform URL — set via env var so it works for both local dev and production
+    const platformUrl = import.meta.env.PUBLIC_PLATFORM_URL || 'http://localhost:4322';
+    const callbackUrl = `${platformUrl}/auth/callback`;
 
     if (mode === 'login') {
       const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -39,18 +42,28 @@ export default function AuthModal() {
       if (signInError) {
         setError(signInError.message);
       } else {
-        window.location.href = 'http://localhost:4322/';
+        // Session is stored in browser; redirect to platform which will
+        // pick up the session automatically via Supabase JS on that domain.
+        window.location.href = platformUrl;
       }
     } else {
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          // Supabase sends a confirmation email with a link back to this URL.
+          // Platform's /auth/callback page exchanges the code for a session.
+          emailRedirectTo: callbackUrl,
+        },
       });
 
       if (signUpError) {
         setError(signUpError.message);
       } else {
-        window.location.href = 'http://localhost:4322/';
+        setError('');
+        // Show success — user needs to confirm email before being redirected.
+        alert('Account created! Check your email to confirm, then sign in.');
+        setMode('login');
       }
     }
   };

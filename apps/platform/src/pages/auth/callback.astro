@@ -1,0 +1,31 @@
+---
+// /auth/callback — Supabase email confirmation lands here.
+// The URL contains ?code=xxx which we exchange for a real session.
+import { createServerClient } from "@supabase/ssr";
+
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: {
+      getAll: () => Astro.cookies.getAll().map(({ name, value }) => ({ name, value })),
+      setAll: (cookies) =>
+        cookies.forEach(({ name, value, options }) =>
+          Astro.cookies.set(name, value, options)
+        ),
+    },
+  }
+);
+
+const code = Astro.url.searchParams.get("code");
+
+if (code) {
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (!error) {
+    return Astro.redirect("/platform");
+  }
+}
+
+// Fallback — redirect to root if no code or exchange failed
+return Astro.redirect("/");
+---
