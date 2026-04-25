@@ -30,8 +30,15 @@ export default function AuthModal() {
 
     const supabase = supabaseBrowserClient();
     
-    // Get platform URL from env, fallback to localhost
-    let platformUrl = import.meta.env.PUBLIC_PLATFORM_URL || 'http://localhost:4322';
+    // Get platform URL from env, fallback to smart production default or localhost
+    let platformUrl = import.meta.env.PUBLIC_PLATFORM_URL;
+    
+    if (!platformUrl && typeof window !== 'undefined') {
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      platformUrl = isLocal ? 'http://localhost:4322' : 'https://app.sb.necookie.dev';
+    }
+    
+    platformUrl = platformUrl || 'http://localhost:4322';
     
     // Remove trailing slash if present
     platformUrl = platformUrl.replace(/\/$/, '');
