@@ -1,6 +1,7 @@
 ---
-// /auth/callback — Supabase email confirmation lands here.
-// The URL contains ?code=xxx which we exchange for a real session.
+// /auth/callback — handles two flows:
+// 1. Email confirmation: Supabase sends ?code= (PKCE)
+// 2. Cross-domain login: landing sends ?access_token=&refresh_token=
 import { createServerClient } from "@supabase/ssr";
 
 const supabase = createServerClient(
@@ -8,7 +9,8 @@ const supabase = createServerClient(
   import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
   {
     cookies: {
-      getAll: () => Astro.cookies.getAll().map(({ name, value }) => ({ name, value })),
+      getAll: () =>
+        Astro.cookies.getAll().map(({ name, value }) => ({ name, value })),
       setAll: (cookies) =>
         cookies.forEach(({ name, value, options }) =>
           Astro.cookies.set(name, value, options)
@@ -18,14 +20,27 @@ const supabase = createServerClient(
 );
 
 const code = Astro.url.searchParams.get("code");
+const accessToken = Astro.url.searchParams.get("access_token");
+const refreshToken = Astro.url.searchParams.get("refresh_token");
 
 if (code) {
+  // Flow 1: email confirmation link (PKCE code exchange)
   const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (!error) {
+    return Astro.redirect("/platform");
+  }
+} else if (accessToken && refreshToken) {
+  // Flow 2: cross-domain login from landing page
+  // Sets the session on the platform domain and stores it in cookies.
+  const { error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
   if (!error) {
     return Astro.redirect("/platform");
   }
 }
 
-// Fallback — redirect to root if no code or exchange failed
+// Fallback — no valid params, back to landing
 return Astro.redirect("/");
 ---

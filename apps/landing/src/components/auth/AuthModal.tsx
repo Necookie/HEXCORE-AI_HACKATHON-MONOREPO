@@ -34,17 +34,19 @@ export default function AuthModal() {
     const callbackUrl = `${platformUrl}/auth/callback`;
 
     if (mode === 'login') {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
         setError(signInError.message);
-      } else {
-        // Session is stored in browser; redirect to platform which will
-        // pick up the session automatically via Supabase JS on that domain.
-        window.location.href = platformUrl;
+      } else if (data?.session) {
+        // Pass tokens to platform so it can set its own session cookie.
+        // Supabase localStorage is domain-scoped — we must hand off tokens explicitly.
+        const { access_token, refresh_token } = data.session;
+        const params = new URLSearchParams({ access_token, refresh_token });
+        window.location.href = `${platformUrl}/auth/callback?${params.toString()}`;
       }
     } else {
       const { error: signUpError } = await supabase.auth.signUp({
