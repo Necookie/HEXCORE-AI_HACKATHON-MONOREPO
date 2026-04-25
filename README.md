@@ -2,6 +2,12 @@
 
 StudyBearer is an AI-powered educational workflow application designed to eradicate the cognitive load of academic planning and testing. By shifting the burden of scheduling, chunking, and testing to an automated AI pipeline, StudyBearer transforms passive dread into an active, gamified learning journey.
 
+## Deployment
+- **Landing:** [sb.necookie.dev](https://sb.necookie.dev)
+- **Platform:** [app.sb.necookie.dev](https://app.sb.necookie.dev)
+- **Status:** [Astro SSR on Cloudflare Pages]
+- **Last Updated:** 2026-04-25 21:05 (Force Redeploy)
+
 ## Features
 - **Automated AI Orchestration:** Upload a PDF and let n8n chunk your curriculum into daily learning objectives.
 - **Google Calendar Sync:** Your AI-generated study roadmap is pushed directly to your Google Calendar.
