@@ -1,0 +1,9 @@
+---
+// src/pages/platform/index.astro – Project Intake View
+import PlatformLayout from '../../layouts/PlatformLayout.astro';
+import ProjectIntake from '../../components/ProjectIntake';
+---
+
+<PlatformLayout title="New Roadmap">
+  <ProjectIntake client:load />
+</PlatformLayout>
