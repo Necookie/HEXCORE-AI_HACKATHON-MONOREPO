@@ -5,15 +5,14 @@ import react from '@astrojs/react';
 import cloudflare from '@astrojs/cloudflare';
 import node from '@astrojs/node';
 
-// CF_PAGES=1 is automatically set by Cloudflare Pages during build.
-// Locally we use the Node adapter so workerd.exe is never spawned.
 const isCloudflare = process.env.CF_PAGES === '1';
 
-// https://astro.build/config
 export default defineConfig({
   output: 'server',
+  // Force the adapter into 'directory' mode for Cloudflare Pages
+  // and 'standalone' for local Node development.
   adapter: isCloudflare
-    ? cloudflare({ inspectorPort: 9232 })
+    ? cloudflare() 
     : node({ mode: 'standalone' }),
   integrations: [react()],
   vite: {

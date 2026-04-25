@@ -1,4 +1,4 @@
-import { rmSync, existsSync, readdirSync } from 'fs';
+import { rmSync, existsSync, readdirSync, renameSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 console.log('🚀 Starting post-build cleanup...');
@@ -12,13 +12,20 @@ targets.forEach(t => {
   }
 });
 
-// 2. Verify _worker.js exists
+// 2. Fix directory structure if adapter used "Advanced/Worker" mode instead of "Pages" mode
+// Cloudflare Pages expects _worker.js in the root of the output directory.
+if (existsSync('dist/server/_worker.js') && !existsSync('dist/_worker.js')) {
+  console.log('  - Moving _worker.js from dist/server to dist/ root...');
+  renameSync('dist/server/_worker.js', 'dist/_worker.js');
+}
+
+// 3. Verify _worker.js exists
 const workerPath = 'dist/_worker.js';
 if (existsSync(workerPath)) {
   console.log(`✅ SUCCESS: _worker.js found at ${workerPath}`);
 } else {
   console.error(`❌ ERROR: _worker.js NOT FOUND in dist/!`);
-  console.log('Contents of dist:', readdirSync('dist'));
+  console.log('Final dist structure:', readdirSync('dist', { recursive: true }));
 }
 
-console.log('✓ Cleanup complete. Cloudflare CI will now use wrangler.toml');
+console.log('✓ Cleanup complete.');
