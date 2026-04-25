@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-24T00:00:00.000Z",
+  "title": "Design System: StudyBearer",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Neon Indigo", "canonical": "oklch(60% 0.2 260)" },
+      "secondary": { "role": "secondary", "displayName": "Violet Arc", "canonical": "oklch(60% 0.2 290)" },
+      "neutral-bg": { "role": "neutral", "displayName": "Deep Void", "canonical": "#0a0a0c" },
+      "surface": { "role": "neutral", "displayName": "Surface Grey", "canonical": "#121216" },
+      "muted": { "role": "neutral", "displayName": "Muted Steel", "canonical": "#a1a1aa" },
+      "text": { "role": "neutral", "displayName": "Pure White", "canonical": "#ffffff" }
+    },
+    "shadows": [
+      { "name": "neon-glow", "value": "0 0 20px rgba(99, 102, 241, 0.3)", "purpose": "Active state highlight." }
+    ],
+    "motion": [
+      { "name": "cinematic-slide", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "Page transitions and reveals." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main tactical action.",
+      "html": "<button class=\"ds-btn-primary\">INITIALIZE MISSION</button>",
+      "css": ".ds-btn-primary { background: #6366f1; color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 0px rgba(99, 102, 241, 0); } .ds-btn-primary:hover { background: #4f46e5; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); transform: translateY(-1px); }"
+    },
+    {
+      "name": "Tactical Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Container for mission data.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Module 01</h3><p class=\"ds-card-body\">Core concepts and foundations.</p></div>",
+      "css": ".ds-card { background: #121216; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.07); } .ds-card-title { color: #fff; font-weight: 600; margin-bottom: 8px; } .ds-card-body { color: #a1a1aa; font-size: 14px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tactical Command Center",
+    "overview": "StudyBearer is a cinematic, high-fidelity environment designed to transform the dread of studying into the focus of a tactical mission.",
+    "keyCharacteristics": [
+      "The Deep Void: Cinematic black backgrounds",
+      "Neon Guidance: Indigo and Violet accents",
+      "Tactical Precision: Sharp edges and monoline icons"
+    ],
+    "dos": [
+      "Do use OKLCH for smooth gradients",
+      "Do keep the background at #0a0a0c"
+    ],
+    "donts": [
+      "Don't use 'startup white' or flat minimal themes",
+      "Don't use cyan or slate colors"
+    ]
+  }
+}
