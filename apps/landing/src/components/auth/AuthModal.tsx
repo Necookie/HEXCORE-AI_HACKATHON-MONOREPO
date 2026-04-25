@@ -29,9 +29,19 @@ export default function AuthModal() {
     setError('');
 
     const supabase = supabaseBrowserClient();
-    // Platform URL — set via env var so it works for both local dev and production
-    const platformUrl = import.meta.env.PUBLIC_PLATFORM_URL || 'http://localhost:4322';
-    const callbackUrl = `${platformUrl}/auth/callback`;
+    
+    // Get platform URL from env, fallback to localhost
+    let platformUrl = import.meta.env.PUBLIC_PLATFORM_URL || 'http://localhost:4322';
+    
+    // Remove trailing slash if present
+    platformUrl = platformUrl.replace(/\/$/, '');
+    
+    // Ensure we have the correct callback path
+    const callbackUrl = platformUrl.includes('/auth/callback') 
+      ? platformUrl 
+      : `${platformUrl}/auth/callback`;
+    
+    console.log('DEBUG: Redirecting to:', callbackUrl);
 
     if (mode === 'login') {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -42,11 +52,9 @@ export default function AuthModal() {
       if (signInError) {
         setError(signInError.message);
       } else if (data?.session) {
-        // Pass tokens to platform so it can set its own session cookie.
-        // Supabase localStorage is domain-scoped — we must hand off tokens explicitly.
         const { access_token, refresh_token } = data.session;
         const params = new URLSearchParams({ access_token, refresh_token });
-        window.location.href = `${platformUrl}/auth/callback?${params.toString()}`;
+        window.location.href = `${callbackUrl}?${params.toString()}`;
       }
     } else {
       const { error: signUpError } = await supabase.auth.signUp({
