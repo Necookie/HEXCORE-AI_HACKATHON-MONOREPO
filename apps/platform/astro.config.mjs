@@ -5,12 +5,13 @@ import react from '@astrojs/react';
 import cloudflare from '@astrojs/cloudflare';
 import node from '@astrojs/node';
 
+// Cloudflare Pages build detection
 const isCloudflare = process.env.CF_PAGES === '1';
 
 export default defineConfig({
   output: 'server',
-  // Force the adapter into 'directory' mode for Cloudflare Pages
-  // and 'standalone' for local Node development.
+  // When building for Cloudflare, use the adapter with NO extra config
+  // to let it auto-detect the Pages environment correctly.
   adapter: isCloudflare
     ? cloudflare() 
     : node({ mode: 'standalone' }),
