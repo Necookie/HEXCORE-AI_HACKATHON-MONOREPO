@@ -1,21 +1,16 @@
-// ProjectIntake.tsx – REQ-2.1 + REQ-2.2 + REQ-NF-2
-import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, Calendar, Clock, CheckSquare, Zap, Loader2, X, CheckCircle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Ic, Badge, Card, Btn } from './ui';
 
 type StudyDay = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
 interface ScheduleConfig {
+  subjectName: string;
   targetDate: string;
-  windowStart: string;
-  windowEnd: string;
+  hoursPerDay: number;
   studyDays: StudyDay[];
 }
-const ALL_DAYS: StudyDay[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const HOURS = Array.from({ length: 24 }, (_, i) => ({
-  label: `${i % 12 || 12}:00 ${i < 12 ? 'AM' : 'PM'}`,
-  value: `${String(i).padStart(2, '0')}:00`,
-}));
 
-// ── Stubs: replace with Supabase Storage + n8n webhook calls ──
+const ALL_DAYS: StudyDay[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
 async function UPLOAD_PDF(_f: File): Promise<string> {
   await new Promise(r => setTimeout(r, 800));
   return 'https://placeholder.example.com/doc.pdf';
@@ -25,184 +20,275 @@ async function TRIGGER_N8N(_p: { pdfUrl: string; schedule: ScheduleConfig }) {
   await new Promise(r => setTimeout(r, 5000));
 }
 
+const PROC_STEPS = [
+  'Parsing PDF content',
+  'Chunking into study modules',
+  'Scheduling calendar events',
+  'Building quiz questions',
+];
+
 export default function ProjectIntake() {
+  const [step, setStep] = useState(1);
   const [file, setFile] = useState<File | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [drag, setDrag] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleConfig>({
-    targetDate: '', windowStart: '20:00', windowEnd: '22:00', studyDays: ['Mon', 'Wed', 'Fri'],
+    subjectName: '', targetDate: '', hoursPerDay: 2, studyDays: ['Mon', 'Wed', 'Fri'],
   });
-  const [phase, setPhase] = useState<'idle' | 'uploading' | 'processing' | 'done' | 'error'>('idle');
+  const [procStep, setProcStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); }, []);
-  const onDragLeave = useCallback(() => setIsDragging(false), []);
+  useEffect(() => {
+    if (step !== 3) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const pdfUrl = await UPLOAD_PDF(file!);
+        if (cancelled) return;
+        await Promise.all([
+          TRIGGER_N8N({ pdfUrl, schedule }),
+          new Promise<void>(res => {
+            let i = 0;
+            const t = setInterval(() => {
+              i++;
+              if (!cancelled) setProcStep(i);
+              if (i >= PROC_STEPS.length) { clearInterval(t); res(); }
+            }, 900);
+          }),
+        ]);
+      } catch {
+        // stay on step 3 with all steps shown
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [step]);
+
   const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault(); setIsDragging(false);
+    e.preventDefault(); setDrag(false);
     const f = e.dataTransfer.files[0];
-    f?.type === 'application/pdf' ? (setFile(f), setError(null)) : setError('Only PDF files are accepted.');
+    if (f?.type === 'application/pdf') { setFile(f); setError(null); }
+    else setError('Only PDF files are accepted.');
   }, []);
 
   const toggleDay = (d: StudyDay) =>
-    setSchedule(s => ({ ...s, studyDays: s.studyDays.includes(d) ? s.studyDays.filter(x => x !== d) : [...s.studyDays, d] }));
+    setSchedule(s => ({
+      ...s,
+      studyDays: s.studyDays.includes(d) ? s.studyDays.filter(x => x !== d) : [...s.studyDays, d],
+    }));
 
-  const handleInit = async () => {
-    if (!file) return setError('Upload a PDF first.');
-    if (!schedule.targetDate) return setError('Select a target completion date.');
-    if (!schedule.studyDays.length) return setError('Select at least one study day.');
-    setError(null);
-    try {
-      setPhase('uploading');
-      const pdfUrl = await UPLOAD_PDF(file);
-      setPhase('processing');
-      await TRIGGER_N8N({ pdfUrl, schedule });
-      setPhase('done');
-    } catch { setPhase('error'); }
+  const goToStep2 = () => {
+    if (!file) { setError('Upload a PDF first.'); return; }
+    setError(null); setStep(2);
+  };
+  const goToStep3 = () => {
+    if (!schedule.targetDate) { setError('Select a target completion date.'); return; }
+    if (!schedule.studyDays.length) { setError('Select at least one study day.'); return; }
+    setError(null); setStep(3);
   };
 
-  const canSubmit = !!file && !!schedule.targetDate && schedule.studyDays.length > 0;
+  const steps = ['Upload PDF', 'Set Schedule', 'AI Processing'];
+  const done = procStep >= PROC_STEPS.length;
 
   return (
-    <>
-      {/* ── Orchestration Overlay (REQ-NF-2) ── */}
-      {phase !== 'idle' && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xl flex items-center justify-center"
-             style={{ animation: 'overlayFadeIn 0.4s ease' }}>
-          <div className="flex flex-col items-center gap-6 text-center px-8">
-            {phase === 'uploading' && (
-              <><Loader2 className="w-12 h-12 text-cyan-400 animate-spin" />
-              <p className="text-lg font-medium text-slate-200">Uploading document…</p></>
-            )}
-            {phase === 'processing' && (
-              <><div className="relative">
-                <div className="w-20 h-20 rounded-full border-2 border-cyan-400 flex items-center justify-center"
-                     style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}>
-                  <Zap className="w-8 h-8 text-cyan-400" />
-                </div>
-                <div className="absolute inset-0 rounded-full border border-cyan-400/30 animate-ping" />
+    <div className="content-scroll fade-in" style={{ padding: '24px 40px', flex: 1, maxWidth: 640, margin: '0 auto', width: '100%' }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 20 }}>
+        <Badge color="purple" sm>New Subject</Badge>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, marginTop: 8, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+          Upload Study Material
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: 13 }}>
+          Drop your PDF and StudyBearer builds a personalized, AI-powered roadmap.
+        </p>
+      </div>
+
+      {/* Step indicator */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
+              <div style={{
+                width: 26, height: 26, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: step > i + 1 ? 'var(--green)' : step === i + 1 ? 'var(--purple)' : 'var(--bg-elevated)',
+                color: step > i + 1 ? '#061a0a' : step === i + 1 ? '#fff' : 'var(--text-muted)',
+                border: step === i + 1 ? '2px solid rgba(123,92,245,0.5)' : '2px solid var(--border)',
+                fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 12, transition: 'all 0.3s ease',
+              }}>
+                {step > i + 1 ? <Ic n="check" size={15} color="#061a0a" /> : i + 1}
               </div>
-              <div>
-                <p className="text-xl font-semibold text-cyan-400" style={{ textShadow: '0 0 18px rgba(34,211,238,0.45)' }}>
-                  AI Orchestration Active
-                </p>
-                <p className="mt-1 text-sm text-slate-400">Analysing document and building your roadmap…</p>
-                <p className="mt-3 text-xs text-slate-500">This may take up to 30 seconds.</p>
-              </div></>
+              <span style={{ fontSize: 10, color: step === i + 1 ? 'var(--text-primary)' : 'var(--text-muted)', whiteSpace: 'nowrap' }}>{s}</span>
+            </div>
+            {i < steps.length - 1 && (
+              <div style={{ flex: 1, height: 2, background: step > i + 1 ? 'var(--purple)' : 'var(--border)', margin: '0 10px', marginBottom: 20, transition: 'background 0.4s ease' }} />
             )}
-            {phase === 'done' && (
-              <><CheckCircle className="w-14 h-14 text-cyan-400" />
-              <p className="text-xl font-semibold text-cyan-400">Roadmap Ready</p>
-              <a href="/platform/dashboard"
-                 className="mt-2 px-6 py-3 bg-cyan-400 text-black font-semibold rounded-lg hover:bg-cyan-300 transition-colors">
-                Open Dashboard →
-              </a></>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Step 1: Upload ── */}
+      {step === 1 && (
+        <div className="fade-in">
+          <div
+            onDragOver={e => { e.preventDefault(); setDrag(true); }}
+            onDragLeave={() => setDrag(false)}
+            onDrop={onDrop}
+            onClick={() => !file && inputRef.current?.click()}
+            style={{
+              border: `2px dashed ${drag ? 'var(--purple)' : file ? 'var(--green)' : 'var(--border)'}`,
+              borderRadius: 'var(--radius-xl)', padding: '48px 32px', textAlign: 'center',
+              background: drag ? 'rgba(123,92,245,0.05)' : file ? 'rgba(74,222,128,0.04)' : 'var(--bg-elevated)',
+              cursor: file ? 'default' : 'pointer', transition: 'all 0.22s ease', marginBottom: 18,
+            }}
+          >
+            <div style={{ marginBottom: 14, display: 'flex', justifyContent: 'center' }}>
+              {file ? <Ic n="file" size={40} color="var(--green)" /> : <Ic n="upload" size={40} color="var(--text-muted)" />}
+            </div>
+            {file ? (
+              <>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, color: 'var(--green)', fontSize: 15 }}>{file.name}</div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 13, marginTop: 6 }}>
+                  {(file.size / 1024 / 1024).toFixed(2)} MB · <button onClick={() => inputRef.current?.click()} className="no-3d" style={{ background: 'none', border: 'none', color: 'var(--purple-light)', cursor: 'pointer', fontSize: 13, padding: 0, fontFamily: 'var(--font-body)' }}>Change file</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 16, marginBottom: 6, color: 'var(--text-primary)' }}>Drop your PDF here</div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Supports PDF up to 50MB · Click to browse</div>
+              </>
             )}
-            {phase === 'error' && (
-              <><X className="w-14 h-14 text-red-400" />
-              <p className="text-lg font-medium text-slate-200">Something went wrong.</p>
-              <button onClick={() => setPhase('idle')}
-                      className="px-5 py-2 border border-slate-600 rounded-lg text-slate-300 text-sm hover:border-cyan-400/40 transition-colors">
-                Try Again
-              </button></>
-            )}
+          </div>
+          <input ref={inputRef} type="file" accept="application/pdf" style={{ display: 'none' }}
+            onChange={e => { const f = e.target.files?.[0]; if (f) { setFile(f); setError(null); } }} />
+          {error && <p style={{ color: 'var(--red)', fontSize: 13, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}><Ic n="x" size={14} color="var(--red)" />{error}</p>}
+          <Btn v="primary" size="lg" disabled={!file} onClick={goToStep2} sx={{ width: '100%', justifyContent: 'center' }}>
+            Continue <Ic n="right" size={16} color="#fff" />
+          </Btn>
+        </div>
+      )}
+
+      {/* ── Step 2: Schedule ── */}
+      {step === 2 && (
+        <div className="fade-in">
+          <Card sx={{ display: 'flex', flexDirection: 'column', gap: 22, marginBottom: 16 }}>
+
+            <div>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginBottom: 10, fontWeight: 500 }}>
+                Daily Study Hours — <span style={{ color: 'var(--purple-light)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{schedule.hoursPerDay}h / day</span>
+              </label>
+              <input type="range" min={1} max={8} value={schedule.hoursPerDay}
+                onChange={e => setSchedule(s => ({ ...s, hoursPerDay: +e.target.value }))} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', marginTop: 5, fontFamily: 'var(--font-mono)' }}>
+                <span>1h</span><span>4h</span><span>8h</span>
+              </div>
+            </div>
+
+            <div>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginBottom: 8, fontWeight: 500 }}>Subject Name</label>
+              <input
+                type="text"
+                placeholder="e.g. Data Structures & Algorithms"
+                value={schedule.subjectName}
+                onChange={e => setSchedule(s => ({ ...s, subjectName: e.target.value }))}
+                className="sb-input"
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginBottom: 8, fontWeight: 500 }}>Target Completion Date</label>
+              <input
+                type="date"
+                value={schedule.targetDate}
+                min={new Date().toISOString().split('T')[0]}
+                onChange={e => setSchedule(s => ({ ...s, targetDate: e.target.value }))}
+                className="sb-input"
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginBottom: 10, fontWeight: 500 }}>Study Days</label>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {ALL_DAYS.map(d => {
+                  const on = schedule.studyDays.includes(d);
+                  return (
+                    <button key={d} type="button" onClick={() => toggleDay(d)}
+                      style={{
+                        padding: '5px 11px', borderRadius: 'var(--radius-sm)', fontSize: 12, fontWeight: 600,
+                        cursor: 'pointer', transition: 'all 0.18s ease', fontFamily: 'var(--font-body)',
+                        background: on ? 'rgba(123,92,245,0.15)' : 'var(--bg-elevated)',
+                        border: on ? '1px solid rgba(123,92,245,0.5)' : '1px solid var(--border)',
+                        color: on ? 'var(--purple-light)' : 'var(--text-muted)',
+                      }}>
+                      {d}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </Card>
+
+          {error && <p style={{ color: 'var(--red)', fontSize: 13, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}><Ic n="x" size={14} color="var(--red)" />{error}</p>}
+          <div style={{ display: 'flex', gap: 10 }}>
+            <Btn v="ghost" onClick={() => setStep(1)}>Back</Btn>
+            <Btn v="primary" size="md" onClick={goToStep3} sx={{ flex: 1, justifyContent: 'center' }}>
+              <Ic n="zap" size={15} color="#fff" /> Generate Roadmap
+            </Btn>
           </div>
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto px-4 py-12 space-y-10">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-50 tracking-tight">
-            New Study <span className="text-cyan-400">Roadmap</span>
-          </h1>
-          <p className="mt-2 text-sm text-slate-400">Upload your study material and configure your schedule.</p>
+      {/* ── Step 3: Processing ── */}
+      {step === 3 && (
+        <div className="fade-in" style={{ textAlign: 'center', paddingTop: 20 }}>
+          <div className="float-anim" style={{ marginBottom: 20, display: 'flex', justifyContent: 'center' }}>
+            <Ic n="bot" size={52} color="var(--purple-light)" />
+          </div>
+          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+            Building your roadmap…
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 32 }}>
+            Chunking content · Scheduling sessions · Syncing Google Calendar
+          </p>
+
+          <Card sx={{ textAlign: 'left', marginBottom: 24 }}>
+            {PROC_STEPS.map((item, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0',
+                borderBottom: i < PROC_STEPS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+              }}>
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: i < procStep ? 'var(--green)' : i === procStep ? 'rgba(123,92,245,0.2)' : 'var(--bg-elevated)',
+                  border: i === procStep ? '2px solid var(--purple)' : '2px solid var(--border)',
+                  transition: 'all 0.4s ease',
+                }}>
+                  {i < procStep && <Ic n="check" size={12} color="#061a0a" />}
+                  {i === procStep && (
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--purple)', animation: 'spin 0.8s linear infinite' }} />
+                  )}
+                </div>
+                <span style={{ fontSize: 14, color: i < procStep ? 'var(--green)' : i === procStep ? 'var(--text-primary)' : 'var(--text-muted)', transition: 'color 0.3s ease' }}>
+                  {item}
+                </span>
+                {i < procStep && <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--green)' }}>done</span>}
+                {i === procStep && <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--purple-light)', opacity: 0.8 }}>working…</span>}
+              </div>
+            ))}
+          </Card>
+
+          {done && (
+            <div className="slide-up">
+              <div style={{ marginBottom: 16 }}>
+                <Badge color="green"><Ic n="check" size={12} color="#4ADE80" /> Roadmap Ready</Badge>
+              </div>
+              <Btn v="primary" size="lg" onClick={() => window.location.href = '/platform/dashboard'} sx={{ justifyContent: 'center' }}>
+                View Dashboard <Ic n="right" size={16} color="#fff" />
+              </Btn>
+            </div>
+          )}
         </div>
-
-        {/* REQ-2.1: Document Intake */}
-        <section className="bg-slate-950 border border-cyan-400/18 rounded-2xl p-6 space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-cyan-400 flex items-center gap-2">
-            <FileText className="w-4 h-4" /> Document Intake
-          </h2>
-          <div role="button" tabIndex={0} id="pdf-dropzone"
-               onClick={() => inputRef.current?.click()}
-               onKeyDown={e => e.key === 'Enter' && inputRef.current?.click()}
-               onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
-               className={`rounded-xl p-10 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300 border-2 border-dashed ${
-                 isDragging ? 'border-cyan-400 bg-cyan-400/10 scale-[1.01]' : 'border-cyan-400/40 hover:border-cyan-400/70 hover:bg-cyan-400/5'
-               }`}
-               style={{ boxShadow: isDragging ? '0 0 20px rgba(34,211,238,0.3)' : undefined }}>
-            <Upload className={`w-10 h-10 ${isDragging ? 'text-cyan-300' : 'text-cyan-400/70'}`} />
-            {file
-              ? <p className="text-sm text-slate-200 font-medium flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-cyan-400" />{file.name}
-                  <span className="text-slate-500">({(file.size/1024/1024).toFixed(2)} MB)</span>
-                </p>
-              : <><p className="text-sm text-slate-300 font-medium">
-                  Drag & drop PDF here, or <span className="text-cyan-400 underline">browse</span>
-                </p>
-                <p className="text-xs text-slate-500">PDF only · Max 50 MB</p></>
-            }
-          </div>
-          <input ref={inputRef} type="file" accept="application/pdf" className="hidden" id="pdf-upload-input"
-                 onChange={e => { const f = e.target.files?.[0]; if(f){setFile(f);setError(null);} }} />
-        </section>
-
-        {/* REQ-2.2: Schedule Configuration */}
-        <section className="bg-slate-950 border border-cyan-400/18 rounded-2xl p-6 space-y-6">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-cyan-400 flex items-center gap-2">
-            <Calendar className="w-4 h-4" /> Schedule Configuration
-          </h2>
-          <div className="space-y-1.5">
-            <label htmlFor="target-date" className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Target Completion Date
-            </label>
-            <input id="target-date" type="date" value={schedule.targetDate}
-                   min={new Date().toISOString().split('T')[0]}
-                   onChange={e => setSchedule(s => ({ ...s, targetDate: e.target.value }))}
-                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-100
-                              focus:outline-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30 transition-colors [color-scheme:dark]" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-              <Clock className="inline w-3.5 h-3.5 mr-1" />Daily Study Window
-            </label>
-            <div className="flex items-center gap-3">
-              {(['windowStart', 'windowEnd'] as const).map((key, i) => (
-                <select key={key} id={key} value={schedule[key]}
-                        onChange={e => setSchedule(s => ({ ...s, [key]: e.target.value }))}
-                        className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100
-                                   focus:outline-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30 transition-colors">
-                  {HOURS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              )).reduce((acc, el, i) => i === 0 ? [el] : [...acc, <span key="sep" className="text-slate-500 text-sm">to</span>, el], [] as React.ReactNode[])}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-              <CheckSquare className="inline w-3.5 h-3.5 mr-1" />Study Days
-            </label>
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Study days">
-              {ALL_DAYS.map(d => (
-                <button key={d} id={`day-${d}`} type="button" onClick={() => toggleDay(d)} aria-pressed={schedule.studyDays.includes(d)}
-                        className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all duration-200 ${
-                          schedule.studyDays.includes(d)
-                            ? 'bg-cyan-400/15 border-cyan-400 text-cyan-300'
-                            : 'bg-transparent border-slate-700 text-slate-500 hover:border-slate-500 hover:text-slate-300'
-                        }`}>{d}</button>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {error && <p className="text-sm text-red-400 flex items-center gap-1.5"><X className="w-4 h-4" />{error}</p>}
-
-        <button id="initialize-roadmap-btn" onClick={handleInit} disabled={!canSubmit}
-                className={`w-full py-3.5 rounded-xl text-base font-semibold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 ${
-                  canSubmit ? 'bg-cyan-400 text-black hover:bg-cyan-300 hover:shadow-[0_0_28px_rgba(34,211,238,0.5)] cursor-pointer'
-                            : 'bg-slate-800 text-slate-600 cursor-not-allowed'
-                }`}>
-          <Zap className="w-5 h-5" /> Initialize Roadmap
-        </button>
-      </div>
-    </>
+      )}
+    </div>
   );
 }

@@ -1,96 +1,246 @@
 ---
-// PlatformLayout.astro – Persistent shell for all platform pages.
-// Handles auth guard: if no session cookie, redirect to landing login.
-import { createServerClient } from '@supabase/ssr';
 import '../styles/global.css';
+import sbLogo from '../assets/sb_symbol_blk.png';
+import { ClientRouter } from 'astro:transitions';
 
-const supabase = createServerClient(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-  {
-    cookies: {
-      getAll: () => {
-        // Fallback to manual parsing if Astro.cookies.getAll is not a function
-        if (typeof Astro.cookies.getAll === 'function') {
-          return Astro.cookies.getAll().map(c => ({ name: c.name, value: c.value }));
-        }
-        const cookieHeader = Astro.request.headers.get('cookie') ?? '';
-        return cookieHeader.split(';').map(c => {
-          const [name, ...value] = c.trim().split('=');
-          return { name, value: value.join('=') };
-        }).filter(c => c.name !== '');
-      },
-      setAll: (cookies) => cookies.forEach(({ name, value, options }) =>
-        Astro.cookies.set(name, value, options)),
-    },
-  }
-);
-
-const { data: { user } } = await supabase.auth.getUser();
-if (!user) {
-  return Astro.redirect('http://localhost:4321/?auth=login', 302);
-}
-
-interface Props {
-  title?: string;
-}
+interface Props { title?: string; }
 const { title = 'StudyBearer' } = Astro.props;
+
+const user = Astro.locals.user;
+const userInitial = (user?.user_metadata?.full_name ?? user?.email ?? 'S')[0].toUpperCase();
+const userName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Scholar';
+
+const path = Astro.url.pathname;
+
+const iconPaths: Record<string, string[]> = {
+  home:    ['M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z','M9 22V12h6v10'],
+  upload:  ['M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4','M17 8l-5-5-5 5','M12 3v12'],
+  map:     ['M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z','M9 3v15','M15 6v15'],
+  quiz:    ['M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z','M9 9a3 3 0 015.83 1c0 2-3 3-3 3','M12 17h.01'],
+  trophy:  ['M6 9H4.5a2.5 2.5 0 000 5H6','M18 9h1.5a2.5 2.5 0 010 5H18','M4 2h16v7a8 8 0 01-16 0z','M12 17v5','M8 22h8'],
+  flame:   ['M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z'],
+  zap:     ['M13 2L3 14h9l-1 8 10-12h-9z'],
+  medal:   ['M12 15a7 7 0 100-14 7 7 0 000 14z','M8.21 13.89L7 23l5-3 5 3-1.21-9.12'],
+  settings:['M12 15a3 3 0 100-6 3 3 0 000 6z','M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z'],
+};
+
+function icon(name: string, size = 17, color = 'currentColor') {
+  const paths = iconPaths[name] ?? [];
+  const pathsHtml = paths.map(d => `<path d="${d}"/>`).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">${pathsHtml}</svg>`;
+}
+
+function isActive(href: string) {
+  if (href === '/platform') return path === '/platform';
+  return path.startsWith(href);
+}
+
+const navDefs = [
+  { href: '/platform/dashboard',    label: 'Dashboard',    iconName: 'home',   badge: '' },
+  { href: '/platform',              label: 'New Subject',  iconName: 'upload', badge: '' },
+  { href: '/platform/roadmap',      label: 'Roadmap',      iconName: 'map',    badge: '' },
+  { href: '/platform/quiz',         label: 'Quiz',         iconName: 'quiz',   badge: '1' },
+  { href: '/platform/achievements', label: 'Achievements', iconName: 'trophy', badge: '' },
+];
+
+// Build nav HTML as a string to avoid JSX + template-literal parser issues
+const navHtml = navDefs.map(item => {
+  const on = isActive(item.href);
+  const color = on ? '#9D82FF' : 'var(--text-secondary)';
+  const bg = on ? 'rgba(123,92,245,0.12)' : 'transparent';
+  const border = on ? '1px solid rgba(123,92,245,0.4)' : '1px solid transparent';
+  const borderLeft = on ? '3px solid var(--purple)' : '3px solid transparent';
+  const pl = on ? '9px' : '12px';
+  const fw = on ? '600' : '500';
+  const cls = on ? 'sidebar-nav-link' : 'nav-btn sidebar-nav-link';
+  const style = `display:flex;align-items:center;gap:11px;padding:8px ${pl};border-radius:var(--radius-md);text-decoration:none;border:${border};border-left:${borderLeft};font-family:var(--font-body);font-weight:${fw};font-size:13px;background:${bg};color:${color};transition:all 0.15s ease;`;
+  const badgeHtml = item.badge ? `<span class="sb-nav-label" style="margin-left:auto;background:rgba(245,107,107,0.2);color:#F56B6B;border-radius:99px;padding:1px 7px;font-size:11px;font-weight:700;">${item.badge}</span>` : '';
+  return `<a href="${item.href}" class="${cls}" data-label="${item.label}" style="${style}">${icon(item.iconName, 17, color)}<span class="sb-nav-label">${item.label}</span>${badgeHtml}</a>`;
+}).join('');
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="StudyBearer – Your AI-powered learning roadmap platform." />
-    <title>{title} | StudyBearer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} | StudyBearer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://db.onlinewebfonts.com/c/14936bb7a4b6575fd2eee80a3ab52cc2?family=Feather+Bold" rel="stylesheet" />
+  <ClientRouter />
+</head>
 
-  <body class="min-h-screen bg-black text-slate-50">
-    <!-- ── HEADER ── -->
-    <header class="sticky top-0 z-40 flex items-center justify-between px-6 py-4 border-b border-cyan-400/15 bg-black/80 backdrop-blur-md">
+<body>
+  <div style="display:flex;height:100vh;width:100vw;overflow:hidden;background:var(--bg-base);">
+
+    <!-- SIDEBAR WRAPPER (position:relative so the tab can escape overflow:hidden) -->
+    <div transition:persist="sidebar" style="position:relative;display:flex;flex-shrink:0;z-index:20;">
+      <!-- Toggle tab — sibling of aside so it isn't clipped -->
+      <button id="sidebar-toggle" aria-label="Toggle sidebar" class="no-3d" style="position:absolute;right:-14px;top:50%;transform:translateY(-50%);width:14px;height:40px;background:var(--bg-elevated);border:1px solid var(--border);border-left:none;border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);padding:0;z-index:31;">
+        <svg id="sb-toggle-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar" style="background:var(--bg-card);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;flex-shrink:0;">
+
       <!-- Logo -->
-      <a href="/platform" class="flex items-center gap-2 group">
-        <span class="inline-block w-7 h-7 rounded-md bg-cyan-400 group-hover:shadow-[0_0_16px_rgba(34,211,238,0.6)] transition-shadow duration-300">
-          <!-- Simple 'S' glyph -->
-          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <text x="5" y="21" font-family="Inter,sans-serif" font-weight="700" font-size="18" fill="#000">S</text>
-          </svg>
-        </span>
-        <span class="text-base font-semibold tracking-tight text-slate-50 group-hover:text-cyan-400 transition-colors duration-200">
-          StudyBearer
-        </span>
-      </a>
+      <div class="sb-logo-wrap" style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px;">
+        <img src={sbLogo.src} width="36" height="36" alt="StudyBearer" style="filter:invert(1);object-fit:contain;flex-shrink:0;" />
+        <div class="sb-nav-label" style="flex:1;min-width:0;">
+          <div style="font-family:var(--font-heading);font-weight:700;font-size:17px;letter-spacing:-0.025em;color:var(--text-primary);line-height:1.1;">StudyBearer</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:1px;line-height:1.1;">AI Study Companion</div>
+        </div>
+      </div>
 
-      <!-- Sign Out -->
-      <form action="/api/auth/signout" method="POST">
-        <button
-          type="submit"
-          class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-400 border border-slate-700 rounded-lg hover:border-cyan-400/50 hover:text-slate-100 transition-all duration-200 group"
-          aria-label="Sign out of StudyBearer"
-        >
-          <!-- LogOut icon (inline SVG mirrors lucide-react LogOut) -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="group-hover:text-cyan-400 transition-colors">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-          Sign Out
-        </button>
-      </form>
-    </header>
+      <!-- Streak / ELO strip -->
+      <div class="sb-streak" style="margin:10px 12px 4px;background:rgba(240,160,48,0.08);border:1px solid rgba(240,160,48,0.2);border-radius:var(--radius-md);padding:9px 12px;display:flex;align-items:center;gap:10px;">
+        <Fragment set:html={icon('flame', 18, '#F0A030')} />
+        <div class="sb-nav-label">
+          <div style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:#F0A030;line-height:1;">0</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">Day Streak</div>
+        </div>
+        <div class="sb-nav-label" style="margin-left:auto;text-align:right;">
+          <div style="font-family:var(--font-mono);font-size:14px;color:#60A5FA;font-weight:700;">0</div>
+          <div style="font-size:11px;color:var(--text-secondary);">ELO</div>
+        </div>
+      </div>
 
-    <!-- ── PAGE CONTENT ── -->
-    <main>
-      <slot />
+      <!-- Nav (pre-rendered as HTML string to avoid JSX parser issues) -->
+      <nav style="flex:1;padding:6px 8px;display:flex;flex-direction:column;gap:3px;">
+        <Fragment set:html={navHtml} />
+      </nav>
+
+      <!-- User -->
+      <div class="sb-user-wrap" style="padding:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:50%;background:#7B5CF5;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid rgba(157,130,255,0.38);">
+          {userInitial}
+        </div>
+        <div class="sb-nav-label" style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);">{userName}</div>
+          <form action="/api/auth/signout" method="POST" style="margin:0;">
+            <button type="submit" class="no-3d" style="background:none;border:none;padding:0;font-size:11px;color:var(--text-muted);cursor:pointer;font-family:var(--font-body);">Sign out</button>
+          </form>
+        </div>
+        <span class="sb-nav-label"><Fragment set:html={icon('settings', 15, 'var(--text-muted)')} /></span>
+      </div>
+    </aside>
+    <script>
+      // Runs synchronously before first paint — prevents the expand→collapse flash on navigation
+      (function () {
+        if (localStorage.getItem('sb-sidebar-collapsed') !== 'true') return;
+        var sb   = document.getElementById('sidebar');
+        var icon = document.getElementById('sb-toggle-icon');
+        if (sb)   { sb.style.transition = 'none'; sb.classList.add('collapsed'); }
+        if (icon) { icon.classList.add('rotated'); }
+        // Re-enable transition after two frames so the initial state is painted without animation
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            if (sb) sb.style.transition = '';
+          });
+        });
+      })();
+    </script>
+    </div><!-- end sidebar wrapper -->
+
+    <!-- Purple hairline -->
+    <div style="width:1px;background:rgba(123,92,245,0.3);flex-shrink:0;"></div>
+
+    <!-- MAIN CONTENT -->
+    <main style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="flex:1;overflow:hidden;display:flex;">
+        <slot />
+      </div>
     </main>
-  </body>
+
+  </div>
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebar-toggle');
+    const toggleIcon = document.getElementById('sb-toggle-icon');
+
+    toggle?.addEventListener('click', () => {
+      const collapsed = sidebar?.classList.toggle('collapsed') ?? false;
+      toggleIcon?.classList.toggle('rotated', collapsed);
+      localStorage.setItem('sb-sidebar-collapsed', String(collapsed));
+    });
+
+    // Nav tooltips — fixed-position so overflow:hidden doesn't clip them
+    const tip = document.createElement('div');
+    tip.style.cssText = [
+      'position:fixed',
+      'background:var(--bg-elevated)',
+      'border:1px solid var(--border)',
+      'color:var(--text-primary)',
+      'padding:5px 11px',
+      'border-radius:8px',
+      'font-size:12px',
+      'font-weight:500',
+      'font-family:var(--font-body)',
+      'white-space:nowrap',
+      'pointer-events:none',
+      'opacity:0',
+      'transition:opacity 0.15s ease',
+      'z-index:9999',
+      'box-shadow:0 4px 16px rgba(0,0,0,0.4)',
+    ].join(';');
+    document.body.appendChild(tip);
+
+    function setupNavLinks() {
+      document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+        // Tooltip on hover (collapsed mode)
+        link.addEventListener('mouseenter', () => {
+          if (!sidebar?.classList.contains('collapsed')) return;
+          const label = link.getAttribute('data-label');
+          if (!label) return;
+          const rect = link.getBoundingClientRect();
+          tip.textContent = label;
+          tip.style.left = (rect.right + 10) + 'px';
+          tip.style.top  = (rect.top + rect.height / 2) + 'px';
+          tip.style.transform = 'translateY(-50%)';
+          tip.style.opacity = '1';
+        });
+        link.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+      });
+    }
+
+    function updateNavActive() {
+      const path = window.location.pathname;
+      document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+        const href = link.getAttribute('href') ?? '';
+        const active = href === '/platform' ? path === '/platform' : path.startsWith(href);
+        const svg = link.querySelector('svg');
+
+        if (active) {
+          link.style.color      = '#9D82FF';
+          link.style.background = 'rgba(123,92,245,0.12)';
+          link.style.border     = '1px solid rgba(123,92,245,0.4)';
+          link.style.borderLeft = '3px solid var(--purple)';
+          link.style.fontWeight = '600';
+          link.style.paddingLeft = '9px';
+          link.style.boxShadow  = 'none';
+          link.classList.remove('nav-btn');
+          if (svg) svg.setAttribute('stroke', '#9D82FF');
+        } else {
+          link.style.color      = 'var(--text-secondary)';
+          link.style.background = 'transparent';
+          link.style.border     = '1px solid transparent';
+          link.style.borderLeft = '3px solid transparent';
+          link.style.fontWeight = '500';
+          link.style.paddingLeft = '12px';
+          link.style.boxShadow  = 'none';
+          link.classList.add('nav-btn');
+          if (svg) svg.setAttribute('stroke', 'var(--text-secondary)');
+        }
+      });
+    }
+
+    setupNavLinks();
+    updateNavActive();
+    document.addEventListener('astro:page-load', updateNavActive);
+  </script>
+</body>
 </html>
