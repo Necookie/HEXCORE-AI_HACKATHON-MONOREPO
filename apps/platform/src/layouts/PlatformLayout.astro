@@ -350,13 +350,26 @@ const navHtml = navDefs.map(item => {
       if (popup?.classList.contains('open')) positionPopup();
     });
 
-    // ── Sign out — fetch POST so ClientRouter never intercepts it ──────────
+    // ── Sign out ─────────────────────────────────────────────────────────
+    // Must call signOut() on the BROWSER client so Supabase clears its
+    // localStorage tokens before we redirect. If we only clear cookies
+    // server-side, getSession() on landing reads the stale localStorage
+    // access token and immediately redirects back to platform.
+    import { createClient } from '@supabase/supabase-js';
+    const _supa = createClient(
+      import.meta.env.PUBLIC_SUPABASE_URL,
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+    );
+
     function setupSignout() {
       document.getElementById('sb-signout-btn')?.addEventListener('click', async () => {
-        try { await fetch('/api/auth/signout', { method: 'POST' }); } catch {}
+        // 1. Sign out client-side — clears localStorage tokens
+        await _supa.auth.signOut().catch(() => {});
+        // 2. Also clear server-side cookies via API endpoint
+        await fetch('/api/auth/signout', { method: 'POST' }).catch(() => {});
+        // 3. Redirect to landing (no ?so=1 needed — localStorage already empty)
         const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-        const landingUrl = isLocal ? 'http://localhost:4321' : 'https://sb.necookie.dev';
-        window.location.replace(`${landingUrl}/?so=1`);
+        window.location.replace(isLocal ? 'http://localhost:4321' : 'https://sb.necookie.dev');
       });
     }
     setupSignout();
