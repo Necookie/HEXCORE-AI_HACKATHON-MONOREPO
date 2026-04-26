@@ -1,0 +1,21 @@
+---
+import PlatformLayout from '../../layouts/PlatformLayout.astro';
+import ProfileView from '../../components/ProfileView';
+
+const user = Astro.locals.user;
+const userName  = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Scholar';
+const userEmail = user?.email ?? '';
+const userBio   = user?.user_metadata?.bio ?? '';
+const avatarSeed = encodeURIComponent(userEmail || userName);
+const avatarUrl  = `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${avatarSeed}`;
+---
+
+<PlatformLayout title="Profile">
+  <ProfileView
+    client:load
+    userName={userName}
+    userEmail={userEmail}
+    userBio={userBio}
+    avatarUrl={avatarUrl}
+  />
+</PlatformLayout>
