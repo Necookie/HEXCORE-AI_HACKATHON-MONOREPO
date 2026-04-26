@@ -38,7 +38,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 72px; /* clears fixed navbar */
+  scroll-padding-top: 64px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
@@ -189,16 +189,38 @@ html {
   .quiz-types { grid-template-columns: 1fr; }
   .stack-grid { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 720px) {
   .features-grid { grid-template-columns: 1fr; }
   .feat-large { grid-column: 1; }
   .ranks-grid { grid-template-columns: repeat(2, 1fr); }
   .nav-links, .nav-cta { display: none; }
   .nav-hamburger { display: flex; }
+
+  .section-title { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+  .section-sub { font-size: 0.9rem; margin-bottom: 2rem; }
 }
+
 @media (max-width: 480px) {
+  .section { padding: 2.5rem 1.25rem; }
+  .section-title { font-size: clamp(1.4rem, 7vw, 2rem); }
+  .section-sub { font-size: 0.875rem; margin-bottom: 1.5rem; }
+
   .hero-stats { flex-direction: column; gap: 0.75rem; }
   .stat-divider { display: none; }
-  .ranks-grid { grid-template-columns: repeat(2, 1fr); }
-  .cta-actions { flex-direction: column; align-items: center; }
+
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions a { text-align: center; justify-content: center; }
+
+  .ranks-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+
+  .cta-actions { flex-direction: column; align-items: stretch; }
+  .cta-actions a { text-align: center; justify-content: center; }
+
+  .btn-lg { padding: 0.75rem 1.25rem; font-size: 0.875rem; }
+
+  .feat-card { padding: 1.25rem; }
+  .feat-large { gap: 1rem; }
+
+  .footer-links { flex-wrap: wrap; gap: 1rem; justify-content: center; }
 }

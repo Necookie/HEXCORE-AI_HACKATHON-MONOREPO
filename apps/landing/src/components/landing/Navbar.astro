@@ -145,6 +145,13 @@ const navbar = document.getElementById('navbar');
     transition: all 0.25s;
   }
 
+  @media (max-width: 480px) {
+    .navbar { padding: 0.75rem 1.25rem; }
+    .nav-mobile { padding: 1.25rem; gap: 1rem; top: 56px; }
+    .logo { font-size: 0.95rem; }
+    .logo img { width: 26px; height: 26px; }
+  }
+
   .nav-hamburger.active span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
   }

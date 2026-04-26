@@ -160,4 +160,21 @@
   .stat-label { font-size: 0.7rem; color: var(--text-secondary); letter-spacing: 0.04em; }
   .stat-divider { width: 1px; height: 28px; background: var(--border); }
 
+  @media (max-width: 720px) {
+    .hero { padding: 4rem 1.25rem 2rem; }
+    .hero-title { font-size: clamp(1.8rem, 8vw, 3rem); }
+    .hero-subtitle { font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .hero-actions { margin-bottom: 1.5rem; }
+    .hero-stats { gap: 1rem; margin-bottom: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .hero { min-height: unset; padding: 5rem 1.25rem 2.5rem; }
+    .hero-title { font-size: clamp(1.6rem, 9vw, 2.4rem); }
+    .hero-badge { font-size: 0.68rem; padding: 0.3rem 0.75rem; }
+    .hero-actions { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
+    .hero-actions a { justify-content: center; }
+    .stat-num { font-size: 1.1rem; }
+  }
+
 </style>

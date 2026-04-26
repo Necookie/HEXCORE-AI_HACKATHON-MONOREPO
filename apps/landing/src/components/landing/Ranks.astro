@@ -192,4 +192,18 @@
     opacity: 0.4;
     border-style: dashed;
   }
+
+  @media (max-width: 480px) {
+    .ranks-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .rank-card { padding: 1rem 0.75rem; }
+    .rank-tier-icon { width: 30px; height: 30px; }
+    .rank-name { font-size: 0.82rem; }
+    .rank-desc { font-size: 0.68rem; }
+    .ach-tag { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+    .achievements-row { padding-top: 1.5rem; }
+  }
+
+  @media (max-width: 360px) {
+    .ranks-grid { grid-template-columns: 1fr; }
+  }
 </style>

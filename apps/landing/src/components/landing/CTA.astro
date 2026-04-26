@@ -60,4 +60,15 @@
     justify-content: center;
     flex-wrap: wrap;
   }
+
+  @media (max-width: 720px) {
+    .cta-section { padding: clamp(3rem, 8vw, 5rem) 1.25rem; }
+    .cta-title { font-size: clamp(1.6rem, 7vw, 2.8rem); }
+    .cta-sub { font-size: 0.9rem; margin-bottom: 1.75rem; }
+  }
+
+  @media (max-width: 480px) {
+    .cta-actions { flex-direction: column; align-items: stretch; max-width: 320px; margin: 0 auto; }
+    .cta-actions a { text-align: center; justify-content: center; }
+  }
 </style>
