@@ -2,301 +2,281 @@
 ---
 
 <header class="hero">
-      <div class="hero-bg" aria-hidden="true">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="grid-lines"></div>
+  <div class="hero-bg" aria-hidden="true">
+    <div class="grid-lines"></div>
+  </div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    iSITE AI Hackathon 2026 · n8n Powered
+  </div>
+
+  <h1 class="hero-title">
+    Stop <em>planning</em> to study.<br />
+    <span class="grad-text">Start executing.</span>
+  </h1>
+
+  <p class="hero-subtitle">
+    Eliminate the cognitive load of organizing notes, generating flashcards, and finding optimal study paths. Just drag, drop, and deploy your knowledge.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#" class="btn-primary btn-lg auth-trigger" data-mode="signup">
+      Deploy Now
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+    <a href="#pipeline" class="btn-ghost btn-lg">View the Pipeline</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">&lt; 30s</span>
+      <span class="stat-label">PDF → Calendar</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num">3 modes</span>
+      <span class="stat-label">MCQ · Enum · ID</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num">8 Ranks</span>
+      <span class="stat-label">Iron → Mythic</span>
+    </div>
+  </div>
+
+  <!-- Mock dashboard card -->
+  <div class="hero-dashboard" aria-hidden="true">
+    <div class="dash-header">
+      <span class="dash-title">Current Pipeline</span>
+      <span class="dash-streak">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>
+        Combo ×7
+      </span>
+    </div>
+    <div class="dash-modules">
+      <div class="module done">
+        <svg class="mod-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        <span class="mod-label">Chapter 2 — Cell Biology</span>
+        <span class="mod-pts">+120 ELO</span>
       </div>
-
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        iSITE AI Hackathon 2026 · n8n Powered
+      <div class="module active">
+        <span class="pulse-dot"></span>
+        <span class="mod-label">Chapter 3 — Mitosis</span>
+        <span class="mod-pts">Executing…</span>
       </div>
-
-      <h1 class="hero-title">
-        Stop <em>planning</em> to study.<br />
-        <span class="grad-text">Start executing.</span>
-      </h1>
-
-      <p class="hero-subtitle">
-        Eliminate the cognitive load of organizing notes, generating flashcards, and finding optimal study paths. Just drag, drop, and deploy your knowledge.
-      </p>
-
-      <div class="hero-actions">
-        <a href="#" class="btn-primary btn-lg auth-trigger" data-mode="signup">
-          Deploy Now
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
-          >
-        </a>
-        <a href="#pipeline" class="btn-ghost btn-lg">View the Pipeline</a>
+      <div class="module locked">
+        <svg class="mod-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span class="mod-label">Chapter 4 — Meiosis</span>
+        <span class="mod-pts">Locked</span>
       </div>
-
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-num">< 30s</span>
-          <span class="stat-label">PDF → Calendar</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-num">3 modes</span>
-          <span class="stat-label">MCQ · Enum · ID</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-num">8 Ranks</span>
-          <span class="stat-label">Iron → Mythic</span>
-        </div>
+      <div class="module locked">
+        <svg class="mod-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span class="mod-label">Chapter 5 — DNA Replication</span>
+        <span class="mod-pts">Locked</span>
       </div>
-
-      <!-- Mock dashboard card -->
-      <div class="hero-dashboard" aria-hidden="true">
-        <div class="dash-header">
-          <span class="dash-title">Current Pipeline</span>
-          <span class="dash-streak">🔥 Combo ×7</span>
-        </div>
-        <div class="dash-modules">
-          <div class="module done">
-            <span class="mod-icon">✓</span>
-            <span class="mod-label">Chapter 2 — Cell Biology</span>
-            <span class="mod-pts">+120 ELO</span>
-          </div>
-          <div class="module active">
-            <span class="mod-icon pulse-dot"></span>
-            <span class="mod-label">Chapter 3 — Mitosis</span>
-            <span class="mod-pts">Executing…</span>
-          </div>
-          <div class="module locked">
-            <span class="mod-icon">🔒</span>
-            <span class="mod-label">Chapter 4 — Meiosis</span>
-            <span class="mod-pts">Locked</span>
-          </div>
-          <div class="module locked">
-            <span class="mod-icon">🔒</span>
-            <span class="mod-label">Chapter 5 — DNA Replication</span>
-            <span class="mod-pts">Locked</span>
-          </div>
-        </div>
-        <div class="dash-footer">
-          <div class="rank-badge">
-            <span class="rank-icon">⚡</span>
-            <span>Gold Rank</span>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-bar">
-              <div class="progress-fill" style="width:62%"></div>
-            </div>
-            <span class="progress-label">62% to Platinum</span>
-          </div>
-        </div>
+    </div>
+    <div class="dash-footer">
+      <div class="rank-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+        <span>Gold Rank</span>
       </div>
-    </header>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div>
+        <span class="progress-label">62% to Platinum</span>
+      </div>
+    </div>
+  </div>
+</header>
 
 <style>
-/* ── HERO ── */
   .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 8rem 1.5rem 4rem;
+    padding: 5rem 1.5rem 2.5rem;
     overflow: hidden;
   }
 
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.5;
-  }
-
-  .orb-1 {
-    width: 500px;
-    height: 500px;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-60%);
-    background: radial-gradient(
-      circle,
-      rgba(99, 102, 241, 0.4) 0%,
-      transparent 70%
-    );
-    animation: drift 8s ease-in-out infinite alternate;
-  }
-
-  .orb-2 {
-    width: 350px;
-    height: 350px;
-    bottom: 0;
-    right: 10%;
-    background: radial-gradient(
-      circle,
-      rgba(139, 92, 246, 0.3) 0%,
-      transparent 70%
-    );
-    animation: drift 10s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes drift {
-    from {
-      transform: translateX(-60%) translateY(0);
-    }
-    to {
-      transform: translateX(-60%) translateY(-30px);
-    }
-  }
+  .hero-bg { position: absolute; inset: 0; pointer-events: none; }
 
   .grid-lines {
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+      linear-gradient(rgba(123, 92, 245, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123, 92, 245, 0.04) 1px, transparent 1px);
     background-size: 60px 60px;
-    mask-image: radial-gradient(
-      ellipse 80% 60% at 50% 40%,
-      black 30%,
-      transparent 100%
-    );
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%);
   }
 
   .hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.4rem 1rem;
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 0.35rem 0.9rem;
+    border: 1px solid rgba(123, 92, 245, 0.3);
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 500;
-    color: var(--indigo);
+    color: var(--purple);
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    margin-bottom: 1.75rem;
-    background: rgba(99, 102, 241, 0.06);
+    margin-bottom: 1.25rem;
+    background: rgba(123, 92, 245, 0.06);
     animation: fadeUp 0.6s ease both;
   }
 
   .badge-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: var(--indigo);
-    box-shadow: 0 0 6px var(--indigo);
+    background: var(--purple);
     animation: pulse-dot 2s infinite;
   }
 
   @keyframes pulse-dot {
-    0%,
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.5;
-      transform: scale(0.7);
-    }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
   }
 
   .hero-title {
-    font-family: "Syne", sans-serif;
-    font-size: clamp(2.4rem, 6vw, 5rem);
-    font-weight: 800;
-    line-height: 1.08;
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.1;
     letter-spacing: -0.03em;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     animation: fadeUp 0.6s 0.1s ease both;
   }
 
-  .hero-title em {
-    font-style: normal;
-    color: var(--muted);
-  }
+  .hero-title em { font-style: normal; color: var(--text-secondary); }
 
   .grad-text {
-    background: linear-gradient(
-      135deg,
-      #fff 0%,
-      var(--indigo) 50%,
-      var(--violet) 100%
-    );
+    background: linear-gradient(135deg, #fff 0%, var(--purple) 50%, var(--purple-light) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .hero-sub {
-    max-width: 560px;
-    color: var(--muted);
-    font-size: clamp(0.95rem, 2vw, 1.1rem);
-    line-height: 1.7;
-    margin-bottom: 2rem;
+  .hero-subtitle {
+    max-width: 520px;
+    color: var(--text-secondary);
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    line-height: 1.65;
+    margin-bottom: 1.75rem;
     animation: fadeUp 0.6s 0.2s ease both;
-  }
-
-  .hero-sub strong {
-    color: var(--text);
-    font-weight: 500;
   }
 
   .hero-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     animation: fadeUp 0.6s 0.3s ease both;
   }
 
   .hero-stats {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
     animation: fadeUp 0.6s 0.4s ease both;
     flex-wrap: wrap;
     justify-content: center;
   }
 
-  .stat {
-    text-align: center;
-  }
+  .stat { text-align: center; }
   .stat-num {
     display: block;
-    font-family: "Syne", sans-serif;
-    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--indigo), var(--violet));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--purple-light);
   }
-  .stat-label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    letter-spacing: 0.04em;
+  .stat-label { font-size: 0.7rem; color: var(--text-secondary); letter-spacing: 0.04em; }
+  .stat-divider { width: 1px; height: 28px; background: var(--border); }
+
+  /* Dashboard mock */
+  .hero-dashboard {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    text-align: left;
+    animation: fadeUp 0.6s 0.5s ease both;
   }
 
-  .stat-divider {
-    width: 1px;
-    height: 36px;
-    background: var(--border);
+  .dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
   }
+  .dash-title { font-size: 0.78rem; font-weight: 600; color: var(--text-primary); font-family: var(--font-heading); }
+  .dash-streak {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .dash-modules { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+
+  .module {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    border: 1px solid var(--border);
+  }
+  .module.done { background: rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.2); }
+  .module.active { background: rgba(123,92,245,0.08); border-color: rgba(123,92,245,0.3); }
+  .module.locked { opacity: 0.45; }
+
+  .mod-icon { flex-shrink: 0; }
+  .module.done .mod-icon { color: var(--green); }
+  .module.locked .mod-icon { color: var(--text-muted); }
+
+  .mod-label { flex: 1; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mod-pts { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); white-space: nowrap; }
+  .module.done .mod-pts { color: var(--green); }
+  .module.active .mod-pts { color: var(--purple-light); }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--purple);
+    flex-shrink: 0;
+    animation: pulse-dot 1.5s infinite;
+  }
+
+  .dash-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+  .rank-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--amber);
+    font-family: var(--font-heading);
+  }
+
+  .progress-wrap { flex: 1; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 3px; }
+  .progress-fill { height: 100%; background: var(--purple); border-radius: 99px; }
+  .progress-label { font-size: 0.65rem; color: var(--text-secondary); }
 </style>

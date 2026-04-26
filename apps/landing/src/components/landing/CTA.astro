@@ -2,7 +2,6 @@
 ---
 
 <section class="cta-section">
-      <div class="cta-glow" aria-hidden="true"></div>
       <div class="cta-content">
         <div class="section-label">Ready to Execute?</div>
         <h2 class="cta-title">
@@ -39,21 +38,6 @@
     overflow: hidden;
   }
 
-  .cta-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 400px;
-    background: radial-gradient(
-      ellipse,
-      rgba(99, 102, 241, 0.18) 0%,
-      transparent 70%
-    );
-    pointer-events: none;
-  }
-
   .cta-content {
     position: relative;
     z-index: 1;
@@ -62,7 +46,7 @@
   }
 
   .cta-title {
-    font-family: "Syne", sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(2rem, 4.5vw, 3.5rem);
     font-weight: 800;
     letter-spacing: -0.03em;

@@ -3,31 +3,7 @@
 
 <nav class="navbar" id="navbar">
       <a href="/" class="logo" aria-label="StudyBearer home">
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 28 28"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <circle cx="14" cy="14" r="5" stroke="#6366f1" stroke-width="1.5"
-          ></circle>
-          <path
-            d="M14 2C14 2 22 6 22 14C22 22 14 26 14 26"
-            stroke="#6366f1"
-            stroke-width="1.5"
-            stroke-linecap="round"></path>
-          <path
-            d="M14 2C14 2 6 6 6 14C6 22 14 26 14 26"
-            stroke="#8b5cf6"
-            stroke-width="1.5"
-            stroke-linecap="round"></path>
-          <circle cx="14" cy="2" r="1.5" fill="#6366f1"></circle>
-          <circle cx="14" cy="26" r="1.5" fill="#8b5cf6"></circle>
-          <circle cx="22" cy="14" r="1.5" fill="#6366f1"></circle>
-          <circle cx="6" cy="14" r="1.5" fill="#8b5cf6"></circle>
-        </svg>
+        <img src="/sb_symbol_blk.png" width="32" height="32" alt="" aria-hidden="true" style="filter:invert(1);object-fit:contain;" />
         <span>StudyBearer</span>
       </a>
       <div class="nav-links">
@@ -105,7 +81,7 @@ const navbar = document.getElementById('navbar');
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-family: "Syne", sans-serif;
+    font-family: var(--font-heading);
     font-weight: 700;
     font-size: 1.1rem;
     color: var(--text);
