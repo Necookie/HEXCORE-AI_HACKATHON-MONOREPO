@@ -117,6 +117,38 @@ button:not(:disabled):not(.no-3d):active {
 .nav-btn { transition: all 0.15s ease; }
 .nav-btn:hover { background: var(--bg-elevated) !important; color: var(--text-primary) !important; }
 
+/* ── USER SETTINGS POPUP ── */
+.sb-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: var(--font-body);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.sb-popup-item:hover { background: var(--bg-card); color: var(--text-primary); }
+.sb-popup-danger { color: var(--red) !important; }
+.sb-popup-danger:hover { background: rgba(245,107,107,0.08) !important; color: var(--red) !important; }
+
+/* Active cog state */
+#sb-user-menu-trigger.active {
+  color: var(--purple-light);
+  border-color: rgba(123,92,245,0.4);
+  background: rgba(123,92,245,0.1);
+}
+
+/* Popup open state */
+#sb-user-popup.open {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  pointer-events: auto !important;
+}
+
 /* ── SCROLLABLE AREA ── */
 .content-scroll { overflow-y: auto; overflow-x: hidden; }
 
