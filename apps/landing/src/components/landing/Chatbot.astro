@@ -179,24 +179,19 @@
             localStorage.setItem("sb_chat_session", sessionData.id);
         }
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        // Try to parse JSON response or get text
-        const contentType = response.headers.get("content-type");
+        // Try to parse response or error message
         let botResponseText = "Sorry, I received an invalid response.";
-
+        const contentType = response.headers.get("content-type");
+        
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
-          // Adjust based on your n8n workflow's response structure
-          botResponseText =
-            data.output ||
-            data.message ||
-            data.response ||
-            JSON.stringify(data);
+          botResponseText = data.output || data.message || data.response || JSON.stringify(data);
         } else {
           botResponseText = await response.text();
+        }
+
+        if (!response.ok) {
+          throw new Error(botResponseText || `Server error (${response.status})`);
         }
 
         removeTyping(typingEl);
@@ -205,7 +200,7 @@
         console.error("Chat error:", error);
         removeTyping(typingEl);
         addMessage(
-          `Connection Error: ${error.message || "Please try again."}`,
+          `Error: ${error.message || "Please try again."}`,
           false,
         );
       }
