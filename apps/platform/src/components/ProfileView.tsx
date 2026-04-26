@@ -359,10 +359,11 @@ export default function ProfileView({
   return (
     <div className="content-scroll fade-in" style={{
       flex: 1, padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 24,
+      alignItems: 'center',
     }}>
 
       {/* Page header */}
-      <div>
+      <div style={{ width: '100%', maxWidth: 560 }}>
         <div style={{
           fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700,
           color: 'var(--text-primary)', letterSpacing: '-0.025em',
@@ -377,6 +378,7 @@ export default function ProfileView({
         display: 'flex', gap: 4,
         background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 'var(--radius-md)', padding: 4, width: 'fit-content',
+        maxWidth: 560,
       }}>
         {TABS.map(t => {
           const active = tab === t.id;
@@ -403,7 +405,7 @@ export default function ProfileView({
       </div>
 
       {/* Tab content */}
-      <div style={{ maxWidth: 560 }}>
+      <div style={{ maxWidth: 560, width: '100%', alignSelf: 'center' }}>
         {tab === 'profile'  && <ProfileTab  userName={userName} userEmail={userEmail} userBio={userBio} avatarUrl={avatarUrl} />}
         {tab === 'security' && <SecurityTab />}
       </div>
