@@ -28,4 +28,53 @@ const { title } = Astro.props;
   <body>
     <slot />
   </body>
+
+  <script>
+    // ── Auth guard for landing (client-side, static site) ──────────────────
+    import { createClient } from '@supabase/supabase-js';
+
+    const SUPABASE_URL  = import.meta.env.PUBLIC_SUPABASE_URL as string;
+    const SUPABASE_KEY  = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string;
+    const PLATFORM_URL  = (import.meta.env.PUBLIC_PLATFORM_URL as string | undefined)
+      ?? (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+          ? 'http://localhost:4322'
+          : 'https://app.sb.necookie.dev');
+
+    const params = new URLSearchParams(location.search);
+
+    // ── 1. Just signed out: clear stale localStorage session, clean URL ──
+    if (params.get('so') === '1') {
+      try {
+        const ref = new URL(SUPABASE_URL).hostname.split('.')[0];
+        localStorage.removeItem(`sb-${ref}-auth-token`);
+        localStorage.removeItem(`sb-${ref}-auth-token-code-verifier`);
+      } catch {}
+      history.replaceState(null, '', location.pathname);
+    }
+
+    // ── 2. Redirected here by platform auth guard (?auth=required) ──
+    else if (params.get('auth') === 'required' || params.get('auth') === 'login') {
+      const next = params.get('next');
+      if (next) sessionStorage.setItem('sb_next', next);
+
+      // Wait for React AuthModal to hydrate, then open it
+      const openModal = () =>
+        window.dispatchEvent(new CustomEvent('open-auth', { detail: { mode: 'login' } }));
+
+      if (document.readyState === 'complete') {
+        setTimeout(openModal, 120);
+      } else {
+        window.addEventListener('load', () => setTimeout(openModal, 120));
+      }
+    }
+
+    // ── 3. Already logged in → send to platform ──────────────────────────
+    else if (location.pathname === '/') {
+      const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        location.replace(`${PLATFORM_URL}/platform`);
+      }
+    }
+  </script>
 </html>

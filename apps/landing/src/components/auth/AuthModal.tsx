@@ -43,6 +43,10 @@ export default function AuthModal() {
       ? platformUrl
       : `${platformUrl}/auth/callback`;
 
+    // Consume any stored deep-link path (set when platform guard redirected here)
+    const nextPath = sessionStorage.getItem('sb_next') ?? '';
+    if (nextPath) sessionStorage.removeItem('sb_next');
+
     if (mode === 'login') {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -51,9 +55,12 @@ export default function AuthModal() {
       } else if (data?.session) {
         const { access_token, refresh_token } = data.session;
         const params = new URLSearchParams({ access_token, refresh_token });
+        if (nextPath) params.set('redirect_to', nextPath);
         window.location.href = `${callbackUrl}?${params.toString()}`;
       }
     } else {
+      // For signup the email confirmation link goes to callbackUrl;
+      // deep-link after email confirm isn't supported (user must sign in manually).
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,

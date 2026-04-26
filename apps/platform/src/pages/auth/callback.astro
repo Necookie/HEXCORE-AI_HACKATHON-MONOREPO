@@ -6,48 +6,41 @@ const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-    return new Response("Server configuration error: Supabase keys missing.", { status: 500 });
+  return new Response("Server configuration error: Supabase keys missing.", { status: 500 });
 }
 
-const supabase = createServerClient(
-  supabaseUrl,
-  supabaseKey,
-  {
-    cookies: {
-      getAll: () => {
-        // Bulletproof way to get cookies on Cloudflare: parse the header directly
-        return parseCookieHeader(Astro.request.headers.get("Cookie") ?? "");
-      },
-      setAll: (cookies) => {
-        // Standard Astro way to set cookies
-        cookies.forEach(({ name, value, options }) =>
-          Astro.cookies.set(name, value, options)
-        );
-      },
-    },
-  }
-);
+const supabase = createServerClient(supabaseUrl, supabaseKey, {
+  cookies: {
+    getAll: () => parseCookieHeader(Astro.request.headers.get("Cookie") ?? ""),
+    setAll: (list) =>
+      list.forEach(({ name, value, options }) => Astro.cookies.set(name, value, options)),
+  },
+});
 
-const code = Astro.url.searchParams.get("code");
+const code        = Astro.url.searchParams.get("code");
 const accessToken = Astro.url.searchParams.get("access_token");
 const refreshToken = Astro.url.searchParams.get("refresh_token");
+const redirectTo  = Astro.url.searchParams.get("redirect_to");
+
+// Validate redirect_to so we never send users off-domain
+const safeRedirect =
+  redirectTo && redirectTo.startsWith("/platform") ? redirectTo : "/platform";
 
 try {
-    if (code) {
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) throw error;
-      return Astro.redirect("/platform");
-    } else if (accessToken && refreshToken) {
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
-      if (error) throw error;
-      return Astro.redirect("/platform");
-    }
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) throw error;
+    return Astro.redirect(safeRedirect);
+  }
+
+  if (accessToken && refreshToken) {
+    const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    if (error) throw error;
+    return Astro.redirect(safeRedirect);
+  }
 } catch (e: any) {
-    console.error("Auth error:", e.message);
-    return new Response(`Auth Error: ${e.message}`, { status: 500 });
+  console.error("[auth/callback] error:", e.message);
+  return new Response(`Auth Error: ${e.message}`, { status: 500 });
 }
 
 return Astro.redirect("/");
