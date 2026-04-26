@@ -32,19 +32,47 @@ import "../styles/landing-global.css";
 </Layout>
 
 <script>
-  const reveals = document.querySelectorAll(
-    ".feat-card, .pipe-step, .rank-card, .quiz-type-card, .stack-card"
-  );
+  // Apply reveal class to section text blocks so they animate in
+  document.querySelectorAll('.section-label, .section-title, .section-sub').forEach((el, i) => {
+    el.classList.add('reveal');
+    // Stagger each text block within its parent section
+    const siblings = el.parentElement?.querySelectorAll('.section-label, .section-title, .section-sub') ?? [];
+    const idx = Array.from(siblings).indexOf(el);
+    if (idx === 1) el.classList.add('reveal-delay-1');
+    if (idx === 2) el.classList.add('reveal-delay-2');
+  });
+
+  // Stagger card groups within each section
+  document.querySelectorAll(
+    '.feat-card, .pipe-step, .rank-card, .quiz-type-card, .stack-card'
+  ).forEach((el, i, all) => {
+    const parent = el.parentElement;
+    if (parent) {
+      const siblings = Array.from(parent.children).filter(c =>
+        c.classList.contains('feat-card') ||
+        c.classList.contains('pipe-step') ||
+        c.classList.contains('rank-card') ||
+        c.classList.contains('quiz-type-card') ||
+        c.classList.contains('stack-card')
+      );
+      const idx = siblings.indexOf(el);
+      (el as HTMLElement).style.transitionDelay = `${idx * 0.07}s`;
+    }
+  });
+
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
-          e.target.classList.add("revealed");
+          e.target.classList.add('revealed');
           io.unobserve(e.target);
         }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
   );
-  reveals.forEach((el) => io.observe(el));
+
+  document.querySelectorAll(
+    '.reveal, .feat-card, .pipe-step, .rank-card, .quiz-type-card, .stack-card'
+  ).forEach((el) => io.observe(el));
 </script>
