@@ -3,7 +3,7 @@
 
 <nav class="navbar" id="navbar">
   <a href="/" class="logo" aria-label="StudyBearer home">
-    <img src="/sb_symbol_blk.png" width="32" height="32" alt="" aria-hidden="true" style="filter:invert(1);object-fit:contain;" />
+    <img src="/sb_symbol_blk.png" width="32" height="32" alt="" aria-hidden="true" class="logo-img" />
     <span>StudyBearer</span>
   </a>
   <div class="nav-links">
@@ -13,6 +13,10 @@
     <a href="#stack">Stack</a>
   </div>
   <div class="nav-cta">
+    <button class="theme-toggle no-3d" id="themeToggle" aria-label="Toggle theme">
+      <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+    </button>
     <a href="#" class="nav-signin auth-trigger" data-mode="login">Sign In</a>
     <a href="#" class="btn-primary auth-trigger" data-mode="signup">Sign Up</a>
   </div>
@@ -93,6 +97,25 @@
   const navbar  = document.getElementById('navbar');
   const ham     = document.getElementById('navHamburger') as HTMLButtonElement | null;
   const menu    = document.getElementById('mobileMenu');
+  const themeToggle = document.getElementById('themeToggle');
+
+  // ── Theme management ──────────────────────────────────────────────
+  function updateTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    // No extra logic needed as CSS handles variables
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('sb-landing-theme', newTheme);
+    updateTheme();
+  });
+
+  // Initial check
+  updateTheme();
 
   // Scroll: frosted navbar
   window.addEventListener('scroll', () => {
@@ -204,6 +227,35 @@
     transition: color 0.2s;
   }
   .nav-signin:hover { color: var(--text-primary); }
+
+  /* Theme Toggle */
+  .theme-toggle {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .theme-toggle:hover {
+    color: var(--text-primary);
+    border-color: var(--purple-light);
+    background: var(--bg-input);
+  }
+
+  .theme-toggle .sun-icon { display: none; }
+  .theme-toggle .moon-icon { display: block; }
+
+  [data-theme='light'] .theme-toggle .sun-icon { display: block; }
+  [data-theme='light'] .theme-toggle .moon-icon { display: none; }
+
+  [data-theme='light'] .logo-img { filter: none; }
+  [data-theme='dark'] .logo-img { filter: invert(1); }
+  .logo-img { transition: filter 0.3s ease; object-fit: contain; }
 
   /* Hamburger */
   .nav-hamburger {
