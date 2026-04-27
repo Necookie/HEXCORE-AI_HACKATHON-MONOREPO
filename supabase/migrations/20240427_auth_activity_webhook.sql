@@ -29,7 +29,7 @@ BEGIN
   ELSIF (TG_OP = 'UPDATE' AND TG_TABLE_NAME = 'users') THEN
     -- Check if last_sign_in_at changed (Login)
     IF (OLD.last_sign_in_at IS DISTINCT FROM NEW.last_sign_in_at) THEN
-      event_name := 'login';
+      event_name := 'logged_in';
       user_email := NEW.email;
       user_name := COALESCE(NEW.raw_user_meta_data->>'username', NEW.raw_user_meta_data->>'full_name', 'Unknown');
       
