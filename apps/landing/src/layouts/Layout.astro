@@ -24,13 +24,7 @@ const { title } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://db.onlinewebfonts.com/c/14936bb7a4b6575fd2eee80a3ab52cc2?family=Feather+Bold" rel="stylesheet" />
-    <script is:inline>
-      // ── Theme initialization ──────────────────────────────────────────
-      (function() {
-        const savedTheme = localStorage.getItem('sb-landing-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      })();
-    </script>
+
   </head>
   <body>
     <slot />
