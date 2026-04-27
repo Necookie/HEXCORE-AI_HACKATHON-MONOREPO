@@ -6,6 +6,7 @@ export default function AuthModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +18,7 @@ export default function AuthModal() {
       setIsOpen(true);
       setError('');
       setEmail('');
+      setUsername('');
       setPassword('');
     };
 
@@ -64,7 +66,10 @@ export default function AuthModal() {
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: callbackUrl },
+        options: { 
+          emailRedirectTo: callbackUrl,
+          data: { username }
+        },
       });
 
       if (signUpError) {
@@ -117,6 +122,29 @@ export default function AuthModal() {
           )}
 
           <form onSubmit={handleSubmit} className="auth-form" noValidate>
+            {mode === 'signup' && (
+              <div className="field-group">
+                <label htmlFor="username" className="field-label">Username</label>
+                <div className="input-wrapper">
+                  <span className="input-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    autoComplete="username"
+                    placeholder="Enter your username"
+                    className="field-input"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="field-group">
               <label htmlFor="email" className="field-label">Email address</label>
               <div className="input-wrapper">
