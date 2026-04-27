@@ -55,17 +55,29 @@ const { title } = Astro.props;
 
     // ── 2. Redirected here by platform auth guard (?auth=required) ──
     else if (params.get('auth') === 'required' || params.get('auth') === 'login') {
-      const next = params.get('next');
-      if (next) sessionStorage.setItem('sb_next', next);
+      // Ensure the automatic prompt only shows once per session to avoid annoyance
+      if (!sessionStorage.getItem('sb_auth_triggered')) {
+        const next = params.get('next');
+        if (next) sessionStorage.setItem('sb_next', next);
 
-      // Wait for React AuthModal to hydrate, then open it
-      const openModal = () =>
-        window.dispatchEvent(new CustomEvent('open-auth', { detail: { mode: 'login' } }));
+        // Clear the URL params immediately so they don't persist
+        history.replaceState(null, '', location.pathname);
+        
+        // Mark as triggered for this session
+        sessionStorage.setItem('sb_auth_triggered', '1');
 
-      if (document.readyState === 'complete') {
-        setTimeout(openModal, 120);
+        // Wait for React AuthModal to hydrate, then open it
+        const openModal = () =>
+          window.dispatchEvent(new CustomEvent('open-auth', { detail: { mode: 'login' } }));
+
+        if (document.readyState === 'complete') {
+          setTimeout(openModal, 120);
+        } else {
+          window.addEventListener('load', () => setTimeout(openModal, 120));
+        }
       } else {
-        window.addEventListener('load', () => setTimeout(openModal, 120));
+        // Even if we don't show the modal, we should clean the URL
+        history.replaceState(null, '', location.pathname);
       }
     }
 
