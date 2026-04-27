@@ -18,8 +18,11 @@ export default function ProjectIntake() {
     procStep,
     error,
     setError,
+    uploadPhase,
+    uploadError,
     goToStep2,
     goToStep3,
+    retryUpload,
   } = useProjectIntake();
 
   return (
@@ -58,7 +61,13 @@ export default function ProjectIntake() {
       )}
 
       {step === 3 && (
-        <ProcessingStep procStep={procStep} />
+        <ProcessingStep
+          procStep={procStep}
+          uploadPhase={uploadPhase}
+          uploadError={uploadError}
+          onRetry={retryUpload}
+          onBack={() => { setStep(2); }}
+        />
       )}
     </div>
   );
