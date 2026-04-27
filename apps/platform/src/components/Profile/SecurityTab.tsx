@@ -10,6 +10,9 @@ export function SecurityTab() {
   const [show,    setShow]    = useState<{ cur: boolean; next: boolean }>({ cur: false, next: false });
   const [status,  setStatus]  = useState<{ type: 'error' | 'success'; msg: string } | null>(null);
   const [saving,  setSaving]  = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteVerify, setDeleteVerify] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const strength = useMemo(() => {
     if (!pw) return null;
@@ -36,6 +39,22 @@ export function SecurityTab() {
       setStatus({ type: 'error', msg: err.message });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteVerify !== 'DELETE') return;
+    setDeleting(true);
+    setStatus(null);
+    try {
+      await userService.deleteAccount();
+      // On success, redirect to landing
+      window.location.href = '/';
+    } catch (err: any) {
+      setStatus({ type: 'error', msg: err.message });
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -178,6 +197,100 @@ export function SecurityTab() {
           </Btn>
         </div>
       </Card>
+
+      <div style={{ height: 1, background: 'var(--border)', margin: '12px 0' }} />
+
+      {/* Danger Zone */}
+      <Card sx={{ 
+        background: 'rgba(245,107,107,0.03)', 
+        border: '1px solid rgba(245,107,107,0.15)',
+        display: 'flex', flexDirection: 'column', gap: 16 
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700,
+          color: 'var(--red)', letterSpacing: '-0.01em',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <Ic n="zap" size={15} color="var(--red)" />
+          Danger Zone
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Delete Account</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
+              Permanently remove all data and access. This action cannot be undone.
+            </div>
+          </div>
+          <Btn v="danger" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+            Initiate Deletion
+          </Btn>
+        </div>
+      </Card>
+
+      {/* Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+        }} onClick={() => !deleting && setShowDeleteConfirm(false)}>
+          <Card sx={{ 
+            maxWidth: 400, width: '100%', gap: 24, display: 'flex', flexDirection: 'column',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.5)', border: '1px solid var(--red)'
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', textAlign: 'center' }}>
+              <div style={{ 
+                width: 48, height: 48, borderRadius: '50%', background: 'rgba(245,107,107,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(245,107,107,0.2)'
+              }}>
+                <Ic n="zap" size={24} color="var(--red)" />
+              </div>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                Are you absolutely sure?
+              </h2>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                Deleting your account will erase your <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Roadmap</span>, 
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}> streaks</span>, and all associated modules. 
+                This is a tactical wipe — no recovery possible.
+              </p>
+            </div>
+
+            <div style={{ 
+              background: 'rgba(240,160,48,0.07)', border: '1px solid rgba(240,160,48,0.2)',
+              borderRadius: 'var(--radius-md)', padding: 12, display: 'flex', gap: 10
+            }}>
+              <Ic n="flame" size={16} color="var(--amber)" sw={2} />
+              <span style={{ fontSize: 11, color: 'var(--amber)', fontWeight: 500, lineHeight: 1.4 }}>
+                Verification required: Type <span style={{ fontWeight: 700 }}>DELETE</span> below to authorize the terminal command.
+              </span>
+            </div>
+
+            <input
+              type="text"
+              value={deleteVerify}
+              onChange={e => setDeleteVerify(e.target.value.toUpperCase())}
+              placeholder="TYPE DELETE"
+              style={{ ...inputSx, textAlign: 'center', letterSpacing: '0.1em', fontWeight: 700 }}
+              disabled={deleting}
+            />
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Btn v="ghost" sx={{ flex: 1, justifyContent: 'center' }} onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
+                Abort
+              </Btn>
+              <Btn 
+                v="danger" 
+                sx={{ flex: 1, justifyContent: 'center' }} 
+                disabled={deleteVerify !== 'DELETE' || deleting}
+                onClick={handleDeleteAccount}
+              >
+                {deleting ? 'Executing Wipe…' : 'Confirm Deletion'}
+              </Btn>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
