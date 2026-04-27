@@ -31,23 +31,40 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401 });
   }
 
-  let body: { password?: string };
+  let body: { currentPassword?: string, newPassword?: string };
   try {
     body = await request.json();
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
   }
 
-  const password = (body.password ?? '').trim();
+  const currentPassword = (body.currentPassword ?? '').trim();
+  const newPassword     = (body.newPassword ?? '').trim();
 
-  if (password.length < 8) {
-    return new Response(JSON.stringify({ error: 'Password must be at least 8 characters.' }), { status: 422 });
+  if (!currentPassword || !newPassword) {
+    return new Response(JSON.stringify({ error: 'Both current and new passwords are required.' }), { status: 422 });
   }
 
-  const { error } = await supabase.auth.updateUser({ password });
+  if (newPassword.length < 8) {
+    return new Response(JSON.stringify({ error: 'New password must be at least 8 characters.' }), { status: 422 });
+  }
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  // ── SECURITY VERIFICATION ──────────────────────────────────────────
+  // Re-authenticate to verify the current password
+  const { error: verifyError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: currentPassword,
+  });
+
+  if (verifyError) {
+    return new Response(JSON.stringify({ error: 'Incorrect current password.' }), { status: 401 });
+  }
+
+  // Verification successful, proceed with update
+  const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (updateError) {
+    return new Response(JSON.stringify({ error: updateError.message }), { status: 500 });
   }
 
   return new Response(JSON.stringify({ ok: true }), { status: 200 });

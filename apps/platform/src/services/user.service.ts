@@ -9,11 +9,11 @@ export const userService = {
     if (!res.ok) throw new Error(json.error ?? 'Something went wrong.');
   },
 
-  async updatePassword(password: string): Promise<void> {
+  async updatePassword(current: string, next: string): Promise<void> {
     const res = await fetch('/api/user/update-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ currentPassword: current, newPassword: next }),
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error ?? 'Something went wrong.');

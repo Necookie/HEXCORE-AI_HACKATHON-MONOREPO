@@ -4,9 +4,10 @@ import { userService } from '../../services/user.service';
 import { Field, Alert, inputSx } from './Shared/Common';
 
 export function SecurityTab() {
+  const [current, setCurrent] = useState('');
   const [pw,      setPw]      = useState('');
   const [confirm, setConfirm] = useState('');
-  const [showPw,  setShowPw]  = useState(false);
+  const [show,    setShow]    = useState<{ cur: boolean; next: boolean }>({ cur: false, next: false });
   const [status,  setStatus]  = useState<{ type: 'error' | 'success'; msg: string } | null>(null);
   const [saving,  setSaving]  = useState(false);
 
@@ -21,15 +22,16 @@ export function SecurityTab() {
   }, [pw]);
 
   const update = async () => {
-    if (pw.length < 8) { setStatus({ type: 'error', msg: 'Password must be at least 8 characters.' }); return; }
+    if (!current) { setStatus({ type: 'error', msg: 'Current password is required.' }); return; }
+    if (pw.length < 8) { setStatus({ type: 'error', msg: 'New password must be at least 8 characters.' }); return; }
     if (pw !== confirm)  { setStatus({ type: 'error', msg: 'Passwords do not match.' }); return; }
     
     setSaving(true);
     setStatus(null);
     try {
-      await userService.updatePassword(pw);
-      setStatus({ type: 'success', msg: 'Password updated. Use it on your next sign-in.' });
-      setPw(''); setConfirm('');
+      await userService.updatePassword(current, pw);
+      setStatus({ type: 'success', msg: 'Password updated successfully. Security level maintained.' });
+      setCurrent(''); setPw(''); setConfirm('');
     } catch (err: any) {
       setStatus({ type: 'error', msg: err.message });
     } finally {
@@ -37,7 +39,7 @@ export function SecurityTab() {
     }
   };
 
-  const EyeIcon = ({ show }: { show: boolean }) => show
+  const EyeIcon = ({ visible }: { visible: boolean }) => visible
     ? <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
     : <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
 
@@ -50,11 +52,11 @@ export function SecurityTab() {
       }}>
         <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
         <span style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
-          Your new password must be at least 8 characters. You'll use it on your next sign-in.
+          Security best practice: You must provide your current password to authorize a change. Ensure your new password is high-entropy.
         </span>
       </div>
 
-      <Card sx={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <Card sx={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div style={{
           fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700,
           color: 'var(--text-primary)', letterSpacing: '-0.01em',
@@ -62,13 +64,43 @@ export function SecurityTab() {
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <Ic n="lock" size={15} color="var(--purple-light)" />
-          Change Password
+          Authorization & Credentials
         </div>
+
+        <Field label="Current Password" hint="Verify ownership to proceed">
+          <div style={{ position: 'relative' }}>
+            <input
+              type={show.cur ? 'text' : 'password'}
+              value={current}
+              onChange={e => setCurrent(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              style={{ ...inputSx, paddingRight: 42 }}
+              onFocus={e => (e.target.style.borderColor = 'rgba(123,92,245,0.5)')}
+              onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
+            />
+            <button
+              type="button"
+              onClick={() => setShow(s => ({ ...s, cur: !s.cur }))}
+              className="no-3d"
+              style={{
+                position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--text-muted)', padding: 2, display: 'flex',
+              }}
+              aria-label={show.cur ? 'Hide password' : 'Show password'}
+            >
+              <EyeIcon visible={show.cur} />
+            </button>
+          </div>
+        </Field>
+
+        <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
 
         <Field label="New Password">
           <div style={{ position: 'relative' }}>
             <input
-              type={showPw ? 'text' : 'password'}
+              type={show.next ? 'text' : 'password'}
               value={pw}
               onChange={e => setPw(e.target.value)}
               placeholder="••••••••"
@@ -79,16 +111,16 @@ export function SecurityTab() {
             />
             <button
               type="button"
-              onClick={() => setShowPw(v => !v)}
+              onClick={() => setShow(s => ({ ...s, next: !s.next }))}
               className="no-3d"
               style={{
                 position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: 'var(--text-muted)', padding: 2, display: 'flex',
               }}
-              aria-label={showPw ? 'Hide password' : 'Show password'}
+              aria-label={show.next ? 'Hide password' : 'Show password'}
             >
-              <EyeIcon show={showPw} />
+              <EyeIcon visible={show.next} />
             </button>
           </div>
         </Field>
@@ -96,7 +128,7 @@ export function SecurityTab() {
         <Field label="Confirm New Password">
           <div style={{ position: 'relative' }}>
             <input
-              type={showPw ? 'text' : 'password'}
+              type={show.next ? 'text' : 'password'}
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
               placeholder="••••••••"
@@ -121,26 +153,28 @@ export function SecurityTab() {
         </Field>
 
         {strength && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: -4 }}>
             <div style={{ display: 'flex', gap: 4 }}>
               {[1, 2, 3, 4].map(level => (
                 <div key={level} style={{
-                  flex: 1, height: 3, borderRadius: 99,
+                  flex: 1, height: 4, borderRadius: 99,
                   background: strength.level >= level ? strength.color : 'var(--border)',
                   transition: 'background 0.2s ease',
                 }} />
               ))}
             </div>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{strength.label}</span>
+            <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500 }}>
+              Strength: <span style={{ color: strength.color }}>{strength.label}</span>
+            </span>
           </div>
         )}
 
         {status && <Alert type={status.type} msg={status.msg} />}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Btn v="primary" onClick={update} disabled={saving || !pw || !confirm}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8 }}>
+          <Btn v="primary" onClick={update} disabled={saving || !current || !pw || !confirm || pw !== confirm} sx={{ width: '100%', justifyContent: 'center' }}>
             <Ic n="lock" size={14} color="#fff" />
-            {saving ? 'Updating…' : 'Update Password'}
+            {saving ? 'Updating Credentials…' : 'Finalize Password Change'}
           </Btn>
         </div>
       </Card>
