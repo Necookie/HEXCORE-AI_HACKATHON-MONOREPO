@@ -13,9 +13,13 @@
     <a href="#stack">Stack</a>
   </div>
   <div class="nav-cta">
-    <button class="theme-toggle no-3d" id="themeToggle" aria-label="Toggle theme">
-      <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+    <button class="theme-switch no-3d" id="themeToggle" aria-label="Toggle theme">
+      <div class="switch-track">
+        <div class="switch-thumb">
+          <svg class="thumb-icon moon-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <svg class="thumb-icon sun-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </div>
+      </div>
     </button>
     <a href="#" class="nav-signin auth-trigger" data-mode="login">Sign In</a>
     <a href="#" class="btn-primary auth-trigger" data-mode="signup">Sign Up</a>
@@ -228,30 +232,64 @@
   }
   .nav-signin:hover { color: var(--text-primary); }
 
-  /* Theme Toggle */
-  .theme-toggle {
-    background: var(--bg-elevated);
+  /* Theme Switch (Standard Toggle Style) */
+  .theme-switch {
+    background: #1a1e30;
     border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 0.5rem;
-    border-radius: var(--radius-md);
+    width: 46px;
+    height: 26px;
+    border-radius: 99px;
     cursor: pointer;
+    position: relative;
+    padding: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+  }
+  [data-theme='light'] .theme-switch {
+    background: #FFD60A;
+    border-color: #F59E0B;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 15px rgba(255, 214, 10, 0.3);
+  }
+
+  .switch-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
-  }
-  .theme-toggle:hover {
-    color: var(--text-primary);
-    border-color: var(--purple-light);
-    background: var(--bg-input);
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+    z-index: 2;
   }
 
-  .theme-toggle .sun-icon { display: none; }
-  .theme-toggle .moon-icon { display: block; }
+  [data-theme='light'] .switch-thumb {
+    transform: translateX(20px);
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.5), 0 0 0 1px rgba(255,255,255,0.2);
+  }
 
-  [data-theme='light'] .theme-toggle .sun-icon { display: block; }
-  [data-theme='light'] .theme-toggle .moon-icon { display: none; }
+  .thumb-icon {
+    position: absolute;
+    transition: opacity 0.3s, transform 0.4s;
+  }
+
+  [data-theme='dark'] .moon-icon { opacity: 1; color: #7B5CF5; transform: scale(1) rotate(0deg); }
+  [data-theme='dark'] .sun-icon  { opacity: 0; color: #F59E0B; transform: scale(0.4) rotate(-90deg); }
+
+  [data-theme='light'] .moon-icon { opacity: 0; color: #7B5CF5; transform: scale(0.4) rotate(90deg); }
+  [data-theme='light'] .sun-icon  { opacity: 1; color: #F59E0B; transform: scale(1) rotate(0deg); }
 
   [data-theme='light'] .logo-img { filter: none; }
   [data-theme='dark'] .logo-img { filter: invert(1); }
