@@ -1,0 +1,380 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/landing/Navbar.astro";
+import Footer from "../components/landing/Footer.astro";
+import AuthModal from "../components/auth/AuthModal";
+import MemberCard from "../components/landing/MemberCard.astro";
+import "../styles/landing-global.css";
+
+const members = [
+  {
+    name: "Christine Arroyo",
+    role: "Documentation, Team Leader",
+    specialty: "2nd Year Bachelor of Science in Computer Science, SOCCS Event Coordinator",
+    image: "https://res.cloudinary.com/dd6gz4moa/image/upload/v1777274521/Arroyo_Christine_rqgpyy.png"
+  },
+  {
+    name: "Francis Neil Mistica",
+    role: "Dev Lead, Full Stack, AI Engineer",
+    specialty: "3rd year Bachelor of Science in Computer Science specialized in Inteligent System",
+    image: "https://res.cloudinary.com/dd6gz4moa/image/upload/v1777274522/Mistica_Francis_Neil_s8eea5.png"
+  },
+  {
+    name: "Dheyn Michael Orlanda",
+    role: "Full Stack, DevOps Engineer, AI Automation",
+    specialty: "3rd year Bachelor of Science in Computer Science specialized in Inteligent System",
+    image: "https://res.cloudinary.com/dd6gz4moa/image/upload/v1777274522/Orlanda_Dheyn_Michael_vafa9f.png"
+  }
+];
+
+const techStack = [
+  { name: "Astro", color: "purple", desc: "Edge-optimized frontend architecture." },
+  { name: "Supabase", color: "green", desc: "Auth, Database, and Realtime sync." },
+  { name: "n8n", color: "red", desc: "Workflow automation and AI pipelines." },
+  { name: "Gemini", color: "blue", desc: "Advanced LLM for personalized learning." }
+];
+---
+
+<Layout title="The Mission Briefing — About StudyBearer">
+  <main class="sb-root">
+    <div class="noise" aria-hidden="true"></div>
+    <Navbar />
+
+    <!-- Hero Briefing -->
+    <section class="about-hero">
+      <div class="container">
+        <div class="hero-mascot float-anim">
+          <img src="/sb_symbol_blk.png" alt="StudyBearer Mascot" class="mascot-img" />
+        </div>
+        <span class="section-label reveal">INTELLIGENCE REPORT</span>
+        <h1 class="hero-title reveal">The Mission Briefing</h1>
+        <p class="hero-subtitle reveal">Stop planning to study. Start executing.</p>
+      </div>
+    </section>
+
+    <!-- Problem / Solution -->
+    <section class="about-grid">
+      <div class="container">
+        <div class="grid-wrap">
+          <div class="grid-col reveal">
+            <div class="grid-header">
+              <span class="status-dot red"></span>
+              <h3>Current Chaos</h3>
+            </div>
+            <ul class="status-list">
+              <li>Manual scheduling overhead</li>
+              <li>Cognitive load of planning</li>
+              <li>Disjointed study resources</li>
+              <li>Low execution ELO</li>
+            </ul>
+          </div>
+          <div class="grid-col highlight reveal">
+            <div class="grid-header">
+              <span class="status-dot purple"></span>
+              <h3>StudyBearer Solution</h3>
+            </div>
+            <ul class="status-list">
+              <li>AI-Automated Roadmaps</li>
+              <li>Pure focus on execution</li>
+              <li>Unified intelligence pipeline</li>
+              <li>Mythic rank efficiency</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CodeBearers Roster -->
+    <section class="about-roster">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label reveal">CODEBEARERS SQUAD</span>
+          <h2 class="section-title reveal">The Roster</h2>
+        </div>
+        <div class="roster-grid">
+          {members.map(member => (
+            <MemberCard {...member} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Blueprint -->
+    <section class="about-tech">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label reveal">SYSTEM ARCHITECTURE</span>
+          <h2 class="section-title reveal">Technical Blueprint</h2>
+        </div>
+        <div class="tech-grid">
+          {techStack.map(tech => (
+            <div class={`tech-card reveal border-${tech.color}`}>
+              <div class={`tech-badge badge-${tech.color}`}>{tech.name}</div>
+              <p class="tech-desc">{tech.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <Footer />
+    <AuthModal client:load />
+  </main>
+</Layout>
+
+<style>
+  .sb-root {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 80px;
+    overflow-x: hidden;
+    background: var(--bg-base);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-label {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--purple-light);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+  }
+
+  /* Hero */
+  .about-hero {
+    padding: 100px 0 60px;
+    text-align: center;
+  }
+
+  .hero-mascot {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 32px;
+  }
+
+  .mascot-img {
+    width: 100%;
+    height: 100%;
+    filter: invert(1);
+    object-fit: contain;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    letter-spacing: -0.04em;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+
+  .hero-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: var(--font-body);
+  }
+
+  /* Grid (Problem/Solution) */
+  .about-grid {
+    padding: 80px 0;
+  }
+
+  .grid-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .grid-col {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+  }
+
+  .grid-col.highlight {
+    background: rgba(123, 92, 245, 0.05);
+    border-color: rgba(123, 92, 245, 0.3);
+  }
+
+  .grid-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .grid-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .status-dot.red { background: var(--red); box-shadow: 0 0 10px var(--red); }
+  .status-dot.purple { background: var(--purple); box-shadow: 0 0 10px var(--purple); }
+
+  .status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .status-list li {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-body);
+  }
+
+  .status-list li::before {
+    content: "—";
+    color: var(--text-muted);
+  }
+
+  /* Roster */
+  .about-roster {
+    padding: 100px 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(123, 92, 245, 0.02) 50%, transparent 100%);
+  }
+
+  .roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+  }
+
+  /* Tech Blueprint */
+  .about-tech {
+    padding: 100px 0 160px;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .tech-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: transform 0.3s ease;
+  }
+
+  .tech-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .tech-card.border-purple { border-left: 3px solid var(--purple); }
+  .tech-card.border-green { border-left: 3px solid var(--green); }
+  .tech-card.border-red { border-left: 3px solid var(--red); }
+  .tech-card.border-blue { border-left: 3px solid var(--blue); }
+
+  .tech-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .badge-purple { background: rgba(123, 92, 245, 0.15); color: var(--purple-light); }
+  .badge-green { background: rgba(74, 222, 128, 0.15); color: var(--green); }
+  .badge-red { background: rgba(245, 107, 107, 0.15); color: var(--red); }
+  .badge-blue { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+
+  .tech-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-family: var(--font-body);
+  }
+
+  /* Animation Utilities */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .float-anim {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (max-width: 768px) {
+    .grid-wrap { grid-template-columns: 1fr; }
+    .hero-title { font-size: 3rem; }
+    .grid-col { padding: 32px; }
+    .roster-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  function initReveal() {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('revealed');
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  }
+
+  initReveal();
+  document.addEventListener('astro:page-load', initReveal);
+</script>

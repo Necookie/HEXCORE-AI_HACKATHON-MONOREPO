@@ -1,0 +1,153 @@
+---
+interface Props {
+  name: string;
+  role: string;
+  specialty: string;
+  image: string;
+}
+
+const { name, role, specialty, image } = Astro.props;
+---
+
+<div class="card-container">
+  <div class="card-3d">
+    <div class="card-content">
+      <div class="image-wrap">
+        <img src={image} alt={name} class="member-image" />
+      </div>
+      <div class="info-wrap">
+        <h3 class="member-name">{name}</h3>
+        <p class="member-role">{role}</p>
+        <span class="member-specialty">{specialty}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .card-3d {
+    position: relative;
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out, border-color 0.3s ease;
+    cursor: default;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-3d:hover {
+    border-color: var(--purple);
+    box-shadow: 0 0 30px rgba(123, 92, 245, 0.15);
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transform-style: preserve-3d;
+  }
+
+  .image-wrap {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 24px;
+    transform: translateZ(40px);
+    pointer-events: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .member-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(123, 92, 245, 0.5)); /* Holographic sticker look */
+  }
+
+  .info-wrap {
+    transform: translateZ(60px);
+  }
+
+  .member-name {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .member-role {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--purple-light);
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .member-specialty {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    display: block;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .image-wrap {
+      width: 160px;
+      height: 160px;
+    }
+  }
+</style>
+
+<script>
+  function init3DCard() {
+    document.querySelectorAll('.card-3d').forEach((card) => {
+      const cardEl = card as HTMLElement;
+      
+      cardEl.addEventListener('mousemove', (e) => {
+        const rect = cardEl.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+        
+        cardEl.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+
+      cardEl.addEventListener('mouseleave', () => {
+        cardEl.style.transform = `rotateX(0) rotateY(0)`;
+      });
+    });
+  }
+
+  // Init on load
+  init3DCard();
+  // Re-init after Astro view transitions
+  document.addEventListener('astro:page-load', init3DCard);
+</script>
