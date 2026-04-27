@@ -389,7 +389,12 @@ const navHtml = navDefs.map(item => {
 
     function setupThemeToggle() {
       syncThemeToggle();
-      document.getElementById('sb-theme-toggle')?.addEventListener('click', () => {
+      const btn = document.getElementById('sb-theme-toggle');
+      // Guard: only attach the listener once — astro:page-load fires on initial
+      // load too, which would add a second listener and make every click toggle twice.
+      if (!btn || btn.dataset.themeReady) return;
+      btn.dataset.themeReady = '1';
+      btn.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
         if (next === 'dark') {
           delete document.documentElement.dataset.theme;
@@ -415,7 +420,10 @@ const navHtml = navDefs.map(item => {
     );
 
     function setupSignout() {
-      document.getElementById('sb-signout-btn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('sb-signout-btn');
+      if (!btn || btn.dataset.signoutReady) return;
+      btn.dataset.signoutReady = '1';
+      btn.addEventListener('click', async () => {
         // 1. Sign out client-side — clears localStorage tokens
         await _supa.auth.signOut().catch(() => {});
         // 2. Also clear server-side cookies via API endpoint
