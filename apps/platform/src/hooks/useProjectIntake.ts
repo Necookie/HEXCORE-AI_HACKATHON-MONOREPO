@@ -58,8 +58,9 @@ export function useProjectIntake() {
   }, [file]);
 
   const goToStep3 = useCallback(() => {
-    if (!schedule.targetDate)       { setError('Select a target completion date.'); return; }
-    if (!schedule.studyDays.length) { setError('Select at least one study day.');   return; }
+    if (!schedule.subjectName.trim()) { setError('Subject name is required.'); return; }
+    if (!schedule.targetDate)          { setError('Select a target completion date.'); return; }
+    if (!schedule.studyDays.length)    { setError('Select at least one study day.'); return; }
     setError(null);
     setUploadError(null);
     setUploadPhase('idle');
