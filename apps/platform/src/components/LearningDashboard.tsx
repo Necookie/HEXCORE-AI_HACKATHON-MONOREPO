@@ -20,7 +20,7 @@ const sessions = [
 ];
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
-export default function LearningDashboard() {
+export default function LearningDashboard({ userName = 'Scholar' }: { userName?: string }) {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
@@ -31,7 +31,7 @@ export default function LearningDashboard() {
         <div>
           <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 5, fontFamily: 'var(--font-mono)' }}>{today}</div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.1, color: 'var(--text-primary)' }}>
-            Welcome back, <span style={{ color: 'var(--purple-light)' }}>Scholar</span>
+            Welcome back, <span style={{ color: 'var(--purple-light)' }}>{userName}</span>
           </h1>
         </div>
         <Btn onClick={() => window.location.href = '/platform'} sx={{ flexShrink: 0 }}>
