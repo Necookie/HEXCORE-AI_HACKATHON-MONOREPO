@@ -38,15 +38,37 @@
   --font-mono:     'Space Mono', monospace;
 }
 
+/* ── LIGHT MODE TOKENS ── */
+[data-theme="light"] {
+  --bg-base:       #F0F1F9;
+  --bg-card:       #FFFFFF;
+  --bg-elevated:   #E7E9F6;
+  --bg-input:      #F4F5FC;
+  --border:        #CFD2E8;
+  --border-subtle: #E0E2F0;
+  --text-primary:  #0D0F1E;
+  --text-secondary:#48506E;
+  --text-muted:    #8A90B2;
+  /* accent colours unchanged — brand stays purple */
+  --purple:        #7B5CF5;
+  --purple-light:  #9D82FF;
+  --amber:         #D4861A;
+  --green:         #22C55E;
+  --red:           #E04B4B;
+  --blue:          #3B82F6;
+}
+
 html, body { height: 100%; overflow: hidden; margin: 0; }
 body {
   background: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-body);
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
 input, button, select, textarea { font-family: var(--font-body); }
 input[type=date] { color-scheme: dark; }
+[data-theme="light"] input[type=date] { color-scheme: light; }
 input[type=range] { accent-color: var(--purple); width: 100%; cursor: pointer; }
 
 ::-webkit-scrollbar { width: 5px; }
@@ -96,6 +118,27 @@ button:not(:disabled):not(.no-3d):active {
 
 .btn-3d-danger   { box-shadow: 0 4px 0 0 #7f1d1d, 0 4px 0 1px #4d0e0e !important; }
 .btn-3d-danger:active:not(:disabled)  { box-shadow: 0 1px 0 0 #7f1d1d, 0 1px 0 1px #4d0e0e !important; transform: translateY(3px); }
+
+/* ── LIGHT MODE: re-tune shadows that used near-black hex colours ── */
+[data-theme="light"] button:not(:disabled):not(.no-3d) {
+  box-shadow: 0 4px 0 0 rgba(0,0,0,0.18), 0 4px 0 1px rgba(0,0,0,0.10);
+}
+[data-theme="light"] button:not(:disabled):not(.no-3d):active {
+  box-shadow: 0 1px 0 0 rgba(0,0,0,0.18), 0 1px 0 1px rgba(0,0,0,0.10);
+}
+[data-theme="light"] .btn-3d-secondary   { box-shadow: 0 4px 0 0 #B8BCCE, 0 4px 0 1px #AAAECC !important; }
+[data-theme="light"] .btn-3d-secondary:active:not(:disabled) { box-shadow: 0 1px 0 0 #B8BCCE, 0 1px 0 1px #AAAECC !important; }
+[data-theme="light"] .btn-3d-ghost       { box-shadow: 0 4px 0 0 #C2C6DA, 0 4px 0 1px #B4B8D0 !important; }
+[data-theme="light"] .btn-3d-ghost:active:not(:disabled)    { box-shadow: 0 1px 0 0 #C2C6DA, 0 1px 0 1px #B4B8D0 !important; }
+[data-theme="light"] .option-3d          { box-shadow: 0 4px 0 0 #B8BCCE, 0 4px 0 1px #AAAECC !important; }
+[data-theme="light"] .option-3d:hover:not(:disabled) { box-shadow: 0 5px 0 0 #B8BCCE, 0 5px 0 1px #AAAECC !important; }
+[data-theme="light"] .option-3d:active:not(:disabled){ box-shadow: 0 1px 0 0 #B8BCCE, 0 1px 0 1px #AAAECC !important; }
+[data-theme="light"] #sb-user-popup {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .card-hover:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10) !important;
+}
 
 /* ── OPTION BUTTONS (quiz) ── */
 .option-3d {

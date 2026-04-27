@@ -77,6 +77,13 @@ const navHtml = navDefs.map(item => {
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link href="https://db.onlinewebfonts.com/c/14936bb7a4b6575fd2eee80a3ab52cc2?family=Feather+Bold" rel="stylesheet" />
   <ClientRouter />
+  <!-- Apply saved theme BEFORE first paint to avoid flash -->
+  <script is:inline>
+    (function () {
+      var t = localStorage.getItem('sb-theme');
+      if (t === 'light') document.documentElement.dataset.theme = 'light';
+    })();
+  </script>
 </head>
 
 <body>
@@ -191,6 +198,20 @@ const navHtml = navDefs.map(item => {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
           <span>About StudyBearer</span>
         </a>
+        <!-- Theme toggle -->
+        <button id="sb-theme-toggle" class="sb-popup-item no-3d" style="width:100%;background:none;border:none;cursor:pointer;justify-content:space-between;font-family:var(--font-body);">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <!-- Sun icon (light mode) -->
+            <svg id="sb-theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <!-- Moon icon (dark mode) -->
+            <svg id="sb-theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span id="sb-theme-label">Light mode</span>
+          </div>
+          <!-- Toggle pill -->
+          <div id="sb-theme-track" style="width:34px;height:20px;border-radius:99px;background:var(--border);position:relative;transition:background 0.22s ease;flex-shrink:0;">
+            <div id="sb-theme-thumb" style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform 0.22s ease;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>
+          </div>
+        </button>
         <div style="height:1px;background:var(--border);margin:4px 0;"></div>
         <button id="sb-signout-btn" class="sb-popup-item sb-popup-danger no-3d" style="width:100%;background:none;border:none;cursor:pointer;font-family:var(--font-body);">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -349,6 +370,38 @@ const navHtml = navDefs.map(item => {
     window.addEventListener('resize', () => {
       if (popup?.classList.contains('open')) positionPopup();
     });
+
+    // ── Theme toggle ─────────────────────────────────────────────────────
+    function syncThemeToggle() {
+      const isLight = document.documentElement.dataset.theme === 'light';
+      const track   = document.getElementById('sb-theme-track');
+      const thumb   = document.getElementById('sb-theme-thumb');
+      const label   = document.getElementById('sb-theme-label');
+      const sun     = document.getElementById('sb-theme-icon-sun');
+      const moon    = document.getElementById('sb-theme-icon-moon');
+
+      if (track)  track.style.background = isLight ? 'var(--purple)' : 'var(--border)';
+      if (thumb)  thumb.style.transform  = isLight ? 'translateX(14px)' : 'translateX(0)';
+      if (label)  label.textContent      = isLight ? 'Dark mode'  : 'Light mode';
+      if (sun)    sun.style.display      = isLight ? 'block' : 'none';
+      if (moon)   moon.style.display     = isLight ? 'none'  : 'block';
+    }
+
+    function setupThemeToggle() {
+      syncThemeToggle();
+      document.getElementById('sb-theme-toggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+        if (next === 'dark') {
+          delete document.documentElement.dataset.theme;
+        } else {
+          document.documentElement.dataset.theme = 'light';
+        }
+        localStorage.setItem('sb-theme', next);
+        syncThemeToggle();
+      });
+    }
+    setupThemeToggle();
+    document.addEventListener('astro:page-load', setupThemeToggle);
 
     // ── Sign out ─────────────────────────────────────────────────────────
     // Must call signOut() on the BROWSER client so Supabase clears its
