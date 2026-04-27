@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(cp webfetch-1777107524228-rbn50d.bin design.html.gz)",
+      "Bash(gzip -d design.html.gz)",
+      "Bash(mkdir -p extracted)",
+      "Bash(tar -xf design.html -C extracted)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git mv *)",
+      "Bash(grep -E \"\\\\.\\(ts|astro|js\\)$\")",
+      "Bash(git rebase *)",
+      "Bash(git checkout *)",
+      "Bash(findstr /n \"uploadPhase\\\\|retryUpload\\\\|ProcessingStep\")",
+      "Bash(GIT_EDITOR=true git rebase --continue)",
+      "Bash(git fetch *)"
+    ]
+  }
+}
