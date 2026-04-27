@@ -77,11 +77,21 @@ const navHtml = navDefs.map(item => {
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link href="https://db.onlinewebfonts.com/c/14936bb7a4b6575fd2eee80a3ab52cc2?family=Feather+Bold" rel="stylesheet" />
   <ClientRouter />
-  <!-- Apply saved theme BEFORE first paint to avoid flash -->
+  <!-- Apply saved theme BEFORE first paint AND after every ClientRouter swap -->
   <script is:inline>
     (function () {
-      var t = localStorage.getItem('sb-theme');
-      if (t === 'light') document.documentElement.dataset.theme = 'light';
+      function applyTheme() {
+        var t = localStorage.getItem('sb-theme');
+        if (t === 'light') {
+          document.documentElement.dataset.theme = 'light';
+        } else {
+          delete document.documentElement.dataset.theme;
+        }
+      }
+      applyTheme();
+      // astro:after-swap fires after ClientRouter replaces the DOM; without this
+      // the <html data-theme> attribute gets wiped on every navigation.
+      document.addEventListener('astro:after-swap', applyTheme);
     })();
   </script>
 </head>
@@ -103,7 +113,7 @@ const navHtml = navDefs.map(item => {
 
       <!-- Logo -->
       <div class="sb-logo-wrap" style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px;">
-        <img src={sbLogo.src} width="36" height="36" alt="StudyBearer" style="filter:invert(1);object-fit:contain;flex-shrink:0;" />
+        <img src={sbLogo.src} width="36" height="36" alt="StudyBearer" style="filter:var(--logo-filter);object-fit:contain;flex-shrink:0;" />
         <div class="sb-nav-label" style="flex:1;min-width:0;">
           <div style="font-family:var(--font-heading);font-weight:700;font-size:17px;letter-spacing:-0.025em;color:var(--text-primary);line-height:1.1;">StudyBearer</div>
           <div style="font-size:11px;color:var(--text-secondary);margin-top:1px;line-height:1.1;">AI Study Companion</div>

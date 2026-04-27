@@ -36,6 +36,7 @@
   --font-heading:  "Feather Bold", 'Nunito', sans-serif;
   --font-body:     'Nunito', sans-serif;
   --font-mono:     'Space Mono', monospace;
+  --logo-filter:   invert(1);
 }
 
 /* ── LIGHT MODE TOKENS ── */
@@ -50,6 +51,7 @@
   --text-secondary:#48506E;
   --text-muted:    #8A90B2;
   /* accent colours unchanged — brand stays purple */
+  --logo-filter:   invert(0);
   --purple:        #7B5CF5;
   --purple-light:  #9D82FF;
   --amber:         #D4861A;
