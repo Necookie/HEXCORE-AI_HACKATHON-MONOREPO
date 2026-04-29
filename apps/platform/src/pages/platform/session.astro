@@ -1,0 +1,9 @@
+---
+import PlatformLayout from '../../layouts/PlatformLayout.astro';
+import SessionView from '../../components/SessionView';
+
+const sessionId = Astro.url.searchParams.get('sessionId') ?? undefined;
+---
+<PlatformLayout title="Study Session">
+  <SessionView client:load sessionId={sessionId} />
+</PlatformLayout>

@@ -418,13 +418,17 @@ export default function RoadmapView({ documentId }: Props) {
                     </div>
 
                     <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                      {today && (
-                        <Btn v="primary" size="sm" onClick={() => window.location.href = '/platform/quiz'}>
-                          <Ic n="quiz" size={13} color="#fff" /> Start
+                      {(today || (!done && !skipped)) && (
+                        <Btn
+                          v={today ? 'primary' : 'ghost'}
+                          size="sm"
+                          onClick={() => window.location.href = `/platform/session?sessionId=${s.id}`}
+                        >
+                          {today
+                            ? <><Ic n="book" size={13} color="#fff" /> Start</>
+                            : <Ic n="right" size={14} color="var(--text-muted)" />
+                          }
                         </Btn>
-                      )}
-                      {!today && !done && !skipped && (
-                        <Ic n="right" size={14} color="var(--text-muted)" />
                       )}
                     </div>
                   </div>
