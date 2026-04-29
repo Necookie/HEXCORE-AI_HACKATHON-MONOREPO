@@ -1,7 +1,13 @@
 ---
 import PlatformLayout from '../../layouts/PlatformLayout.astro';
 import QuizView from '../../components/QuizView';
+import QuizHub  from '../../components/QuizHub';
+
+const sessionId = Astro.url.searchParams.get('sessionId') ?? undefined;
 ---
-<PlatformLayout title="Quiz">
-  <QuizView client:load />
+<PlatformLayout title={sessionId ? 'Quiz' : 'Quiz Practice'}>
+  {sessionId
+    ? <QuizView client:load sessionId={sessionId} />
+    : <QuizHub  client:load />
+  }
 </PlatformLayout>

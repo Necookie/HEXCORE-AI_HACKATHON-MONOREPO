@@ -124,11 +124,11 @@ const navHtml = navDefs.map(item => {
       <div class="sb-streak" style="margin:10px 12px 4px;background:rgba(240,160,48,0.08);border:1px solid rgba(240,160,48,0.2);border-radius:var(--radius-md);padding:9px 12px;display:flex;align-items:center;gap:10px;">
         <Fragment set:html={icon('flame', 18, '#F0A030')} />
         <div class="sb-nav-label">
-          <div style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:#F0A030;line-height:1;">0</div>
+          <div id="sb-streak-val" style="font-family:var(--font-mono);font-weight:700;font-size:20px;color:#F0A030;line-height:1;">—</div>
           <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">Day Streak</div>
         </div>
         <div class="sb-nav-label" style="margin-left:auto;text-align:right;">
-          <div style="font-family:var(--font-mono);font-size:14px;color:#60A5FA;font-weight:700;">0</div>
+          <div id="sb-elo-val" style="font-family:var(--font-mono);font-size:14px;color:#60A5FA;font-weight:700;">—</div>
           <div style="font-size:11px;color:var(--text-secondary);">ELO</div>
         </div>
       </div>
@@ -445,6 +445,23 @@ const navHtml = navDefs.map(item => {
     }
     setupSignout();
     document.addEventListener('astro:page-load', setupSignout);
+
+    // ── Sidebar streak / ELO hydration ───────────────────────────────────
+    function hydrateSidebarStats() {
+      const streakEl = document.getElementById('sb-streak-val');
+      const eloEl    = document.getElementById('sb-elo-val');
+      if (!streakEl || !eloEl) return;
+      fetch('/api/dashboard/stats')
+        .then(r => r.ok ? r.json() : null)
+        .then((s: { streak: number; elo: number } | null) => {
+          if (!s) return;
+          if (streakEl) streakEl.textContent = s.streak + 'd';
+          if (eloEl)    eloEl.textContent    = String(s.elo);
+        })
+        .catch(() => {});
+    }
+    hydrateSidebarStats();
+    document.addEventListener('astro:page-load', hydrateSidebarStats);
   </script>
 </body>
 </html>

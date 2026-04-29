@@ -1,0 +1,9 @@
+---
+import PlatformLayout from '../../layouts/PlatformLayout.astro';
+import FlashcardView  from '../../components/FlashcardView';
+
+const sessionId = Astro.url.searchParams.get('sessionId') ?? undefined;
+---
+<PlatformLayout title="Flashcard Practice">
+  <FlashcardView client:load sessionId={sessionId} />
+</PlatformLayout>

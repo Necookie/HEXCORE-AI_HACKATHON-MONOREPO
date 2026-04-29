@@ -654,7 +654,16 @@ export default function SessionView({ sessionId }: Props) {
             {ACTIONS.map(action => (
               <button
                 key={action.label}
-                onClick={() => window.location.href = action.href}
+                onClick={() => {
+                  // Attach sessionId to session-specific actions
+                  let href = action.href;
+                  if (session?.id) {
+                    if (action.href === '/platform/quiz')       href = `/platform/quiz?sessionId=${session.id}`;
+                    if (action.href === '/platform/flashcards') href = `/platform/flashcards?sessionId=${session.id}`;
+                    if (action.href === '/platform/mindmap')    href = `/platform/mindmap?sessionId=${session.id}`;
+                  }
+                  window.location.href = href;
+                }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 11,
                   padding: '11px 13px',
@@ -710,7 +719,8 @@ export default function SessionView({ sessionId }: Props) {
 
           <div>
             {allSessions.map((s, i) => {
-              const active = i === currentIdx;
+              const active    = i === currentIdx;
+              const completed = s.status === 'completed';
               return (
                 <div
                   key={s.id}
@@ -734,31 +744,49 @@ export default function SessionView({ sessionId }: Props) {
                     if (!active) e.currentTarget.style.background = 'transparent';
                   }}
                 >
-                  {/* Number dot */}
-                  <span style={{
-                    width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: active ? 'rgba(123,92,245,0.2)' : 'transparent',
-                    fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                    color: active ? '#9D82FF' : 'var(--text-muted)',
-                    transition: 'all 0.12s',
-                  }}>
-                    {i + 1}
-                  </span>
+                  {/* Status indicator */}
+                  {completed ? (
+                    <span style={{
+                      width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'rgba(74,222,128,0.18)',
+                      border: '1.5px solid rgba(74,222,128,0.45)',
+                    }}>
+                      <Ic n="check" size={10} color="#4ADE80" sw={2.8} />
+                    </span>
+                  ) : (
+                    <span style={{
+                      width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: active ? 'rgba(123,92,245,0.2)' : 'transparent',
+                      fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                      color: active ? '#9D82FF' : 'var(--text-muted)',
+                      transition: 'all 0.12s',
+                    }}>
+                      {i + 1}
+                    </span>
+                  )}
 
                   {/* Text */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                       fontSize: 12,
                       fontWeight: active ? 600 : 400,
-                      color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      color: completed && !active
+                        ? 'var(--text-muted)'
+                        : active ? 'var(--text-primary)' : 'var(--text-secondary)',
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                       lineHeight: 1.4,
+                      textDecoration: completed && !active ? 'line-through' : 'none',
+                      textDecorationColor: 'var(--border)',
                     }}>
                       {s.title}
                     </div>
-                    {s.isToday && (
+                    {s.isToday && !completed && (
                       <span style={{ fontSize: 10, color: '#F0A030' }}>Today</span>
+                    )}
+                    {completed && (
+                      <span style={{ fontSize: 10, color: '#4ADE80' }}>Completed</span>
                     )}
                   </div>
                 </div>

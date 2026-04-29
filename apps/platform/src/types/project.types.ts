@@ -82,3 +82,10 @@ export interface TodaySession {
   startTime: string;
   status: 'scheduled' | 'completed' | 'skipped';
 }
+
+export interface DashboardStats {
+  streak: number;
+  elo: number;
+  quizzesPassed: number;
+  studyHours: number;
+}

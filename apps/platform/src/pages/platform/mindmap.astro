@@ -1,0 +1,9 @@
+---
+import PlatformLayout from '../../layouts/PlatformLayout.astro';
+import MindMapView    from '../../components/MindMapView';
+
+const sessionId = Astro.url.searchParams.get('sessionId') ?? undefined;
+---
+<PlatformLayout title="Mind Map">
+  <MindMapView client:load sessionId={sessionId} />
+</PlatformLayout>

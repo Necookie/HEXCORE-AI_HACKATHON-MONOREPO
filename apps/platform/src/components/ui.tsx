@@ -35,6 +35,7 @@ const iconPaths: Record<string, string[]> = {
   target:      ["M12 22a10 10 0 100-20 10 10 0 000 20z","M12 18a6 6 0 100-12 6 6 0 000 12z","M12 14a2 2 0 100-4 2 2 0 000 4z"],
   left:        ["M15 18l-6-6 6-6"],
   refresh:     ["M23 4v6h-6","M1 20v-6h6","M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"],
+  play:        ["M5 3l14 9-14 9z"],
 };
 
 export const Ic = ({

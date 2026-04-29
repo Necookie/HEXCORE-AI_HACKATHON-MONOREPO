@@ -4,6 +4,7 @@ import type {
   RoadmapData,
   DocumentSummary,
   TodaySession,
+  DashboardStats,
 } from '../types/project.types';
 
 export const projectService = {
@@ -107,6 +108,25 @@ export const projectService = {
     }
 
     return res.json() as Promise<TodaySession[]>;
+  },
+
+  /**
+   * Returns real-time dashboard stats for the current user:
+   * streak (days), elo, quizzesPassed, studyHours.
+   */
+  async fetchDashboardStats(): Promise<DashboardStats> {
+    let res: Response;
+    try {
+      res = await fetch('/api/dashboard/stats');
+    } catch {
+      throw new Error('Network error while loading stats.');
+    }
+
+    if (!res.ok) {
+      throw new Error('Failed to load dashboard stats.');
+    }
+
+    return res.json() as Promise<DashboardStats>;
   },
 
   /**

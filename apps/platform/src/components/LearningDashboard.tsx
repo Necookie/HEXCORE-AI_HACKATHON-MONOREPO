@@ -1,15 +1,26 @@
 import { useState, useEffect } from 'react';
 import { Ic, Badge, Bar, Card, Btn } from './ui';
 import { projectService } from '../services/project.service';
-import type { DocumentSummary, TodaySession } from '../types/project.types';
+import type { DocumentSummary, TodaySession, DashboardStats } from '../types/project.types';
 
-// ── Static stats (ELO / streak not yet wired to a DB table) ───────────────────
-const stats = [
-  { label: 'Current Streak', val: '0',  icon: 'flame',       color: '#F0A030' },
-  { label: 'ELO Rating',     val: '0',  icon: 'zap',         color: '#60A5FA' },
-  { label: 'Quizzes Passed', val: '0',  icon: 'checkCircle', color: '#4ADE80' },
-  { label: 'Study Hours',    val: '0',  icon: 'book',        color: '#9D82FF' },
-];
+// ── Bear rank thresholds ──────────────────────────────────────────────────────
+export const BEAR_RANKS = [
+  { name: 'Cub',         emoji: '🐾', min: 0,    max: 199,      color: '#C89B7B' },
+  { name: 'Panda',       emoji: '🐼', min: 200,  max: 499,      color: '#4ADE80' },
+  { name: 'Grizzly',     emoji: '🐻', min: 500,  max: 999,      color: '#CD7F32' },
+  { name: 'Polar',       emoji: '❄️', min: 1000, max: 1749,     color: '#60A5FA' },
+  { name: 'Kodiak',      emoji: '🏔️', min: 1750, max: 2999,     color: '#9D82FF' },
+  { name: 'Spirit Bear', emoji: '✨', min: 3000, max: Infinity,  color: '#F0A030' },
+] as const;
+
+function getRank(elo: number) {
+  return BEAR_RANKS.find(r => elo >= r.min && elo <= r.max) ?? BEAR_RANKS[0];
+}
+
+function getNextRank(elo: number) {
+  const idx = BEAR_RANKS.findIndex(r => elo >= r.min && elo <= r.max);
+  return idx < BEAR_RANKS.length - 1 ? BEAR_RANKS[idx + 1] : null;
+}
 
 // ── Colour palette for subject cards ─────────────────────────────────────────
 const PALETTE = ['#7B5CF5', '#60A5FA', '#4ADE80', '#F0A030', '#F472B6', '#9D82FF'];
@@ -40,8 +51,10 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
 
   const [subjects,       setSubjects]       = useState<DocumentSummary[]>([]);
   const [todaySessions,  setTodaySessions]  = useState<TodaySession[]>([]);
+  const [dashStats,      setDashStats]      = useState<DashboardStats | null>(null);
   const [loadingSubj,    setLoadingSubj]    = useState(true);
   const [loadingToday,   setLoadingToday]   = useState(true);
+  const [loadingStats,   setLoadingStats]   = useState(true);
   const [confirmingId,   setConfirmingId]   = useState<string | null>(null);
   const [deletingId,     setDeletingId]     = useState<string | null>(null);
   const [deleteError,    setDeleteError]    = useState<string | null>(null);
@@ -58,6 +71,11 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
       .then(sess => { if (!cancelled) setTodaySessions(sess); })
       .catch(() => {})
       .finally(() => { if (!cancelled) setLoadingToday(false); });
+
+    projectService.fetchDashboardStats()
+      .then(s => { if (!cancelled) setDashStats(s); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingStats(false); });
 
     return () => { cancelled = true; };
   }, []);
@@ -78,7 +96,7 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
     }
   };
 
-  const loading = loadingSubj || loadingToday;
+  const loading = loadingSubj || loadingToday || loadingStats;
 
   return (
     <div className="content-scroll fade-in" style={{ padding: '22px 28px', flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -97,21 +115,33 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
       </div>
 
       {/* Stat strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
-        {stats.map((s, i) => (
-          <div key={i} style={{
-            background: 'var(--bg-card)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-md)', padding: '11px 14px',
-            display: 'flex', alignItems: 'center', gap: 10,
-          }}>
-            <Ic n={s.icon} size={20} color={s.color} />
-            <div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.val}</div>
-              <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{s.label}</div>
-            </div>
+      {(() => {
+        const statItems = [
+          { label: 'Current Streak', val: dashStats ? `${dashStats.streak}d`  : '—', icon: 'flame',       color: '#F0A030' },
+          { label: 'ELO Rating',     val: dashStats ? `${dashStats.elo}`       : '—', icon: 'zap',         color: '#60A5FA' },
+          { label: 'Quizzes Passed', val: dashStats ? `${dashStats.quizzesPassed}` : '—', icon: 'checkCircle', color: '#4ADE80' },
+          { label: 'Study Hours',    val: dashStats ? `${dashStats.studyHours}h` : '—', icon: 'book',        color: '#9D82FF' },
+        ];
+        return (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+            {statItems.map((s, i) => (
+              <div key={i} style={{
+                background: 'var(--bg-card)', border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)', padding: '11px 14px',
+                display: 'flex', alignItems: 'center', gap: 10,
+                opacity: loadingStats ? 0.5 : 1,
+                transition: 'opacity 0.3s ease',
+              }}>
+                <Ic n={s.icon} size={20} color={s.color} />
+                <div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.val}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{s.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        );
+      })()}
 
       {/* Main grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 12, flex: 1, minHeight: 0 }}>
@@ -321,35 +351,62 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
                 );
               })}
 
-              <div style={{ padding: '10px 13px', display: 'flex', gap: 8 }}>
-                <Btn v="primary" size="sm" onClick={() => window.location.href = '/platform/quiz'} sx={{ flex: 1, justifyContent: 'center' }}>
-                  <Ic n="quiz" size={14} color="#fff" /> Take Quiz
-                </Btn>
-                <Btn v="ghost" size="sm" onClick={() => window.location.href = '/platform/roadmap'}>
-                  <Ic n="calendar" size={14} />
-                </Btn>
-              </div>
+              {(() => {
+                // First scheduled (not completed/skipped) session today
+                const nextSession = todaySessions.find(s => s.status === 'scheduled');
+                const anyCompleted = todaySessions.some(s => s.status === 'completed');
+                const label = nextSession
+                  ? (anyCompleted ? 'Resume Session' : 'Start Session')
+                  : 'View Roadmap';
+                const icon  = nextSession ? 'play' : 'calendar';
+                const href  = nextSession
+                  ? `/platform/session?sessionId=${nextSession.id}`
+                  : '/platform/roadmap';
+                return (
+                  <div style={{ padding: '10px 13px', display: 'flex', gap: 8 }}>
+                    <Btn v="primary" size="sm" onClick={() => window.location.href = href} sx={{ flex: 1, justifyContent: 'center' }}>
+                      <Ic n={icon} size={14} color="#fff" /> {label}
+                    </Btn>
+                    <Btn v="ghost" size="sm" onClick={() => window.location.href = '/platform/roadmap'}>
+                      <Ic n="calendar" size={14} />
+                    </Btn>
+                  </div>
+                );
+              })()}
             </Card>
           </div>
 
           {/* Rank card */}
-          <Card>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <Ic n="medal" size={22} color="#F0A030" />
-              <div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>Iron Rank</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>500 ELO to Bronze</div>
-              </div>
-              <div style={{ marginLeft: 'auto' }}>
-                <Badge color="amber" sm>Top —</Badge>
-              </div>
-            </div>
-            <Bar val={0} color="#F0A030" h={8} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 7, fontSize: 11, color: 'var(--text-secondary)' }}>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>0</span>
-              <span style={{ fontFamily: 'var(--font-mono)' }}>500</span>
-            </div>
-          </Card>
+          {(() => {
+            const elo      = dashStats?.elo ?? 0;
+            const rank     = getRank(elo);
+            const next     = getNextRank(elo);
+            const barPct   = next
+              ? Math.round(((elo - rank.min) / (next.min - rank.min)) * 100)
+              : 100;
+            const eloToNext = next ? next.min - elo : 0;
+            return (
+              <Card>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>{rank.emoji}</span>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{rank.name} Rank</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      {next ? `${eloToNext} ELO to ${next.name}` : 'Max rank reached!'}
+                    </div>
+                  </div>
+                  <div style={{ marginLeft: 'auto' }}>
+                    <Badge color="amber" sm>{elo} ELO</Badge>
+                  </div>
+                </div>
+                <Bar val={barPct} color={rank.color} h={8} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 7, fontSize: 11, color: 'var(--text-secondary)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{rank.min}</span>
+                  {next && <span style={{ fontFamily: 'var(--font-mono)' }}>{next.min}</span>}
+                </div>
+              </Card>
+            );
+          })()}
 
           {/* Achievement teaser */}
           <Card hover onClick={() => window.location.href = '/platform/achievements'}
