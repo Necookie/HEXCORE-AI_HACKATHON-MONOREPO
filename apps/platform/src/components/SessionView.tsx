@@ -508,12 +508,10 @@ export default function SessionView({ sessionId }: Props) {
                   textAlign: 'left', width: '100%',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = `0 4px 12px ${action.border}`;
+                  e.currentTarget.style.opacity = '0.85';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.opacity = '1';
                 }}
               >
                 <div style={{
