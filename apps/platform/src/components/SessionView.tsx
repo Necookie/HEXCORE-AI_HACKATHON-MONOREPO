@@ -173,6 +173,7 @@ export default function SessionView({ sessionId }: Props) {
 
   const [currentIdx,       setCurrentIdx]       = useState(initialIdx);
   const [objectivesOpen,   setObjectivesOpen]   = useState(true);
+  const [quizGateOpen,     setQuizGateOpen]     = useState(false);
   const session = MOCK_SESSIONS[currentIdx];
   const subject = MOCK_SUBJECT;
 
@@ -394,7 +395,74 @@ export default function SessionView({ sessionId }: Props) {
           />
         </section>
 
-        {/* Mobile session navigation (hidden on wide screens via inline style, visible on narrow) */}
+        {/* ── Complete session CTA ───────────────────────────────────────── */}
+        {session.status !== 'completed' ? (
+          <div style={{
+            margin: '8px 0 24px',
+            padding: '20px 24px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'rgba(123,92,245,0.06)',
+            border: '1px solid rgba(123,92,245,0.18)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+          }}>
+            <div>
+              <div style={{
+                fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700,
+                color: 'var(--text-primary)', marginBottom: 3,
+              }}>
+                Done studying this session?
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
+                Pass the quiz to mark it complete and update your progress.
+              </p>
+            </div>
+            <button
+              onClick={() => setQuizGateOpen(true)}
+              style={{
+                flexShrink: 0,
+                display: 'inline-flex', alignItems: 'center', gap: 7,
+                padding: '9px 18px',
+                background: '#7B5CF5',
+                border: '1px solid #9D82FF',
+                borderBottom: '2px solid #4A2DB0',
+                borderRadius: 'var(--radius-md)',
+                color: '#fff', fontSize: 13, fontWeight: 600,
+                fontFamily: 'var(--font-heading)', cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Ic n="trophy" size={14} color="#fff" />
+              Complete Session
+            </button>
+          </div>
+        ) : (
+          <div style={{
+            margin: '8px 0 24px',
+            padding: '14px 20px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'rgba(74,222,128,0.07)',
+            border: '1px solid rgba(74,222,128,0.22)',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+              background: 'rgba(74,222,128,0.18)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Ic n="check" size={14} color="#4ADE80" sw={2.5} />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, color: '#4ADE80' }}>
+                Session Completed
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>
+                You passed the quiz for this session.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Prev / Next nav ────────────────────────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           paddingTop: 16, borderTop: '1px solid var(--border-subtle)',
@@ -412,6 +480,113 @@ export default function SessionView({ sessionId }: Props) {
           </Btn>
         </div>
       </div>
+
+      {/* ── Quiz gate modal ───────────────────────────────────────────────────── */}
+      {quizGateOpen && (
+        <div
+          onClick={() => setQuizGateOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 50,
+            background: 'rgba(4,6,20,0.72)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          {/* Card — stop propagation so clicking inside doesn't close */}
+          <div
+            onClick={e => e.stopPropagation()}
+            className="fade-in"
+            style={{
+              width: '100%', maxWidth: 420,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              padding: '32px 28px 24px',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              textAlign: 'center',
+            }}
+          >
+            {/* Icon */}
+            <div style={{
+              width: 56, height: 56, borderRadius: '50%',
+              background: 'rgba(123,92,245,0.12)',
+              border: '2px solid rgba(123,92,245,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: 20,
+            }}>
+              <Ic n="trophy" size={26} color="#9D82FF" />
+            </div>
+
+            {/* Heading */}
+            <h2 style={{
+              fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700,
+              color: 'var(--text-primary)', marginBottom: 10, letterSpacing: '-0.02em',
+            }}>
+              Quiz Required
+            </h2>
+
+            <p style={{
+              fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7,
+              marginBottom: 8, maxWidth: 320,
+            }}>
+              To mark <strong style={{ color: 'var(--text-primary)' }}>"{session.title}"</strong> as complete
+              and update your progress, you need to <strong style={{ color: 'var(--text-primary)' }}>pass the quiz</strong> for this session first.
+            </p>
+
+            {/* Info row */}
+            <div style={{
+              display: 'flex', gap: 16, margin: '16px 0 24px',
+              padding: '12px 20px',
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border-subtle)',
+              width: '100%',
+            }}>
+              {[
+                { icon: 'quiz',   color: '#60A5FA', label: 'Answer questions' },
+                { icon: 'check',  color: '#4ADE80', label: 'Pass the quiz'    },
+                { icon: 'trophy', color: '#9D82FF', label: 'Session complete' },
+              ].map((step, i) => (
+                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, position: 'relative' }}>
+                  {i < 2 && (
+                    <div style={{
+                      position: 'absolute', top: 10, left: 'calc(50% + 14px)',
+                      width: 'calc(100% - 28px)', height: 1,
+                      borderTop: '1px dashed var(--border)',
+                    }} />
+                  )}
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%', zIndex: 1,
+                    background: `color-mix(in srgb, ${step.color} 14%, transparent)`,
+                    border: `1.5px solid color-mix(in srgb, ${step.color} 30%, transparent)`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Ic n={step.icon} size={13} color={step.color} />
+                  </div>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-heading)', textAlign: 'center', lineHeight: 1.3 }}>
+                    {step.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+              <Btn v="ghost" size="md" onClick={() => setQuizGateOpen(false)}
+                sx={{ flex: 1, justifyContent: 'center' }}>
+                Cancel
+              </Btn>
+              <Btn v="primary" size="md"
+                onClick={() => window.location.href = `/platform/quiz?sessionId=${session.id}`}
+                sx={{ flex: 2, justifyContent: 'center' }}>
+                <Ic n="quiz" size={14} color="#fff" /> Take the Quiz
+              </Btn>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Right sidebar ─────────────────────────────────────────────────────── */}
       <aside style={{
