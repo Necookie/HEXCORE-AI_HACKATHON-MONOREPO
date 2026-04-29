@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Ic, Badge, Bar, Card, Btn } from './ui';
+import StudyNotes from './StudyNotes';
 
 // ── Mock data (replace with real API call later) ──────────────────────────────
 
@@ -363,48 +364,34 @@ export default function SessionView({ sessionId }: Props) {
           </div>
         </section>
 
-        {/* Study notes placeholder */}
+        {/* Study notes — AI generated */}
         <section style={{ marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 16 }}>
             <div style={{
               width: 28, height: 28, borderRadius: '50%',
               background: 'rgba(74,222,128,0.12)',
               border: '1.5px solid rgba(74,222,128,0.28)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <Ic n="file" size={14} color="#4ADE80" />
+              <Ic n="sparkles" size={14} color="#4ADE80" />
             </div>
             <h2 style={{
               fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
-              color: 'var(--text-primary)',
+              color: 'var(--text-primary)', flex: 1,
             }}>
               Study Notes
             </h2>
+            <Badge color="green" sm>AI</Badge>
           </div>
 
-          <div style={{
-            padding: '32px 24px',
-            background: 'var(--bg-card)',
-            border: '1px dashed var(--border)',
-            borderRadius: 'var(--radius-lg)',
-            textAlign: 'center',
-          }}>
-            <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center' }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: '50%',
-                background: 'var(--bg-elevated)',
-                border: '1.5px solid var(--border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Ic n="sparkles" size={20} color="var(--text-muted)" />
-              </div>
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              AI-generated study notes for this session are coming soon.
-              <br />
-              Use the actions on the right to start practising now.
-            </p>
-          </div>
+          <StudyNotes
+            key={session.id}
+            sessionId={session.id}
+            title={session.title}
+            summary={session.summary}
+            learningObjectives={session.learningObjectives}
+            subtopics={session.subtopics}
+          />
         </section>
 
         {/* Mobile session navigation (hidden on wide screens via inline style, visible on narrow) */}

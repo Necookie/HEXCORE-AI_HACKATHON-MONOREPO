@@ -12,6 +12,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_SUPABASE_ANON_KEY: string;
   readonly N8N_WEBHOOK_URL: string;
   readonly N8N_DELETE_WEBHOOK_URL: string;
+  readonly GROQ_API_KEY: string;
 }
 
 interface ImportMeta {
