@@ -55,3 +55,12 @@ StudyBearer is an AI-powered educational workflow application. It automates stud
 - **Security:** RLS for PDFs in Supabase. Google Calendar tokens handled securely.
 - **Reliability:** n8n workflows include error-handling nodes (Catch nodes) for AI hallucinations or rate limits.
 - **Maintainability:** Prisma Client for strict type-checking.
+
+## 6. The Team: CodeBearers
+**School:** Laguna State Polytechnic University - Sta Cruz Campus
+
+- **Dheyn Michael Orlanda** - 3rd year BSCS Student
+- **Francis Neil Mistica** - 3rd year BSCS Student
+- **Christine Arroyo** - 2nd year BSCS Student
+
+**Coach:** Mark Bernardino

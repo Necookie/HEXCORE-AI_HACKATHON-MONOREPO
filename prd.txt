@@ -163,4 +163,11 @@ while you sleep."
 • Usage of N8N Platform (20%): n8n is not just an API wrapper; it is the entire backend 
 brain and rules engine. It manages multi-step AI orchestration, 3rd party API integration, 
 and complex streak/achievement logic. 
+
+7. The Team: CodeBearers 
+School: Laguna State Polytechnic University - Sta Cruz Campus 
+• Dheyn Michael Orlanda - 3rd year BSCS Student 
+• Francis Neil Mistica - 3rd year BSCS Student 
+• Christine Arroyo - 2nd year BSCS Student 
+• Coach: Mark Bernardino
  

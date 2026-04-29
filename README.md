@@ -38,5 +38,14 @@ To run the monorepo:
 ## Design Doctrine
 StudyBearer follows a "Glass-Neon" aesthetic: deep voids (`#0a0a0c`), surface greys (`#121216`), and neon accents (`#6366f1` and `#8b5cf6`). We exclusively use dark mode.
 
+## The Team: CodeBearers
+**School:** Laguna State Polytechnic University - Sta Cruz Campus
+
+- **Dheyn Michael Orlanda** - 3rd year BSCS Student
+- **Francis Neil Mistica** - 3rd year BSCS Student
+- **Christine Arroyo** - 2nd year BSCS Student
+
+**Coach:** Mark Bernardino
+
 ---
 *Built for the iSITE AI Hackathon 2026*

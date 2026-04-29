@@ -30,3 +30,12 @@ StudyBearer transforms passive PDF documents into active, gamified learning jour
 - **User-Centric Design (10%):** Addresses academic burnout, provides immediate gratification via gamification, respects existing habits (Google Calendar).
 - **Presentation (20%):** Pitch: "We organize your life, schedule your week, and quiz you like a personal tutor, all while you sleep."
 - **Usage of n8n (20%):** n8n is the entire backend brain and rules engine.
+
+## 6. The Team: CodeBearers
+**School:** Laguna State Polytechnic University - Sta Cruz Campus
+
+- **Dheyn Michael Orlanda** - 3rd year BSCS Student
+- **Francis Neil Mistica** - 3rd year BSCS Student
+- **Christine Arroyo** - 2nd year BSCS Student
+
+**Coach:** Mark Bernardino

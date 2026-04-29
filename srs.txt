@@ -124,4 +124,11 @@ Calendar API rate limits the requests.
 • REQ-NF-6: Database interactions shall be strictly type-checked using Prisma Client to 
 ensure rapid, error-free schema updates during the tight time constraints of the 
 hackathon. 
+
+6. The Team: CodeBearers 
+School: Laguna State Polytechnic University - Sta Cruz Campus 
+• Dheyn Michael Orlanda - 3rd year BSCS Student 
+• Francis Neil Mistica - 3rd year BSCS Student 
+• Christine Arroyo - 2nd year BSCS Student 
+• Coach: Mark Bernardino
  

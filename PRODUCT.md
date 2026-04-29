@@ -3,6 +3,53 @@
 ## Overview
 StudyBearer is an AI-powered educational workflow application designed to eradicate the cognitive load of academic planning and testing. By shifting the burden of scheduling, chunking, and testing to an automated AI pipeline, StudyBearer transforms passive dread into an active, gamified learning journey.
 
+## The Problem: The Student Productivity Crisis
+The current higher education landscape is defined by a systemic failure in student productivity and retention, driven by four core cognitive barriers.
+
+### 2.1 Executive Dysfunction
+The overwhelming task of breaking down a 100-page document into studyable chunks is not merely frustrating—it is clinically debilitating. Success in higher education demands strong executive cognition: planning, problem-solving, and task management. Deficits in these areas directly cause academic underperformance and heightened psychological stress.
+> **[DATA CARD]**
+> *   **5x** more likely to struggle academically if suffering from executive dysfunction (*Skill Point Therapy, 2024*).
+> *   **~30%** of university students show clinically significant executive dysfunction symptoms (*PLOS One / PMC, 2025*).
+
+### 2.2 Planning Friction
+A significant portion of students' cognitive energy is consumed not by learning, but by the "meta-task" of deciding what and when to study. This planning overhead results in widespread deadline failure. Nearly half of students invest less than one hour daily in coursework, and the majority submit tasks only in the final hours before a deadline.
+> **[DATA CARD]**
+> *   **~50%** of students spend less than 1 hour per day on coursework (*Time Mgmt. Stats, 2025*).
+> *   **58%** of students submit assignments within 24 hours of the deadline despite having days of lead time (*Life Hack Method, 2025*).
+
+### 2.3 Passive Learning
+The dominant study method among students—re-reading, highlighting, and rewatching—is demonstrably the least effective approach to long-term retention. Students who rely on passive reading retain roughly half the material of peers who employ active recall strategies.
+> **[DATA CARD]**
+> *   **57% vs 29%** retention rate: Active Recall vs. Passive Reading (*Karpicke & Roediger, 2025*).
+> *   **91%** of students rely primarily on ineffective re-reading or rewatching (*Persky et al.; ScienceDirect, 2025*).
+
+### 2.4 Lack of Momentum
+Traditional learning management systems offer no motivational scaffolding, leaving students to rely entirely on self-discipline—a resource consistently depleted by stress. Procrastination among college-aged students is nearly universal and directly damages grades and well-being.
+> **[DATA CARD]**
+> *   **80–95%** of college students procrastinate to some degree (*Steel, 2007; APA Monitor on Psychology*).
+> *   **75%** of students consider themselves habitual procrastinators (*Frontiers in Psychology, 2022*).
+
+## The CodeBearers Solution
+We don't just provide another document reader. We provide an **Automated Learning Pipeline**. 
+*   **Cognitive Offloading:** We shift the burden of "planning" and "scheduling" to AI. 
+*   **Seamless Integration:** By pushing roadmaps directly to Google Calendar, we meet the student where they already live.
+*   **Gamified Retention:** We turn studying into a competitive sport with Elo ranks, streaks, and dynamic rewards, transforming passive dread into active engagement.
+*   **Centralized Intelligence:** A RAG-powered nervous system that knows your materials better than you do.
+
+## How We Do It (Execution)
+1.  **Intake Phase:** The user provides the raw material (PDF) and their constraints (availability, deadline).
+2.  **Orchestration Phase:** n8n (our Central Nervous System) takes over—parsing the file, chunking topics, and calculating the optimal schedule.
+3.  **Deployment Phase:** The roadmap is simultaneously updated in the platform dashboard and pushed to the user's Google Calendar.
+4.  **Feedback Loop:** After each session, n8n generates a custom quiz. Passing the quiz builds streaks and awards Elo, triggering cinematic animations that reinforce the "win."
+
+## Technical Architecture
+*   **Frontend:** **Astro** (Islands Architecture for speed) & **React JS** (for interactive components).
+*   **Backend & Database:** **Supabase** (Postgres, Auth, Storage) managed with **Prisma ORM**.
+*   **Automation Core:** **n8n** acting as the central nervous system for AI agent routing and API orchestration.
+*   **Deployment & CDN:** Hosted on **Cloudflare Pages** utilizing **Cloudflare's Edge Network** for global performance.
+*   **AI Engine:** Integration with **Gemini/OpenAI** models for RAG and content generation.
+
 ## Feature Ecosystem
 
 ### 1. User Side (Learning Experience)
@@ -46,7 +93,39 @@ Cinematic, Moody, Tactical, Competitive, Precise. It feels like a high-end AI as
 4. **Frictionless Orchestration:** The AI does the heavy lifting (planning, chunking, testing), so the UI should feel like a command center for that automation.
 5. **Neon Guidance:** Use glowing accents (Indigo/Violet) to draw focus to the "Next Action" or high-tier achievements.
 
+## Design Doctrine: The "Glass-Neon" Aesthetic
+StudyBearer explicitly distances itself from sterile, institutional, and infantilizing educational platforms.
+*   **The Deep Void:** We use a cinematic, infinite dark canvas (`#0a0a0c`) to reduce cognitive dread and eye strain.
+*   **Tactical HUD:** Every interface element is designed to feel like a piece of high-end equipment or a tactical command center.
+*   **Neon Guidance:** Glowing accents (Neon Indigo and Violet Arc) draw the user's focus to the "Next Action" or high-tier achievements.
+
+## Gamification Philosophy (The Lexicon)
+We treat studying like a competitive sport. Our terminology reflects this shift in mindset:
+*   **The Pipeline / Roadmap:** Instead of a static "Study Plan."
+*   **Executing Modules:** Instead of "Doing Homework."
+*   **Combo / Streak:** Instead of "Consecutive Days."
+*   **Elo / Points:** Instead of "Grades / Scores."
+*   **Competitive Ranks:** Users progress through tiers: **Iron, Bronze, Silver, Gold, Elite, Master, Legend, and Mythic.**
+
 ## Accessibility & Inclusion
 - High contrast for primary text (White on Deep Void).
 - Exclusively Dark Mode (designed for late-night focus).
 - Clear visual hierarchy using Muted Steel for secondary info.
+
+## The Team: CodeBearers
+**School:** Laguna State Polytechnic University - Sta Cruz Campus
+
+- **Dheyn Michael Orlanda** - 3rd year BSCS Student
+- **Francis Neil Mistica** - 3rd year BSCS Student
+- **Christine Arroyo** - 2nd year BSCS Student
+
+**Coach:** Mark Bernardino
+
+## References
+1.  Steel, P. (2007). The nature of procrastination: A meta-analytic and theoretical review of quintessential self-regulatory failure. *Psychological Bulletin*. American Psychological Association (APA).
+2.  Karpicke, J. D., & Roediger, H. L. (2008/2025). The Critical Importance of Retrieval for Learning. *Science* (Updated data via FlashGenius Meta-study 2025).
+3.  Persky, A. M., et al. (2025). Survey of student study habits and adoption of active learning strategies. *ScienceDirect*.
+4.  Skill Point Therapy (2024). Clinical impacts of executive dysfunction on academic performance in higher education.
+5.  Life Hack Method (2025). Time Management Statistics: Annual Report on Student Productivity and Deadline Compliance.
+6.  *PLOS One / PMC* (2025). Prevalence of Executive Dysfunction Symptoms in University Populations: A Multi-Center Study.
+7.  *Frontiers in Psychology* (2022). Habitual Procrastination and its Impact on Student Grades and Well-being.
