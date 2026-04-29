@@ -11,7 +11,8 @@ StudyBearer is an AI-powered educational workflow application. It automates stud
 - **Frontend:** Astro & React (Islands architecture)
 - **Backend & Auth:** Supabase (PostgreSQL, Storage, Google OAuth)
 - **Database ORM:** Prisma
-- **AI Orchestration:** n8n (handles webhooks, AI agent routing with OpenAI/Gemini, and Calendar sync)
+- **AI Orchestration:** n8n (handles webhooks, AI agent routing with OpenAI/Gemini, Calendar sync, and Discord notifications)
+- **RAG Engine:** Retrieval-Augmented Generation for product and material assistance.
 
 ## 3. Core Features
 ### 3.1 Authentication
@@ -37,8 +38,12 @@ StudyBearer is an AI-powered educational workflow application. It automates stud
 ### 3.5 Progression & Gamification Logic
 - **Streaks:** Completing study and passing quizzes adds +1 to `current_streak`. Missing a 24-hour window resets it.
 - **Elo/Points:** Awarded based on quiz accuracy and streak multipliers.
-- **Ranks:** Tiered ranks (e.g., Warrior, Elite, Master, Grandmaster, Epic, Legend, Mythic) update automatically.
+- **Ranks:** Tiered ranks update automatically.
 - **Achievements:** Cosmetic unlocks (e.g., "First Blood", "Flawless Victory").
+
+### 3.6 Assistant & Monitoring (RAG & Webhooks)
+- **RAG Chatbot:** Provides instant replies to users and potential clients.
+- **Discord Webhooks:** Log auth events (signup, login, logout, deletion) for business management.
 
 ## 4. Design Aesthetics
 - **Vibe:** Dark-toned, cinematic, and moody visual aesthetic. Deep blacks, high-contrast typography, and subtle glowing neon accents (Glass-Neon aesthetic).

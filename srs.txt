@@ -77,11 +77,13 @@ passing the quiz adds +1 to the current_streak.
 the current_streak to 0. 
 • REQ-5.3: The system shall award Elo/points based on quiz accuracy and current streak 
 multipliers. 
-• REQ-5.4: The system shall feature tiered ranks (e.g., Warrior, Elite, Master, Grandmaster, 
-Epic, Legend, Mythic) that update automatically based on accumulated Elo. 
-• REQ-5.5: The system shall unlock specific cosmetic achievements (e.g., "First Blood" for 
-the first quiz, "Flawless Victory" for a 100% score) managed via the UserAchievements 
+• REQ-5.4: The system shall feature tiered ranks that update automatically based on accumulated Elo. 
+• REQ-5.5: The system shall unlock specific cosmetic achievements managed via the UserAchievements 
 relational table. 
+
+3.6 Assistant & Business Monitoring
+• REQ-6.1: The system shall provide a RAG-powered chatbot for both user support and business lead assistance.
+• REQ-6.2: The system shall trigger Discord webhooks via n8n to log user registrations, logins, logouts, and account deletions for business management.
  
 4. External Interface Requirements 
 4.1 User Interfaces 

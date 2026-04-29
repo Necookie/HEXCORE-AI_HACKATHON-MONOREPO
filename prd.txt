@@ -11,7 +11,7 @@ subjects. StudyBearer transforms passive documents into active, gamified learnin
 uploading a PDF and defining their availability, students receive an automated, AI-chunked 
 study roadmap integrated directly into their Google Calendar, followed by gamified quizzes. 
 StudyBearer makes education feel effortless by completely automating the "planning" and 
-"testing" phases, leaving only the "discovering" phase for the user. 
+"testing" phases, leaving only the "discovering" phase for the user. It also features a RAG-powered assistant for both user support and business lead generation, and a real-time monitoring system via Discord webhooks.
  
 2. Problem Statement & Empathy (User-Centric Design) 
 Traditional studying demands high executive function: breaking down chapters, scheduling 
@@ -43,18 +43,22 @@ scheduled events, removing the friction of manual time management.
 • At the end of a scheduled study block, the app unlocks a highly engaging, AI-generated 
 quiz specific to that day's topic. 
 • Formats include Multiple Choice, Enumeration, and Identification. 
-3.6. Progression Engine (Streaks & Achievements) 
-• Consistency Combos (Streaks): Completing the daily scheduled study block and passing 
-the quiz increases the user's "Combo." Missing a scheduled day breaks the combo, 
-creating strong loss-aversion. 
-• Ranked Milestones & Achievements: Users climb ranks and unlock premium profile 
-banners. 
-o First Blood: Complete the very first AI-generated study block. 
-o Flawless Victory: Score 100% on a post-study quiz. 
-o Competitive Ladder: Users accumulate Elo points based on quiz accuracy and 
-streak multipliers, climbing from base tiers up to elite statuses like Mythic, or 
-grinding to hit a 2000+ Elo rating. This turns a semester-long subject into a 
-competitive grind. 
+3.6. RAG Chatbot (Assistant)
+• Instant support for users to ask about product features or their own study materials.
+• Business-side RAG helps capture leads and convert users by providing instant, helpful replies.
+
+3.7. Progression Engine (Streaks & Achievements)
+• Consistency Combos (Streaks): Completing the daily scheduled study block and passing the quiz increases the user's "Combo." Missing a scheduled day breaks the combo, creating strong loss-aversion.
+• Ranked Milestones & Achievements: Users climb ranks and unlock premium profile banners.
+    o First Blood: Complete the very first AI-generated study block.
+    o Flawless Victory: Score 100% on a post-study quiz.
+    o Competitive Ladder: Users accumulate Elo points based on quiz accuracy and streak multipliers, climbing from base tiers up to elite statuses like Mythic.
+
+3.8. Business Monitoring (Discord Webhooks)
+• Automated notifications sent to business owners via Discord for:
+    o New user registrations (Account Creation).
+    o User activity (Login/Logout).
+    o Churn monitoring (Account Deletions).
  
 4. Design & Aesthetics 
 To distance the app from the sterile, boring look of traditional academic portals, StudyBearer 

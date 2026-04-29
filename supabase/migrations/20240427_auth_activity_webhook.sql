@@ -7,7 +7,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-  webhook_url text := 'https://isite.francismistica.me/webhook-test/eb5af6d3-89bb-4b49-85a5-2ee32592b5f4';
+  webhook_url text := 'https://isite.francismistica.me/webhook/eb5af6d3-89bb-4b49-85a5-2ee32592b5f4';
   payload jsonb;
   user_email text;
   user_name text;

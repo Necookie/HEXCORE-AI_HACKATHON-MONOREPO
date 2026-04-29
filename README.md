@@ -9,10 +9,13 @@ StudyBearer is an AI-powered educational workflow application designed to eradic
 - **Last Updated:** 2026-04-25 21:05 (Force Redeploy)
 
 ## Features
-- **Automated AI Orchestration:** Upload a PDF and let n8n chunk your curriculum into daily learning objectives.
-- **Google Calendar Sync:** Your AI-generated study roadmap is pushed directly to your Google Calendar.
-- **Gamified Quizzes:** Dynamic quizzes (MCQ, Enumeration, ID) unlock after your study blocks.
-- **Competitive Progression:** Earn Elo, build streaks, and climb the ranks to Mythic. Education treated like a competitive sport.
+- **n8n Nervous System:** Orchestrates all complex logic, AI agent routing, and third-party integrations (Google Calendar, Discord).
+- **Automated AI Orchestration:** Upload a PDF and let n8n chunk your curriculum into daily learning objectives based on your specific availability and goals.
+- **Google Calendar Sync:** Your AI-generated study roadmap is pushed directly to your Google Calendar as timed events.
+- **RAG Chatbot:** Instant answers about the product and your study materials via Retrieval-Augmented Generation.
+- **Gamified Study Sessions:** Dynamic quizzes (MCQ, Enumeration, ID) and flashcards are generated for every session.
+- **Competitive Progression:** Earn Elo, build streaks, and climb the ranks from Warrior to Mythic.
+- **Business Monitoring:** Real-time Discord webhooks for registrations, logins, and account activity to assist business management.
 
 ## Tech Stack
 - **Frontend:** Astro & React (Islands architecture)

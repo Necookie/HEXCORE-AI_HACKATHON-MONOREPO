@@ -1,7 +1,6 @@
 # StudyBearer Product Requirements Document (PRD) Guide
 
-## 1. Executive Summary
-StudyBearer transforms passive PDF documents into active, gamified learning journeys. It automates the "planning" and "testing" phases by chunking PDFs and pushing a schedule to Google Calendar, followed by gamified quizzes. This allows students to focus entirely on learning.
+StudyBearer transforms passive PDF documents into active, gamified learning journeys. It automates the "planning" and "testing" phases by chunking PDFs and pushing a schedule to Google Calendar. It also features a RAG-powered assistant for user support and business monitoring via Discord webhooks.
 
 ## 2. User Journey & Flow
 1. **Onboarding & Auth:** Frictionless Google OAuth.
@@ -12,7 +11,9 @@ StudyBearer transforms passive PDF documents into active, gamified learning jour
 6. **Progression Engine:**
    - **Consistency Combos:** Maintain streaks by passing daily quizzes.
    - **Ranked Milestones:** Climb competitive ladders based on Elo points (up to Mythic).
-   - **Achievements:** Unlock titles and profile banners (e.g., "First Blood", "Flawless Victory").
+7. **Assistant & Monitoring:**
+   - **RAG Chatbot:** Instant replies for users and lead generation for business.
+   - **Discord Webhooks:** Real-time business activity logging (signup, login, delete).
 
 ## 3. Design & Vibe
 - **Aesthetic:** Dark-toned, cinematic, moody (Glow Doctrine / Glass-Neon). Avoids sterile academic portal looks; feels like a premium developer tool or high-end gaming interface.
