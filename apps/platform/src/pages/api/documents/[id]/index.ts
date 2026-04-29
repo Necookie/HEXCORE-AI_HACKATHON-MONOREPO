@@ -70,7 +70,7 @@ export const DELETE: APIRoute = async ({ params, request, cookies }) => {
   // response is sent, so any un-awaited fetch() is silently dropped before it
   // ever leaves the server. We wrap in try/catch so a calendar failure never
   // blocks or rolls back the DB/storage cleanup that follows.
-  const deleteWebhookUrl = 'https://isite.francismistica.me/webhook/del_studyplan';
+  const deleteWebhookUrl = 'https://isite.francismistica.me/webhook/delete_studyplan_events';
   if (calendarEventIds.length === 0) {
     console.info('[delete] no calendar events to delete for document', documentId);
   } else {
