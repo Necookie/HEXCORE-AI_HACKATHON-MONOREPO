@@ -1,111 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Ic, Badge, Bar, Card, Btn } from './ui';
 import StudyNotes from './StudyNotes';
+import type { StudySession, RoadmapDocument } from '../types/project.types';
+import type { SessionContext } from '../pages/api/sessions/[id]';
 
-// ── Mock data (replace with real API call later) ──────────────────────────────
+// ── Date helpers ──────────────────────────────────────────────────────────────
 
-const MOCK_SUBJECT = {
-  name: 'Topic 1 - SIPP',
-  totalSessions: 4,
-  completedSessions: 0,
-  hoursPerDay: 2,
-  targetDate: 'May 4',
-};
-
-const MOCK_SESSIONS = [
-  {
-    id: 'session-1',
-    moduleNumber: 1,
-    title: 'Common Social Issues Related to Computing',
-    summary:
-      'Delving into data privacy, cybersecurity threats, digital divide, online behavior, and job displacement caused by rapid technological change.',
-    learningObjectives: [
-      'Understand the concept of data privacy and its implications in the digital age',
-      'Identify common cybersecurity threats and best practices for protection',
-      'Analyze the digital divide and its socioeconomic impact on communities',
-      'Evaluate the ethical dimensions of online behavior and digital citizenship',
-      'Assess how computing contributes to job displacement and societal shifts',
-    ],
-    subtopics: [
-      'Data privacy',
-      'Cybersecurity threats',
-      'Digital divide',
-      'Online behavior and digital citizenship',
-      'Job displacement',
-    ],
-    estimatedMinutes: 120,
-    startTime: '2026-04-29T11:00:00.000Z',
-    status: 'scheduled',
-    isToday: true,
-  },
-  {
-    id: 'session-2',
-    moduleNumber: 2,
-    title: 'The Importance of Ethics in Computer Science',
-    summary:
-      'Understanding the role of ethics in computer science and its profound impact on society, decision-making, and professional responsibility.',
-    learningObjectives: [
-      'Define ethics in the context of computer science and technology',
-      'Describe the power and responsibility that comes with computing knowledge',
-      'Analyze ethical decision-making frameworks applied to real-world CS scenarios',
-      'Examine consequences of unethical computing practices',
-    ],
-    subtopics: [
-      'Ethics in computing',
-      'Power and responsibility of CS',
-      'Ethical decision-making',
-      'Consequences of unethical practices',
-    ],
-    estimatedMinutes: 120,
-    startTime: '2026-04-29T13:00:00.000Z',
-    status: 'scheduled',
-    isToday: true,
-  },
-  {
-    id: 'session-3',
-    moduleNumber: 3,
-    title: 'Introduction to Social Issues in the Digital Age',
-    summary:
-      'Understanding the impact of technology on individuals, communities, and society at large.',
-    learningObjectives: [
-      'Describe the digital age and its influence on daily life',
-      "Analyze technology's positive and negative effects on individuals",
-      'Evaluate social and cultural changes driven by digital transformation',
-    ],
-    subtopics: [
-      'The digital age and daily life',
-      "Technology's influence on communities",
-      'Cultural shifts in the digital era',
-    ],
-    estimatedMinutes: 120,
-    startTime: '2026-05-01T11:00:00.000Z',
-    status: 'scheduled',
-    isToday: false,
-  },
-  {
-    id: 'session-4',
-    moduleNumber: 4,
-    title: 'Social Issues in the Digital Age',
-    summary:
-      'Exploring the problems, challenges, and ethical concerns arising from technology use across human rights, privacy, and social equality.',
-    learningObjectives: [
-      'Identify human rights concerns in the digital space',
-      'Analyze privacy and personal security challenges online',
-      'Evaluate fairness and equality issues in algorithmic systems',
-      'Discuss the role of public trust in maintaining social harmony online',
-    ],
-    subtopics: [
-      'Human rights and dignity',
-      'Privacy and personal security',
-      'Fairness and equality',
-      'Public trust and social harmony',
-    ],
-    estimatedMinutes: 120,
-    startTime: '2026-05-04T11:00:00.000Z',
-    status: 'scheduled',
-    isToday: false,
-  },
-];
+function localDateStr(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function isToday(iso: string) { return localDateStr(new Date(iso)) === localDateStr(new Date()); }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -159,6 +63,37 @@ const ACTIONS = [
   },
 ];
 
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+
+function SessionSkeleton() {
+  return (
+    <div className="fade-in" style={{ flex: 1, display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <div className="content-scroll" style={{ flex: 1, padding: '32px 40px' }}>
+        <div style={{ width: 80, height: 13, borderRadius: 6, background: 'var(--bg-elevated)', marginBottom: 28 }} />
+        <div style={{ width: 160, height: 14, borderRadius: 6, background: 'var(--bg-elevated)', marginBottom: 12 }} />
+        <div style={{ width: 340, height: 26, borderRadius: 6, background: 'var(--bg-elevated)', marginBottom: 10 }} />
+        <div style={{ width: '70%', height: 14, borderRadius: 6, background: 'var(--bg-elevated)', marginBottom: 32 }} />
+        {[1,2,3].map(i => (
+          <div key={i} style={{ height: 52, borderRadius: 10, background: 'var(--bg-elevated)', marginBottom: 8, opacity: 1 - i * 0.2 }} />
+        ))}
+      </div>
+      <aside style={{ width: 300, borderLeft: '1px solid var(--border)', background: 'var(--bg-card)' }} />
+    </div>
+  );
+}
+
+function SessionError({ message }: { message: string }) {
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 40, textAlign: 'center' }}>
+      <Ic n="x" size={28} color="var(--red)" />
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 320 }}>{message}</p>
+      <Btn v="ghost" size="sm" onClick={() => window.location.href = '/platform/dashboard'}>
+        <Ic n="left" size={13} color="var(--text-secondary)" /> Back to Dashboard
+      </Btn>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface Props {
@@ -166,20 +101,50 @@ interface Props {
 }
 
 export default function SessionView({ sessionId }: Props) {
-  // Find the session (fallback to first if no match)
-  const initialIdx = sessionId
-    ? Math.max(0, MOCK_SESSIONS.findIndex(s => s.id === sessionId))
-    : 0;
+  const [allSessions,    setAllSessions]    = useState<StudySession[]>([]);
+  const [document,       setDocument]       = useState<RoadmapDocument | null>(null);
+  const [currentIdx,     setCurrentIdx]     = useState(0);
+  const [loading,        setLoading]        = useState(true);
+  const [fetchError,     setFetchError]     = useState<string | null>(null);
+  const [objectivesOpen, setObjectivesOpen] = useState(true);
+  const [quizGateOpen,   setQuizGateOpen]   = useState(false);
 
-  const [currentIdx,       setCurrentIdx]       = useState(initialIdx);
-  const [objectivesOpen,   setObjectivesOpen]   = useState(true);
-  const [quizGateOpen,     setQuizGateOpen]     = useState(false);
-  const session = MOCK_SESSIONS[currentIdx];
-  const subject = MOCK_SUBJECT;
+  useEffect(() => {
+    if (!sessionId) { setFetchError('No session ID provided.'); setLoading(false); return; }
+
+    fetch(`/api/sessions/${sessionId}`)
+      .then(r => r.json())
+      .then((ctx: SessionContext & { error?: string }) => {
+        if (ctx.error) { setFetchError(ctx.error); return; }
+        setAllSessions(ctx.allSessions);
+        setDocument(ctx.document);
+        // Set index to the requested session
+        const idx = ctx.allSessions.findIndex(s => s.id === sessionId);
+        setCurrentIdx(idx >= 0 ? idx : 0);
+      })
+      .catch(() => setFetchError('Failed to load session. Check your connection.'))
+      .finally(() => setLoading(false));
+  }, [sessionId]);
+
+  // Reset objectives accordion when switching sessions
+  useEffect(() => { setObjectivesOpen(true); }, [currentIdx]);
+
+  if (loading)     return <SessionSkeleton />;
+  if (fetchError)  return <SessionError message={fetchError} />;
+  if (!document || allSessions.length === 0) return <SessionError message="Session data not found." />;
+
+  const session    = allSessions[currentIdx];
+  const subject    = {
+    name:              document.subjectName ?? 'Study Session',
+    totalSessions:     allSessions.length,
+    completedSessions: allSessions.filter(s => s.status === 'completed').length,
+    hoursPerDay:       document.hoursPerDay,
+    targetDate:        new Date(document.targetDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }),
+  };
 
   const progressPct = Math.round((subject.completedSessions / subject.totalSessions) * 100);
   const hasPrev = currentIdx > 0;
-  const hasNext = currentIdx < MOCK_SESSIONS.length - 1;
+  const hasNext = currentIdx < allSessions.length - 1;
 
   return (
     <div
@@ -223,7 +188,7 @@ export default function SessionView({ sessionId }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
             <Badge color="blue">{subject.name}</Badge>
             <Badge color="purple" sm>Module {session.moduleNumber}</Badge>
-            {session.isToday && <Badge color="amber" sm>Today</Badge>}
+            {isToday(session.startTime) && <Badge color="amber" sm>Today</Badge>}
           </div>
 
           <h1 style={{
@@ -472,7 +437,7 @@ export default function SessionView({ sessionId }: Props) {
             <Ic n="left" size={14} color="var(--text-secondary)" /> Previous
           </Btn>
           <span style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            {currentIdx + 1} / {MOCK_SESSIONS.length}
+            {currentIdx + 1} / {allSessions.length}
           </span>
           <Btn v="ghost" size="sm" onClick={() => hasNext && setCurrentIdx(i => i + 1)}
             sx={{ opacity: hasNext ? 1 : 0.3, pointerEvents: hasNext ? 'auto' : 'none' }}>
@@ -637,7 +602,7 @@ export default function SessionView({ sessionId }: Props) {
                 <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}>
                   {formatDay(session.startTime)}
                 </div>
-                {session.isToday && (
+                {isToday(session.startTime) && (
                   <div style={{ fontSize: 10, color: '#F0A030' }}>Today</div>
                 )}
               </div>
@@ -671,7 +636,7 @@ export default function SessionView({ sessionId }: Props) {
               </div>
               <div>
                 <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}>
-                  Module {session.moduleNumber} of {MOCK_SESSIONS.length}
+                  Module {session.moduleNumber} of {allSessions.length}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Current module</div>
               </div>
@@ -744,7 +709,7 @@ export default function SessionView({ sessionId }: Props) {
           </div>
 
           <div>
-            {MOCK_SESSIONS.map((s, i) => {
+            {allSessions.map((s, i) => {
               const active = i === currentIdx;
               return (
                 <div
