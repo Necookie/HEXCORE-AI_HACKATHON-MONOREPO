@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { GROQ_API_KEY } from 'astro:env/server';
 import { createServerClient } from '@supabase/ssr';
 
 function json(body: object, status = 200): Response {
@@ -170,8 +171,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   }
 
   // ── 2. Generate ───────────────────────────────────────────────────────────
-  // groqApiKey is injected by middleware from the Cloudflare runtime env binding.
-  const groqKey = (locals as { groqApiKey?: string }).groqApiKey || '';
+  // GROQ_API_KEY is read via astro:env/server — in Cloudflare Workers this is
+  // backed by the runtime env binding (set in Pages dashboard), not build-time vars.
+  const groqKey = GROQ_API_KEY ?? '';
 
   try {
     const deck = await generateFlashcards(body, groqKey);

@@ -9,16 +9,6 @@ function getLandingUrl(request: Request): string {
 }
 
 export const onRequest = defineMiddleware(async ({ url, cookies, redirect, locals, request }, next) => {
-  // Inject GROQ_API_KEY from Cloudflare runtime into locals for all API routes.
-  // Must be done before the /platform auth guard so API routes under /api also benefit.
-  // import.meta.env.GROQ_API_KEY is Vite build-time only — always undefined in
-  // Cloudflare Workers at runtime. The actual value lives in locals.runtime.env.
-  const cfRuntime = (locals as { runtime?: { env?: { GROQ_API_KEY?: string } } }).runtime;
-  locals.groqApiKey =
-    import.meta.env.GROQ_API_KEY ||   // local dev via .env file
-    cfRuntime?.env?.GROQ_API_KEY ||   // Cloudflare Pages production binding
-    '';
-
   if (!url.pathname.startsWith('/platform')) return next();
 
   const supabase = createServerClient(
