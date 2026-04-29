@@ -80,7 +80,7 @@ function json(body: object, status: number): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   // ── 1. Authenticated Supabase server client ───────────────────────────────
   const supabase = createServerClient(
     import.meta.env.PUBLIC_SUPABASE_URL,
@@ -254,13 +254,31 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         preferred_days:        preferredDays,
       };
 
-      // Fire and forget — don't block the 200 response on n8n
-      fetch(webhookUrl, {
+      // Fire n8n webhook.
+      // On Cloudflare Workers, background fetch is killed the moment the
+      // Response is returned unless registered via ctx.waitUntil().
+      // We use that when available; on Node dev we just await it.
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), 15_000);
+
+      const webhookPromise = fetch(webhookUrl, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
-        signal:  AbortSignal.timeout(10_000),
-      }).catch(err => console.error('[upload/pdf] n8n webhook error:', err));
+        signal:  controller.signal,
+      })
+        .then(() => clearTimeout(timeoutId))
+        .catch(err => {
+          clearTimeout(timeoutId);
+          console.error('[upload/pdf] n8n webhook error:', err);
+        });
+
+      // Cloudflare Workers execution context — keeps the worker alive after
+      // the response is flushed so the webhook fetch can complete.
+      const cfCtx = (locals as { runtime?: { ctx?: { waitUntil?: (p: Promise<unknown>) => void } } }).runtime?.ctx;
+      if (cfCtx?.waitUntil) {
+        cfCtx.waitUntil(webhookPromise);
+      }
     }
   }
 
