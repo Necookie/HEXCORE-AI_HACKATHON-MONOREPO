@@ -57,8 +57,7 @@ export interface MindMapData {
 
 // ── Groq generation ───────────────────────────────────────────────────────────
 
-async function generateMindMap(req: MindMapRequest): Promise<MindMapData> {
-  const groqKey = import.meta.env.GROQ_API_KEY;
+async function generateMindMap(req: MindMapRequest, groqKey: string): Promise<MindMapData> {
   if (!groqKey) throw new Error('GROQ_API_KEY is not configured.');
 
   const systemPrompt = `You are StudyBearer's mind map engine. Return ONLY raw JSON — no markdown fences, no explanation.
@@ -146,7 +145,7 @@ Return this exact JSON structure and nothing else:
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const supabase = makeSupabase(request, cookies);
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
   if (authErr || !user) return json({ error: 'Unauthorized' }, 401);
@@ -174,8 +173,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   // ── 2. Generate ───────────────────────────────────────────────────────────
+  // import.meta.env is build-time only on Cloudflare Workers — fall back to
+  // the runtime env binding (locals.runtime.env) for secrets set in the dashboard.
+  const groqKey = import.meta.env.GROQ_API_KEY
+    || (locals as { runtime?: { env?: { GROQ_API_KEY?: string } } }).runtime?.env?.GROQ_API_KEY
+    || '';
+
   try {
-    const mindmap = await generateMindMap(body);
+    const mindmap = await generateMindMap(body, groqKey);
 
     if (isReal) {
       supabase

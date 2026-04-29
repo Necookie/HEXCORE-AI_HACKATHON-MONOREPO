@@ -59,8 +59,7 @@ export interface NotesResult {
 
 // ── Groq generation ───────────────────────────────────────────────────────────
 
-async function generateNotes(req: NotesRequest): Promise<NotesResult> {
-  const groqKey = import.meta.env.GROQ_API_KEY;
+async function generateNotes(req: NotesRequest, groqKey: string): Promise<NotesResult> {
   if (!groqKey) throw new Error('GROQ_API_KEY is not configured.');
 
   const objectiveLines = (req.learningObjectives ?? [])
@@ -134,7 +133,7 @@ Return ONLY valid JSON with no markdown fences, no extra text, nothing else:
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const supabase = makeSupabase(request, cookies);
 
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
@@ -168,8 +167,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   // so the API is only called once per browser session regardless.
 
   // ── 2. Generate ────────────────────────────────────────────────────────────
+  // import.meta.env is build-time only on Cloudflare Workers — fall back to
+  // the runtime env binding (locals.runtime.env) for secrets set in the dashboard.
+  const groqKey = import.meta.env.GROQ_API_KEY
+    || (locals as { runtime?: { env?: { GROQ_API_KEY?: string } } }).runtime?.env?.GROQ_API_KEY
+    || '';
+
   try {
-    const notes = await generateNotes(body);
+    const notes = await generateNotes(body, groqKey);
 
     // ── 3. Persist (fire-and-forget is fine here — notes are non-critical) ───
     if (isRealSession) {

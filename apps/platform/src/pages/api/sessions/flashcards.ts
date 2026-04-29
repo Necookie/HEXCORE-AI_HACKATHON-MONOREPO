@@ -57,8 +57,7 @@ export interface FlashcardDeck {
 
 // ── Groq generation ───────────────────────────────────────────────────────────
 
-async function generateFlashcards(req: FlashcardRequest): Promise<FlashcardDeck> {
-  const groqKey = import.meta.env.GROQ_API_KEY;
+async function generateFlashcards(req: FlashcardRequest, groqKey: string): Promise<FlashcardDeck> {
   if (!groqKey) throw new Error('GROQ_API_KEY is not configured.');
 
   const systemPrompt = `You are StudyBearer's flashcard engine. Return ONLY raw JSON — no markdown fences, no explanation, nothing else.
@@ -143,7 +142,7 @@ Return this exact JSON structure and nothing else:
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const supabase = makeSupabase(request, cookies);
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
   if (authErr || !user) return json({ error: 'Unauthorized' }, 401);
@@ -171,8 +170,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   // ── 2. Generate ───────────────────────────────────────────────────────────
+  // import.meta.env is build-time only on Cloudflare Workers — fall back to
+  // the runtime env binding (locals.runtime.env) for secrets set in the dashboard.
+  const groqKey = import.meta.env.GROQ_API_KEY
+    || (locals as { runtime?: { env?: { GROQ_API_KEY?: string } } }).runtime?.env?.GROQ_API_KEY
+    || '';
+
   try {
-    const deck = await generateFlashcards(body);
+    const deck = await generateFlashcards(body, groqKey);
 
     // ── 3. Persist (fire-and-forget) ─────────────────────────────────────
     if (isReal) {
