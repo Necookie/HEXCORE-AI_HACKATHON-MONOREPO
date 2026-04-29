@@ -542,57 +542,72 @@ export default function SessionView({ sessionId }: Props) {
         </div>
 
         {/* ── Session navigation ─────────────────────────────────────────── */}
-        <div style={{ padding: '16px 20px' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'var(--font-heading)', marginBottom: 12 }}>
+        <div style={{ padding: '18px 0 8px' }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, color: 'var(--text-muted)',
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+            fontFamily: 'var(--font-heading)', marginBottom: 6,
+            padding: '0 20px',
+          }}>
             Sessions
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {MOCK_SESSIONS.map((s, i) => (
-              <button
-                key={s.id}
-                onClick={() => setCurrentIdx(i)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 9,
-                  padding: '8px 10px',
-                  background: i === currentIdx ? 'rgba(123,92,245,0.1)' : 'transparent',
-                  border: `1px solid ${i === currentIdx ? 'rgba(123,92,245,0.3)' : 'transparent'}`,
-                  borderRadius: 'var(--radius-md)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  textAlign: 'left', width: '100%',
-                }}
-                onMouseEnter={e => {
-                  if (i !== currentIdx) e.currentTarget.style.background = 'var(--bg-elevated)';
-                }}
-                onMouseLeave={e => {
-                  if (i !== currentIdx) e.currentTarget.style.background = 'transparent';
-                }}
-              >
-                <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: i === currentIdx ? 'rgba(123,92,245,0.2)' : 'var(--bg-elevated)',
-                  border: `1.5px solid ${i === currentIdx ? 'rgba(123,92,245,0.45)' : 'var(--border)'}`,
-                  fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                  color: i === currentIdx ? '#9D82FF' : 'var(--text-muted)',
-                }}>
-                  {i + 1}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: 12, fontWeight: i === currentIdx ? 600 : 400,
-                    color: i === currentIdx ? 'var(--text-primary)' : 'var(--text-secondary)',
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          <div>
+            {MOCK_SESSIONS.map((s, i) => {
+              const active = i === currentIdx;
+              return (
+                <div
+                  key={s.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setCurrentIdx(i)}
+                  onKeyDown={e => e.key === 'Enter' && setCurrentIdx(i)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '9px 20px 9px 17px',
+                    borderLeft: `3px solid ${active ? '#7B5CF5' : 'transparent'}`,
+                    background: active ? 'rgba(123,92,245,0.07)' : 'transparent',
+                    cursor: 'pointer',
+                    transition: 'background 0.12s, border-color 0.12s',
+                    outline: 'none',
+                  }}
+                  onMouseEnter={e => {
+                    if (!active) e.currentTarget.style.background = 'var(--bg-elevated)';
+                  }}
+                  onMouseLeave={e => {
+                    if (!active) e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  {/* Number dot */}
+                  <span style={{
+                    width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: active ? 'rgba(123,92,245,0.2)' : 'transparent',
+                    fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                    color: active ? '#9D82FF' : 'var(--text-muted)',
+                    transition: 'all 0.12s',
                   }}>
-                    {s.title}
+                    {i + 1}
+                  </span>
+
+                  {/* Text */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: 12,
+                      fontWeight: active ? 600 : 400,
+                      color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                      lineHeight: 1.4,
+                    }}>
+                      {s.title}
+                    </div>
+                    {s.isToday && (
+                      <span style={{ fontSize: 10, color: '#F0A030' }}>Today</span>
+                    )}
                   </div>
-                  {s.isToday && (
-                    <div style={{ fontSize: 10, color: '#F0A030', marginTop: 1 }}>Today</div>
-                  )}
                 </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
         </div>
       </aside>
