@@ -170,7 +170,8 @@ export default function SessionView({ sessionId }: Props) {
     ? Math.max(0, MOCK_SESSIONS.findIndex(s => s.id === sessionId))
     : 0;
 
-  const [currentIdx, setCurrentIdx] = useState(initialIdx);
+  const [currentIdx,       setCurrentIdx]       = useState(initialIdx);
+  const [objectivesOpen,   setObjectivesOpen]   = useState(true);
   const session = MOCK_SESSIONS[currentIdx];
   const subject = MOCK_SUBJECT;
 
@@ -242,9 +243,18 @@ export default function SessionView({ sessionId }: Props) {
         {/* Divider */}
         <div style={{ height: 1, background: 'var(--border-subtle)', marginBottom: 28 }} />
 
-        {/* Learning objectives */}
+        {/* Learning objectives — collapsible accordion */}
         <section style={{ marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
+          {/* Header row — click to toggle */}
+          <button
+            onClick={() => setObjectivesOpen(o => !o)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 9,
+              width: '100%', background: 'none', border: 'none',
+              padding: 0, cursor: 'pointer', marginBottom: objectivesOpen ? 14 : 0,
+              transition: 'margin 0.25s',
+            }}
+          >
             <div style={{
               width: 28, height: 28, borderRadius: '50%',
               background: 'rgba(123,92,245,0.12)',
@@ -255,39 +265,60 @@ export default function SessionView({ sessionId }: Props) {
             </div>
             <h2 style={{
               fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
-              color: 'var(--text-primary)',
+              color: 'var(--text-primary)', flex: 1, textAlign: 'left',
             }}>
               Learning Objectives
             </h2>
-          </div>
+            <span style={{
+              fontSize: 11, color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)', marginRight: 4,
+            }}>
+              {session.learningObjectives.length}
+            </span>
+            <div style={{
+              transition: 'transform 0.25s ease',
+              transform: objectivesOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+              display: 'flex',
+            }}>
+              <Ic n="chevronDown" size={16} color="var(--text-muted)" />
+            </div>
+          </button>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {session.learningObjectives.map((obj, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 10,
-                  padding: '10px 14px',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
-                }}
-              >
-                <div style={{
-                  width: 20, height: 20, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                  background: 'rgba(123,92,245,0.14)',
-                  border: '1.5px solid rgba(123,92,245,0.3)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                  color: '#9D82FF',
-                }}>
-                  {i + 1}
+          {/* Collapsible body */}
+          <div style={{
+            overflow: 'hidden',
+            maxHeight: objectivesOpen ? 1000 : 0,
+            opacity: objectivesOpen ? 1 : 0,
+            transition: 'max-height 0.3s ease, opacity 0.2s ease',
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {session.learningObjectives.map((obj, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 10,
+                    padding: '10px 14px',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: '50%', flexShrink: 0, marginTop: 1,
+                    background: 'rgba(123,92,245,0.14)',
+                    border: '1.5px solid rgba(123,92,245,0.3)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                    color: '#9D82FF',
+                  }}>
+                    {i + 1}
+                  </div>
+                  <span style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.6 }}>
+                    {obj}
+                  </span>
                 </div>
-                <span style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.6 }}>
-                  {obj}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
