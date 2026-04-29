@@ -20,7 +20,10 @@ export default defineConfig({
     : node({ mode: 'standalone' }),
   integrations: [react()],
   vite: {
-    envDir: resolve(rootDir, '../..'),
+    // Load .env from apps/platform/ — where the file actually lives.
+    // The previous value (resolve(rootDir, '../..')) pointed at the monorepo
+    // root which has no .env, so PUBLIC_SUPABASE_URL etc. were undefined.
+    envDir: rootDir,
     plugins: [tailwindcss()],
   },
 });
