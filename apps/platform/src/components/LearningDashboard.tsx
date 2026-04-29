@@ -42,6 +42,9 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
   const [todaySessions,  setTodaySessions]  = useState<TodaySession[]>([]);
   const [loadingSubj,    setLoadingSubj]    = useState(true);
   const [loadingToday,   setLoadingToday]   = useState(true);
+  const [confirmingId,   setConfirmingId]   = useState<string | null>(null);
+  const [deletingId,     setDeletingId]     = useState<string | null>(null);
+  const [deleteError,    setDeleteError]    = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,6 +61,22 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
 
     return () => { cancelled = true; };
   }, []);
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    setDeleteError(null);
+    try {
+      await projectService.deleteDocument(id);
+      // Optimistically remove from list
+      setSubjects(prev => prev.filter(s => s.id !== id));
+      setTodaySessions(prev => prev.filter(s => s.documentId !== id));
+      setConfirmingId(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Delete failed.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const loading = loadingSubj || loadingToday;
 
@@ -108,31 +127,117 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
           ))}
 
           {!loadingSubj && subjects.map((s, i) => {
-            const color  = subjectColor(i);
-            const pct    = s.totalSessions > 0 ? Math.round((s.completedSessions / s.totalSessions) * 100) : 0;
-            const next   = formatNextSession(s.nextSessionDate);
-            const topic  = s.nextSessionTitle ?? 'No upcoming sessions';
+            const color        = subjectColor(i);
+            const pct          = s.totalSessions > 0 ? Math.round((s.completedSessions / s.totalSessions) * 100) : 0;
+            const next         = formatNextSession(s.nextSessionDate);
+            const topic        = s.nextSessionTitle ?? 'No upcoming sessions';
+            const isConfirming = confirmingId === s.id;
+            const isDeleting   = deletingId   === s.id;
 
             return (
-              <Card key={s.id} hover onClick={() => window.location.href = `/platform/roadmap?documentId=${s.id}`}
-                sx={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 13px' }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, border: `1px solid ${color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Ic n="book" size={15} color={color} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
-                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>{s.subjectName ?? 'Untitled'}</span>
+              <Card key={s.id} sx={{ padding: '10px 13px', position: 'relative', overflow: 'hidden' }}>
+
+                {/* ── Confirm-delete overlay ────────────────────────────── */}
+                {isConfirming && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    animation: 'fadeIn 0.15s ease',
+                  }}>
+                    {/* Red warning badge */}
+                    <div style={{
+                      width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                      background: 'rgba(245,107,107,0.12)',
+                      border: '1px solid rgba(245,107,107,0.28)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Ic n="trash" size={14} color="var(--red)" />
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 1 }}>
+                        Delete &ldquo;{s.subjectName ?? 'Untitled'}&rdquo;?
+                      </div>
+                      <div style={{ fontSize: 10, color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                        Removes the PDF, all sessions &amp; calendar events.
+                      </div>
+                      {deleteError && deletingId === null && (
+                        <div style={{ fontSize: 10, color: 'var(--red)', marginTop: 3 }}>{deleteError}</div>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                      <Btn v="ghost" size="sm"
+                        onClick={() => { setConfirmingId(null); setDeleteError(null); }}>
+                        Cancel
+                      </Btn>
+                      <Btn v="danger" size="sm"
+                        onClick={() => handleDelete(s.id)}
+                        sx={isDeleting ? { opacity: 0.6, pointerEvents: 'none' } : {}}>
+                        {isDeleting ? 'Deleting…' : 'Delete'}
+                      </Btn>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {topic}
+                )}
+
+                {/* ── Normal card row ───────────────────────────────────── */}
+                {!isConfirming && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    {/* Book icon */}
+                    <div
+                      onClick={() => window.location.href = `/platform/roadmap?documentId=${s.id}`}
+                      style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, border: `1px solid ${color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: 'pointer' }}>
+                      <Ic n="book" size={15} color={color} />
+                    </div>
+
+                    {/* Main content — clickable */}
+                    <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}
+                      onClick={() => window.location.href = `/platform/roadmap?documentId=${s.id}`}>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13, color: 'var(--text-primary)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {s.subjectName ?? 'Untitled'}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {topic}
+                      </div>
+                      <Bar val={pct} color={color} h={4} />
+                    </div>
+
+                    {/* Progress + next session — clickable */}
+                    <div style={{ textAlign: 'right', flexShrink: 0, cursor: 'pointer' }}
+                      onClick={() => window.location.href = `/platform/roadmap?documentId=${s.id}`}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color, lineHeight: 1 }}>{pct}%</div>
+                      <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{next}</div>
+                    </div>
+
+                    {/* Arrow — clickable */}
+                    <div style={{ cursor: 'pointer' }}
+                      onClick={() => window.location.href = `/platform/roadmap?documentId=${s.id}`}>
+                      <Ic n="right" size={13} color="var(--text-muted)" />
+                    </div>
+
+                    {/* Trash button — does NOT navigate */}
+                    <button
+                      type="button"
+                      onClick={e => { e.stopPropagation(); setConfirmingId(s.id); setDeleteError(null); }}
+                      title="Delete subject"
+                      style={{
+                        flexShrink: 0, background: 'none', border: 'none',
+                        padding: '4px 5px', borderRadius: 6, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        opacity: 0.45, transition: 'opacity 0.15s ease, background 0.15s ease',
+                      }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLButtonElement).style.opacity = '1';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,107,107,0.1)';
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLButtonElement).style.opacity = '0.45';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'none';
+                      }}
+                    >
+                      <Ic n="trash" size={13} color="var(--red)" />
+                    </button>
                   </div>
-                  <Bar val={pct} color={color} h={4} />
-                </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color, lineHeight: 1 }}>{pct}%</div>
-                  <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{next}</div>
-                </div>
-                <Ic n="right" size={13} color="var(--text-muted)" />
+                )}
               </Card>
             );
           })}

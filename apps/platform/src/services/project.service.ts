@@ -108,4 +108,24 @@ export const projectService = {
 
     return res.json() as Promise<TodaySession[]>;
   },
+
+  /**
+   * Deletes a document and all associated data:
+   * - Supabase Storage PDF
+   * - study_sessions rows (via FK cascade)
+   * - Google Calendar events (fire-and-forget via n8n)
+   */
+  async deleteDocument(id: string): Promise<void> {
+    let res: Response;
+    try {
+      res = await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+    } catch {
+      throw new Error('Network error while deleting subject.');
+    }
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({})) as { error?: string };
+      throw new Error(body.error ?? 'Failed to delete subject.');
+    }
+  },
 };

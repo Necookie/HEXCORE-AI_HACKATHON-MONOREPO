@@ -29,6 +29,7 @@ const iconPaths: Record<string, string[]> = {
   clock:       ["M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z","M12 6v6l4 2"],
   chevronUp:   ["M18 15l-6-6-6 6"],
   chevronDown: ["M6 9l6 6 6-6"],
+  trash:       ["M3 6h18","M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6","M10 11v6","M14 11v6","M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"],
 };
 
 export const Ic = ({
