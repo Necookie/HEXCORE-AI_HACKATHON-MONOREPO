@@ -61,10 +61,12 @@ import type { APIRoute } from 'astro';
 import { createServerClient } from '@supabase/ssr';
 
 interface ScheduleConfig {
-  subjectName:  string;
-  targetDate:   string;
-  hoursPerDay:  number;
-  studyDays:    string[];
+  subjectName:     string;
+  targetDate:      string;
+  hoursPerDay:     number;
+  studyDays:       string[];
+  startTime:       string;   // "HH:MM" in user's local time, e.g. "19:00"
+  timezoneOffset:  number;   // new Date().getTimezoneOffset() — minutes behind UTC
 }
 
 const MAX_BYTES   = 25 * 1024 * 1024; // 25 MB
@@ -205,6 +207,63 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return json({ error: 'Failed to save document. Please try again.' }, 500);
   }
 
-  // ── 11. Success ───────────────────────────────────────────────────────────
+  // ── 11. Fire n8n webhook (non-blocking, best-effort) ─────────────────────
+  const webhookUrl = import.meta.env.N8N_WEBHOOK_URL;
+  if (webhookUrl) {
+    // Convert study_days abbreviations → full names expected by n8n
+    const DAY_MAP: Record<string, string> = {
+      Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday',
+      Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday',
+    };
+    const preferredDays = schedule.studyDays.map(d => DAY_MAP[d] ?? d);
+
+    // Convert user's local start time → UTC hour + minute.
+    // timezoneOffset = getTimezoneOffset() = (UTC - local) in minutes.
+    // So: utcMinutes = localMinutes + timezoneOffset (+ wrap to [0,1440)).
+    const [localH, localM] = (schedule.startTime || '19:00').split(':').map(Number);
+    const localMins = localH * 60 + (localM || 0);
+    const utcTotalMins = ((localMins + (schedule.timezoneOffset ?? 0)) % 1440 + 1440) % 1440;
+    const startUtcHour   = Math.floor(utcTotalMins / 60);
+    const startUtcMinute = utcTotalMins % 60;
+
+    // Generate a 1-hour signed URL so n8n can download the PDF
+    const { data: signedData } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(storagePath, 3600);
+    const fileUrl = signedData?.signedUrl ?? '';
+
+    // Calculate total_study_hours = hoursPerDay × studyDaysPerWeek × weeksUntilTarget
+    const msPerDay         = 86_400_000;
+    const daysUntilTarget  = Math.max(1, Math.ceil(
+      (new Date(schedule.targetDate).getTime() - Date.now()) / msPerDay
+    ));
+    const weeksUntilTarget  = Math.ceil(daysUntilTarget / 7);
+    const totalStudyHours   = schedule.hoursPerDay * schedule.studyDays.length * weeksUntilTarget;
+
+    if (fileUrl) {
+      const payload = {
+        user_id:               user.id,
+        study_plan_id:         docId,
+        file_url:              fileUrl,
+        title:                 (schedule.subjectName ?? '').trim() || 'Untitled Subject',
+        hours_per_day:         schedule.hoursPerDay,
+        start_utc_hour:        startUtcHour,
+        start_utc_minute:      startUtcMinute,
+        total_study_hours:     totalStudyHours,
+        target_completion_date: schedule.targetDate,
+        preferred_days:        preferredDays,
+      };
+
+      // Fire and forget — don't block the 200 response on n8n
+      fetch(webhookUrl, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+        signal:  AbortSignal.timeout(10_000),
+      }).catch(err => console.error('[upload/pdf] n8n webhook error:', err));
+    }
+  }
+
+  // ── 12. Success ───────────────────────────────────────────────────────────
   return json({ ok: true, documentId: docId, storagePath }, 200);
 };

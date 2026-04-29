@@ -1,42 +1,95 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { ScheduleConfig, UploadPhase } from '../types/project.types';
 import { PROC_STEPS } from '../types/project.types';
 import { projectService } from '../services/project.service';
+
+const POLL_INTERVAL_MS  = 3_000;   // check n8n status every 3 s
+const VISUAL_STEP_MS    = 8_000;   // advance progress visually every 8 s
+const MAX_POLL_ATTEMPTS = 200;     // ~10 min timeout
 
 export function useProjectIntake() {
   const [step,        setStep]        = useState(1);
   const [file,        setFile]        = useState<File | null>(null);
   const [schedule,    setSchedule]    = useState<ScheduleConfig>({
     subjectName: '', targetDate: '', hoursPerDay: 2, studyDays: ['Mon', 'Wed', 'Fri'],
+    startTime: '19:00', timezoneOffset: 0,
   });
   const [procStep,    setProcStep]    = useState(0);
   const [error,       setError]       = useState<string | null>(null);
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>('idle');
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [documentId,  setDocumentId]  = useState<string | null>(null);
 
-  // ── Real upload effect ───────────────────────────────────────────────────
+  // Refs used inside intervals so closures always see latest values
+  const pollAttemptsRef = useRef(0);
+  const pollTimerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const visualTimerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearTimers = useCallback(() => {
+    if (pollTimerRef.current)   { clearInterval(pollTimerRef.current);   pollTimerRef.current   = null; }
+    if (visualTimerRef.current) { clearInterval(visualTimerRef.current); visualTimerRef.current = null; }
+  }, []);
+
+  // ── Upload + polling effect ──────────────────────────────────────────────
   useEffect(() => {
     if (step !== 3) return;
     let cancelled = false;
 
     (async () => {
       setUploadPhase('pending');
+      setProcStep(0);
+      pollAttemptsRef.current = 0;
 
       try {
-        // Real upload — step 0 ("Uploading PDF") stays active until this resolves
-        await projectService.uploadPDF(file!, schedule);
+        // Step 0 stays active during the actual file upload
+        const { documentId: docId } = await projectService.uploadPDF(file!, schedule);
 
         if (cancelled) return;
+        setDocumentId(docId);
         setUploadPhase('done');
         setProcStep(1); // "Uploading PDF" turns green
 
-        // Simulate remaining AI pipeline steps at 950ms each
-        for (let i = 2; i <= PROC_STEPS.length; i++) {
-          await new Promise<void>(r => setTimeout(r, 950));
-          if (cancelled) return;
-          setProcStep(i);
-        }
-        // procStep === PROC_STEPS.length → done = true → CTA appears
+        // ── Visual progress ticker (cosmetic, keeps UI alive during AI work) ──
+        visualTimerRef.current = setInterval(() => {
+          setProcStep(prev => {
+            const cap = PROC_STEPS.length - 1; // never auto-complete — wait for DB signal
+            return prev < cap ? prev + 1 : prev;
+          });
+        }, VISUAL_STEP_MS);
+
+        // ── Real status polling ──────────────────────────────────────────────
+        pollTimerRef.current = setInterval(async () => {
+          if (cancelled) { clearTimers(); return; }
+
+          pollAttemptsRef.current += 1;
+          if (pollAttemptsRef.current > MAX_POLL_ATTEMPTS) {
+            clearTimers();
+            if (!cancelled) {
+              setUploadPhase('failed');
+              setUploadError('Processing timed out. Please try again.');
+            }
+            return;
+          }
+
+          try {
+            const { status, errorMessage } = await projectService.pollDocumentStatus(docId);
+
+            if (status === 'ready') {
+              clearTimers();
+              if (!cancelled) setProcStep(PROC_STEPS.length); // all steps → done
+            } else if (status === 'error') {
+              clearTimers();
+              if (!cancelled) {
+                setUploadPhase('failed');
+                setUploadError(errorMessage ?? 'AI processing failed. Please try again.');
+              }
+            }
+            // 'processing' → keep polling
+          } catch {
+            // transient network error — keep polling
+          }
+        }, POLL_INTERVAL_MS);
+
       } catch (err: unknown) {
         if (!cancelled) {
           setUploadPhase('failed');
@@ -47,7 +100,10 @@ export function useProjectIntake() {
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      clearTimers();
+    };
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Navigation ───────────────────────────────────────────────────────────
@@ -65,17 +121,20 @@ export function useProjectIntake() {
     setUploadError(null);
     setUploadPhase('idle');
     setProcStep(0);
+    setDocumentId(null);
     setStep(3); // optimistic — UI advances immediately
   }, [schedule]);
 
   const retryUpload = useCallback(() => {
+    clearTimers();
     setUploadError(null);
     setUploadPhase('idle');
     setProcStep(0);
+    setDocumentId(null);
     // Flip 3 → 2 → 3 via microtask to re-trigger the useEffect
     setStep(2);
     Promise.resolve().then(() => setStep(3));
-  }, []);
+  }, [clearTimers]);
 
   return {
     step,
@@ -89,6 +148,7 @@ export function useProjectIntake() {
     setError,
     uploadPhase,
     uploadError,
+    documentId,
     goToStep2,
     goToStep3,
     retryUpload,

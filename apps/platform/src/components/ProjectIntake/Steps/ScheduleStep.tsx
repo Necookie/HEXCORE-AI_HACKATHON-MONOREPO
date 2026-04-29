@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ALL_DAYS, type ScheduleConfig, type StudyDay } from '../../../types/project.types';
 import { Ic, Btn, Card } from '../../ui';
@@ -7,7 +7,42 @@ import { Ic, Btn, Card } from '../../ui';
 const MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const WEEKDAYS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 
-function todayIso() { return new Date().toISOString().split('T')[0]; }
+function todayIso() {
+  const d = new Date();
+  // Use local-timezone getters (not UTC) so midnight rollover matches the user's clock
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+const DAY_INDEX: StudyDay[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/**
+ * Returns the set of StudyDay abbreviations that actually occur between
+ * tomorrow (local) and the target date (inclusive). If no target date is set,
+ * all 7 days are available. This prevents the user from selecting days that
+ * will never appear in their study window.
+ */
+function getAvailableDays(targetDate: string): Set<StudyDay> {
+  if (!targetDate) return new Set(ALL_DAYS);
+
+  // Start from tomorrow (local midnight)
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() + 1);
+
+  // End at the target date (local end of day) — parse with T23:59 to keep it local
+  const end = new Date(targetDate + 'T23:59:59');
+
+  const available = new Set<StudyDay>();
+  const cursor = new Date(start);
+
+  while (cursor <= end) {
+    available.add(DAY_INDEX[cursor.getDay()]);
+    if (available.size === 7) break; // all days covered, stop early
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return available;
+}
 function toIso(y: number, m: number, d: number) {
   return `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
@@ -252,6 +287,255 @@ function DatePickerModal({
   return createPortal(modal, document.body);
 }
 
+// ── Time helpers ──────────────────────────────────────────────────────────────
+
+/** Parse "HH:MM" → total minutes from midnight. */
+function parseTimeMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+
+/** Format minutes-from-midnight → "h:MM AM/PM". */
+function formatTimeMins(mins: number): string {
+  const m = ((mins % 1440) + 1440) % 1440; // wrap
+  const h = Math.floor(m / 60);
+  const min = m % 60;
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12  = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(min).padStart(2, '0')} ${ampm}`;
+}
+
+/** Build all 30-min slot labels from 5:00 AM to 11:30 PM (38 options). */
+function buildTimeSlots(): { value: string; label: string }[] {
+  const slots: { value: string; label: string }[] = [];
+  for (let h = 5; h < 24; h++) {
+    for (const m of [0, 30]) {
+      const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      slots.push({ value, label: formatTimeMins(h * 60 + m) });
+    }
+  }
+  return slots;
+}
+const TIME_SLOTS = buildTimeSlots();
+
+// ── TimeSlotPicker ─────────────────────────────────────────────────────────────
+interface TimeSlotPickerProps {
+  value:       string;   // "HH:MM"
+  hoursPerDay: number;
+  onChange:    (v: string) => void;
+}
+
+const TIME_GROUPS = [
+  { label: 'Morning',   from: 5  * 60, to: 12 * 60 },
+  { label: 'Afternoon', from: 12 * 60, to: 17 * 60 },
+  { label: 'Evening',   from: 17 * 60, to: 24 * 60 },
+];
+
+function TimeSlotPicker({ value, hoursPerDay, onChange }: TimeSlotPickerProps) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+  const listRef = React.useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  // Scroll the selected slot into view whenever the dropdown opens
+  useEffect(() => {
+    if (!open || !listRef.current) return;
+    const sel = listRef.current.querySelector('[data-sel="true"]') as HTMLElement | null;
+    if (sel) sel.scrollIntoView({ block: 'center', behavior: 'instant' });
+  }, [open]);
+
+  const startMins = parseTimeMinutes(value || '19:00');
+  const endMins   = startMins + hoursPerDay * 60;
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative' }}>
+
+      {/* ── Trigger ─────────────────────────────────────────────── */}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="no-3d"
+        style={{
+          width: '100%', boxSizing: 'border-box',
+          background: open ? 'var(--bg-elevated)' : 'var(--bg-input)',
+          border: `1.5px solid ${open ? 'rgba(123,92,245,0.7)' : 'var(--border)'}`,
+          borderRadius: 'var(--radius-md)',
+          padding: '10px 14px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          cursor: 'pointer',
+          transition: 'border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease',
+          boxShadow: open ? '0 0 0 3px rgba(123,92,245,0.14)' : 'none',
+        }}
+      >
+        {/* Left section: icon badge + time range */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Icon badge */}
+          <div style={{
+            width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+            background: open ? 'rgba(123,92,245,0.22)' : 'rgba(123,92,245,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'background 0.18s ease',
+          }}>
+            <Ic n="clock" size={14} color="var(--purple-light)" />
+          </div>
+
+          {/* Time range: START → END */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700,
+              color: 'var(--purple-light)',
+              letterSpacing: '-0.01em',
+            }}>
+              {formatTimeMins(startMins)}
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11,
+              color: 'var(--text-muted)',
+              userSelect: 'none',
+            }}>→</span>
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600,
+              color: 'var(--text-secondary)',
+              letterSpacing: '-0.01em',
+            }}>
+              {formatTimeMins(endMins)}
+            </span>
+            <span style={{
+              fontSize: 10, fontFamily: 'var(--font-mono)',
+              color: 'var(--text-muted)',
+              background: 'rgba(123,92,245,0.08)',
+              border: '1px solid rgba(123,92,245,0.14)',
+              borderRadius: 4,
+              padding: '1px 5px',
+              letterSpacing: '0.02em',
+              userSelect: 'none',
+            }}>
+              {hoursPerDay}h
+            </span>
+          </div>
+        </div>
+
+        {/* Right: chevron */}
+        <Ic
+          n={open ? 'chevronUp' : 'chevronDown'}
+          size={14}
+          color={open ? 'var(--purple-light)' : 'var(--text-muted)'}
+        />
+      </button>
+
+      {/* ── Dropdown panel ──────────────────────────────────────── */}
+      {open && (
+        <div
+          ref={listRef}
+          style={{
+            position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0,
+            zIndex: 300,
+            background: 'var(--bg-card)',
+            border: '1.5px solid var(--border)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.38), 0 0 0 1px rgba(123,92,245,0.05)',
+            maxHeight: 272, overflowY: 'auto',
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(123,92,245,0.18) transparent',
+          }}
+        >
+          {TIME_GROUPS.map((group, gi) => {
+            const slots = TIME_SLOTS.filter(
+              s => parseTimeMinutes(s.value) >= group.from && parseTimeMinutes(s.value) < group.to
+            );
+            if (!slots.length) return null;
+            return (
+              <div key={group.label} style={{ padding: '10px 10px 6px' }}>
+                {/* Section header */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  marginBottom: 8,
+                  ...(gi > 0 ? { paddingTop: 4, borderTop: '1px solid var(--border-subtle)' } : {}),
+                }}>
+                  <span style={{
+                    fontSize: 9, fontFamily: 'var(--font-mono)', fontWeight: 700,
+                    color: 'var(--text-muted)', letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                  }}>
+                    {group.label}
+                  </span>
+                  <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
+                </div>
+
+                {/* 4-column grid of time pills */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: 3,
+                  marginBottom: 4,
+                }}>
+                  {slots.map(slot => {
+                    const sel = slot.value === value;
+                    return (
+                      <button
+                        key={slot.value}
+                        type="button"
+                        data-sel={sel}
+                        onClick={() => { onChange(slot.value); setOpen(false); }}
+                        style={{
+                          padding: '6px 2px',
+                          borderRadius: 6,
+                          border: sel
+                            ? '1px solid rgba(123,92,245,0.55)'
+                            : '1px solid transparent',
+                          background: sel
+                            ? 'rgba(123,92,245,0.16)'
+                            : 'transparent',
+                          color: sel ? 'var(--purple-light)' : 'var(--text-secondary)',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 11,
+                          fontWeight: sel ? 700 : 400,
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          transition: 'all 0.1s ease',
+                          boxShadow: sel ? '0 0 6px rgba(123,92,245,0.14)' : 'none',
+                          whiteSpace: 'nowrap',
+                        }}
+                        onMouseEnter={e => {
+                          if (!sel) {
+                            const el = e.currentTarget as HTMLButtonElement;
+                            el.style.background = 'rgba(123,92,245,0.08)';
+                            el.style.color = 'var(--text-primary)';
+                            el.style.borderColor = 'rgba(123,92,245,0.2)';
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (!sel) {
+                            const el = e.currentTarget as HTMLButtonElement;
+                            el.style.background = 'transparent';
+                            el.style.color = 'var(--text-secondary)';
+                            el.style.borderColor = 'transparent';
+                          }
+                        }}
+                      >
+                        {slot.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Schedule Step ──────────────────────────────────────────────────────────────
 interface ScheduleStepProps {
   schedule: ScheduleConfig;
@@ -272,6 +556,32 @@ export function ScheduleStep({ schedule, onUpdate, error, onBack, onNext }: Sche
   const [errs,      setErrs]      = useState<FieldErrors>({});
   const [attempted, setAttempted] = useState(false);
 
+  // Capture the browser's timezone offset once on mount so the API can
+  // convert the user-selected local time to UTC for n8n scheduling.
+  useEffect(() => {
+    const offset = new Date().getTimezoneOffset();
+    if (offset !== schedule.timezoneOffset) {
+      onUpdate({ timezoneOffset: offset });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Days that actually exist between tomorrow and the target date.
+  // Recomputed whenever the target date changes.
+  const availableDays = useMemo(
+    () => getAvailableDays(schedule.targetDate),
+    [schedule.targetDate],
+  );
+
+  // Auto-deselect any selected days that no longer exist in the study window
+  // when the target date changes (e.g. user picks a closer date).
+  useEffect(() => {
+    if (!schedule.targetDate) return;
+    const pruned = schedule.studyDays.filter(d => availableDays.has(d)) as StudyDay[];
+    if (pruned.length !== schedule.studyDays.length) {
+      onUpdate({ studyDays: pruned });
+    }
+  }, [schedule.targetDate]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const validate = (s: ScheduleConfig): boolean => {
     const e: FieldErrors = {};
     const name = s.subjectName.trim();
@@ -289,6 +599,7 @@ export function ScheduleStep({ schedule, onUpdate, error, onBack, onNext }: Sche
   };
 
   const toggleDay = (day: StudyDay) => {
+    if (!availableDays.has(day)) return; // guard: unavailable day clicked
     const next = schedule.studyDays.includes(day)
       ? schedule.studyDays.filter(d => d !== day)
       : [...schedule.studyDays, day];
@@ -374,26 +685,62 @@ export function ScheduleStep({ schedule, onUpdate, error, onBack, onNext }: Sche
         <div>
           <label style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginBottom: 10, fontWeight: 500 }}>
             Study Days
+            {schedule.targetDate && availableDays.size < 7 && (
+              <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                ({availableDays.size} day{availableDays.size !== 1 ? 's' : ''} available in window)
+              </span>
+            )}
           </label>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {ALL_DAYS.map(d => {
-              const on = schedule.studyDays.includes(d);
+              const on        = schedule.studyDays.includes(d);
+              const available = availableDays.has(d);
               return (
-                <button key={d} type="button" onClick={() => toggleDay(d)}
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => toggleDay(d)}
+                  disabled={!available}
+                  title={!available ? 'This day is not within your study window' : undefined}
                   style={{
                     padding: '6px 13px', borderRadius: 'var(--radius-sm)', fontSize: 12, fontWeight: 600,
-                    cursor: 'pointer', transition: 'all 0.15s ease', fontFamily: 'var(--font-body)',
-                    background: on ? 'rgba(123,92,245,0.15)' : 'var(--bg-elevated)',
-                    border: on ? '1px solid rgba(123,92,245,0.5)' : '1px solid var(--border)',
-                    color: on ? 'var(--purple-light)' : 'var(--text-muted)',
-                    boxShadow: on ? '0 0 10px rgba(123,92,245,0.18)' : 'none',
-                  }}>
+                    transition: 'all 0.15s ease', fontFamily: 'var(--font-body)',
+                    // unavailable: grayed-out, non-interactive look
+                    cursor:     !available ? 'not-allowed' : 'pointer',
+                    opacity:    !available ? 0.3 : 1,
+                    background: !available ? 'var(--bg-elevated)'
+                              : on        ? 'rgba(123,92,245,0.15)'
+                              :             'var(--bg-elevated)',
+                    border:     !available ? '1px solid var(--border)'
+                              : on        ? '1px solid rgba(123,92,245,0.5)'
+                              :             '1px solid var(--border)',
+                    color:      !available ? 'var(--text-muted)'
+                              : on        ? 'var(--purple-light)'
+                              :             'var(--text-muted)',
+                    boxShadow:  on && available ? '0 0 10px rgba(123,92,245,0.18)' : 'none',
+                  }}
+                >
                   {d}
                 </button>
               );
             })}
           </div>
           {attempted && errs.studyDays && <FieldErr msg={errs.studyDays} />}
+        </div>
+
+        {/* ── Study time slot ── */}
+        <div>
+          <label style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'block', marginBottom: 8, fontWeight: 500 }}>
+            Study Time Slot
+          </label>
+          <TimeSlotPicker
+            value={schedule.startTime || '19:00'}
+            hoursPerDay={schedule.hoursPerDay}
+            onChange={t => onUpdate({ startTime: t })}
+          />
+          <p style={{ marginTop: 6, fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5, fontFamily: 'var(--font-mono)' }}>
+            Google Calendar events will be created at this time on your chosen study days.
+          </p>
         </div>
       </Card>
 

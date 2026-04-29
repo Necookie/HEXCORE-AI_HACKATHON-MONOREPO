@@ -1,7 +1,9 @@
 ---
 import PlatformLayout from '../../layouts/PlatformLayout.astro';
 import RoadmapView from '../../components/RoadmapView';
+
+const documentId = Astro.url.searchParams.get('documentId') ?? undefined;
 ---
 <PlatformLayout title="Roadmap">
-  <RoadmapView client:load />
+  <RoadmapView client:load documentId={documentId} />
 </PlatformLayout>

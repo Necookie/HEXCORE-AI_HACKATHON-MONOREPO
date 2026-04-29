@@ -5,11 +5,12 @@ interface ProcessingStepProps {
   procStep:    number;
   uploadPhase: UploadPhase;
   uploadError: string | null;
+  documentId:  string | null;
   onRetry:     () => void;
   onBack:      () => void;
 }
 
-export function ProcessingStep({ procStep, uploadPhase, uploadError, onRetry, onBack }: ProcessingStepProps) {
+export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId, onRetry, onBack }: ProcessingStepProps) {
   const done = procStep >= PROC_STEPS.length;
 
   // ── Error state ────────────────────────────────────────────────────────────
@@ -115,8 +116,18 @@ export function ProcessingStep({ procStep, uploadPhase, uploadError, onRetry, on
           <div style={{ marginBottom: 16 }}>
             <Badge color="green"><Ic n="check" size={12} color="#4ADE80" /> Roadmap Ready</Badge>
           </div>
-          <Btn v="primary" size="lg" onClick={() => window.location.href = '/platform/dashboard'} sx={{ justifyContent: 'center' }}>
-            View Dashboard <Ic n="right" size={16} color="#fff" />
+          <Btn
+            v="primary"
+            size="lg"
+            onClick={() => {
+              const dest = documentId
+                ? `/platform/roadmap?documentId=${documentId}`
+                : '/platform/dashboard';
+              window.location.href = dest;
+            }}
+            sx={{ justifyContent: 'center' }}
+          >
+            View Roadmap <Ic n="right" size={16} color="#fff" />
           </Btn>
         </div>
       )}
