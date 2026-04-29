@@ -37,6 +37,47 @@ We don't just provide another document reader. We provide an **Automated Learnin
 *   **Gamified Retention:** We turn studying into a competitive sport with Elo ranks, streaks, and dynamic rewards, transforming passive dread into active engagement.
 *   **Centralized Intelligence:** A RAG-powered nervous system that knows your materials better than you do.
 
+## User Guide: Navigating the Pipeline
+
+This section serves as the definitive manual for both human users and the RAG Assistant.
+
+### 1. Authentication: Joining the Pipeline
+*   **Sign Up:** Click the "Sign Up" button on the landing page. Provide your email, a secure password, and a unique username. 
+*   **Login:** Access your dashboard by entering your credentials at the login portal. 
+*   **Authentication Events:** Every signup and login is monitored by our business nervous system via Discord webhooks to ensure platform security and support.
+
+### 2. Initialization: The Intake Phase
+To start your learning journey, you must feed the pipeline:
+1.  **Upload PDF:** Navigate to the Dashboard and click **"Upload PDF"**. Select your syllabus, textbook chapter, or lecture notes (Max 25MB).
+2.  **Define Constraints:** 
+    *   **Goal:** Set your target completion date.
+    *   **Availability:** Specify which days you can study and for how long (e.g., 2 hours on MWF).
+3.  **Roadmap Generation:** Once submitted, n8n parses the material. Within seconds, a detailed **Study Roadmap** is generated, breaking the PDF into logical "Execution Modules."
+4.  **Calendar Sync:** Authorize Google Calendar access to have your study blocks automatically scheduled as timed events, reducing the cognitive load of "when" to study.
+
+### 3. The Command Center: Dashboard & Platform
+*   **Active Subjects:** View all your uploaded materials and your progress percentage for each.
+*   **Today's Sessions:** A prioritized list of modules scheduled for the current 24-hour window.
+*   **Stat Strip:** Real-time tracking of your **Current Streak (Combo)**, **Elo Rating**, **Quizzes Passed**, and **Total Study Hours**.
+
+### 4. Execution: The Study Session
+When it's time to study:
+1.  **Start Session:** Click on a scheduled module. You will be presented with the specific "chunk" of material to focus on.
+2.  **Active Recall (Quiz):** After studying, you must pass a dynamic quiz. These are generated on-the-fly and include Multiple Choice, Identification, and Enumeration questions.
+3.  **Flashcards:** Use the AI-generated flashcard deck for quick-fire review and spaced repetition.
+4.  **Mind Map:** Visualize the connections between topics within your subject using the interactive Mind Map view.
+
+### 5. Progression: Ranks & Achievements
+*   **Earning Elo:** Pass quizzes with high accuracy to gain Elo. Consecutive successes build a **Combo multiplier**.
+*   **Climbing Ranks:** Progress through the five Bear Tiers: **Cub $\rightarrow$ Panda $\rightarrow$ Grizzly $\rightarrow$ Polar $\rightarrow$ Spirit Bear**.
+*   **Unlocking Badges:** Earn cosmetic achievements like "First Blood" (First quiz pass) or "7-Day Inferno" (Week-long streak).
+
+### 6. RAG Assistant: Instant Intelligence
+The RAG-powered chatbot is accessible throughout the platform. You can:
+*   **Ask about the Product:** "How do I sync my calendar?" or "What are the rank requirements?"
+*   **Ask about your Materials:** "Summarize Chapter 3 of my Biology PDF" or "Explain the concept of Recursion from my notes."
+*   **Get Study Tips:** "How can I improve my quiz accuracy?"
+
 ## How We Do It (Execution)
 1.  **Intake Phase:** The user provides the raw material (PDF) and their constraints (availability, deadline).
 2.  **Orchestration Phase:** n8n (our Central Nervous System) takes over—parsing the file, chunking topics, and calculating the optimal schedule.
