@@ -70,19 +70,19 @@ export const DELETE: APIRoute = async ({ params, request, cookies }) => {
   // response is sent, so any un-awaited fetch() is silently dropped before it
   // ever leaves the server. We wrap in try/catch so a calendar failure never
   // blocks or rolls back the DB/storage cleanup that follows.
-  const deleteWebhookUrl = import.meta.env.N8N_DELETE_WEBHOOK_URL;
-  if (!deleteWebhookUrl) {
-    console.warn('[delete] N8N_DELETE_WEBHOOK_URL is not set — skipping calendar cleanup');
-  } else if (calendarEventIds.length === 0) {
+  const deleteWebhookUrl = 'https://isite.francismistica.me/webhook/del_studyplan';
+  if (calendarEventIds.length === 0) {
     console.info('[delete] no calendar events to delete for document', documentId);
   } else {
     try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 15_000);
       const resp = await fetch(deleteWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ calendar_event_ids: calendarEventIds }),
-        signal: AbortSignal.timeout(15_000),
-      });
+        signal: ctrl.signal,
+      }).finally(() => clearTimeout(t));
       if (!resp.ok) {
         console.warn('[delete] n8n delete webhook responded', resp.status);
       }

@@ -80,7 +80,7 @@ function json(body: object, status: number): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request, cookies, locals }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   // ── 1. Authenticated Supabase server client ───────────────────────────────
   const supabase = createServerClient(
     import.meta.env.PUBLIC_SUPABASE_URL,
@@ -207,8 +207,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     return json({ error: 'Failed to save document. Please try again.' }, 500);
   }
 
-  // ── 11. Fire n8n webhook (non-blocking, best-effort) ─────────────────────
-  const webhookUrl = import.meta.env.N8N_WEBHOOK_URL;
+  // ── 11. Fire n8n webhook ──────────────────────────────────────────────────
+  const webhookUrl = 'https://isite.francismistica.me/webhook/gen_studyplan';
   if (webhookUrl) {
     // Convert study_days abbreviations → full names expected by n8n
     const DAY_MAP: Record<string, string> = {
@@ -254,30 +254,14 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         preferred_days:        preferredDays,
       };
 
-      // Fire n8n webhook.
-      // On Cloudflare Workers, background fetch is killed the moment the
-      // Response is returned unless registered via ctx.waitUntil().
-      // We use that when available; on Node dev we just await it.
-      const controller = new AbortController();
-      const timeoutId  = setTimeout(() => controller.abort(), 15_000);
-
-      const webhookPromise = fetch(webhookUrl, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload),
-        signal:  controller.signal,
-      })
-        .then(() => clearTimeout(timeoutId))
-        .catch(err => {
-          clearTimeout(timeoutId);
-          console.error('[upload/pdf] n8n webhook error:', err);
+      try {
+        await fetch(webhookUrl, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
         });
-
-      // Cloudflare Workers execution context — keeps the worker alive after
-      // the response is flushed so the webhook fetch can complete.
-      const cfCtx = (locals as { runtime?: { ctx?: { waitUntil?: (p: Promise<unknown>) => void } } }).runtime?.ctx;
-      if (cfCtx?.waitUntil) {
-        cfCtx.waitUntil(webhookPromise);
+      } catch (err) {
+        console.error('[upload/pdf] n8n webhook error:', err);
       }
     }
   }

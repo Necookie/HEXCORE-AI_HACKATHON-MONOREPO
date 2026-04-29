@@ -74,8 +74,7 @@ export interface QuizResult {
 // ── n8n webhook call ──────────────────────────────────────────────────────────
 
 async function generateQuizViaN8n(req: QuizRequest): Promise<QuizResult> {
-  const webhookUrl = import.meta.env.N8N_QUIZ_WEBHOOK_URL;
-  if (!webhookUrl) throw new Error('N8N_QUIZ_WEBHOOK_URL is not configured.');
+  const webhookUrl = 'https://isite.francismistica.me/webhook/gen_quiz';
 
   const payload = {
     session_id:          req.sessionId ?? null,
@@ -85,12 +84,14 @@ async function generateQuizViaN8n(req: QuizRequest): Promise<QuizResult> {
     subtopics:           req.subtopics ?? [],
   };
 
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), 60_000);
   const res = await fetch(webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(60_000),   // n8n AI flows can take up to ~45s
-  });
+    signal: controller.signal,
+  }).finally(() => clearTimeout(t));
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
