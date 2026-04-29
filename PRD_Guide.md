@@ -10,7 +10,7 @@ StudyBearer transforms passive PDF documents into active, gamified learning jour
 5. **Gamified Recall:** AI-generated quizzes (MCQ, Enumeration, ID) unlock after scheduled blocks.
 6. **Progression Engine:**
    - **Consistency Combos:** Maintain streaks by passing daily quizzes.
-   - **Ranked Milestones:** Climb competitive ladders based on Elo points (up to Mythic).
+   - **Ranked Milestones:** Climb competitive ladders based on Elo points (Cub to Spirit Bear).
 7. **Assistant & Monitoring:**
    - **RAG Chatbot:** Instant replies for users and lead generation for business.
    - **Discord Webhooks:** Real-time business activity logging (signup, login, delete).

@@ -77,7 +77,7 @@ passing the quiz adds +1 to the current_streak.
 the current_streak to 0. 
 • REQ-5.3: The system shall award Elo/points based on quiz accuracy and current streak 
 multipliers. 
-• REQ-5.4: The system shall feature tiered ranks that update automatically based on accumulated Elo. 
+• REQ-5.4: The system shall feature tiered ranks (Cub, Panda, Grizzly, Polar, Spirit Bear) that update automatically based on accumulated Elo. 
 • REQ-5.5: The system shall unlock specific cosmetic achievements managed via the UserAchievements 
 relational table. 
 

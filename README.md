@@ -14,7 +14,7 @@ StudyBearer is an AI-powered educational workflow application designed to eradic
 - **Google Calendar Sync:** Your AI-generated study roadmap is pushed directly to your Google Calendar as timed events.
 - **RAG Chatbot:** Instant answers about the product and your study materials via Retrieval-Augmented Generation.
 - **Gamified Study Sessions:** Dynamic quizzes (MCQ, Enumeration, ID) and flashcards are generated for every session.
-- **Competitive Progression:** Earn Elo, build streaks, and climb the ranks from Warrior to Mythic.
+- **Competitive Progression:** Earn Elo, build streaks, and climb the ranks from Cub to Spirit Bear.
 - **Business Monitoring:** Real-time Discord webhooks for registrations, logins, and account activity to assist business management.
 
 ## Tech Stack

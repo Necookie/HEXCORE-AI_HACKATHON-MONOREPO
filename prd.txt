@@ -52,7 +52,7 @@ quiz specific to that day's topic.
 • Ranked Milestones & Achievements: Users climb ranks and unlock premium profile banners.
     o First Blood: Complete the very first AI-generated study block.
     o Flawless Victory: Score 100% on a post-study quiz.
-    o Competitive Ladder: Users accumulate Elo points based on quiz accuracy and streak multipliers, climbing from base tiers up to elite statuses like Mythic.
+    o Competitive Ladder: Users accumulate Elo points based on quiz accuracy and streak multipliers, climbing from base tiers up to elite statuses like Spirit Bear.
 
 3.8. Business Monitoring (Discord Webhooks)
 • Automated notifications sent to business owners via Discord for:

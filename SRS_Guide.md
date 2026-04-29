@@ -38,7 +38,7 @@ StudyBearer is an AI-powered educational workflow application. It automates stud
 ### 3.5 Progression & Gamification Logic
 - **Streaks:** Completing study and passing quizzes adds +1 to `current_streak`. Missing a 24-hour window resets it.
 - **Elo/Points:** Awarded based on quiz accuracy and streak multipliers.
-- **Ranks:** Tiered ranks update automatically.
+- **Ranks:** Tiered ranks (e.g., Cub, Panda, Grizzly, Polar, Spirit Bear) update automatically.
 - **Achievements:** Cosmetic unlocks (e.g., "First Blood", "Flawless Victory").
 
 ### 3.6 Assistant & Monitoring (RAG & Webhooks)

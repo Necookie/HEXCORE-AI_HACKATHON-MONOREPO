@@ -105,7 +105,7 @@ We treat studying like a competitive sport. Our terminology reflects this shift 
 *   **Executing Modules:** Instead of "Doing Homework."
 *   **Combo / Streak:** Instead of "Consecutive Days."
 *   **Elo / Points:** Instead of "Grades / Scores."
-*   **Competitive Ranks:** Users progress through tiers: **Iron, Bronze, Silver, Gold, Elite, Master, Legend, and Mythic.**
+*   **Competitive Ranks:** Users progress through tiers: **Cub, Panda, Grizzly, Polar, and Spirit Bear.**
 
 ## Accessibility & Inclusion
 - High contrast for primary text (White on Deep Void).

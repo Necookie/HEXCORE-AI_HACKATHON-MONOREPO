@@ -43,4 +43,4 @@ Avoid traditional academic terms where possible. The terminology must reinforce 
 * **Traditional:** Doing Homework $\rightarrow$ **StudyBearer:** Executing Module
 * **Traditional:** Consecutive Days $\rightarrow$ **StudyBearer:** Combo / Streak
 * **Traditional:** Grades / Scores $\rightarrow$ **StudyBearer:** Elo / Points
-* **Traditional:** Levels $\rightarrow$ **StudyBearer:** Ranks (Iron, Bronze, Silver, Gold, Elite, Master, Legend, Mythic)
+* **Traditional:** Levels $\rightarrow$ **StudyBearer:** Ranks (Cub, Panda, Grizzly, Polar, Spirit Bear)
