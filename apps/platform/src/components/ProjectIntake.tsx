@@ -21,6 +21,8 @@ export default function ProjectIntake() {
     uploadPhase,
     uploadError,
     documentId,
+    isStale,
+    errorKind,
     goToStep2,
     goToStep3,
     retryUpload,
@@ -67,6 +69,8 @@ export default function ProjectIntake() {
           uploadPhase={uploadPhase}
           uploadError={uploadError}
           documentId={documentId}
+          isStale={isStale}
+          errorKind={errorKind}
           onRetry={retryUpload}
           onBack={() => { setStep(2); }}
         />

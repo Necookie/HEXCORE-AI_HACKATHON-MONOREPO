@@ -6,15 +6,26 @@ interface ProcessingStepProps {
   uploadPhase: UploadPhase;
   uploadError: string | null;
   documentId:  string | null;
+  isStale:     boolean;
+  errorKind:   'upload' | 'processing' | 'timeout';
   onRetry:     () => void;
   onBack:      () => void;
 }
 
-export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId, onRetry, onBack }: ProcessingStepProps) {
+export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId, isStale, errorKind, onRetry, onBack }: ProcessingStepProps) {
   const done = procStep >= PROC_STEPS.length;
 
-  // ── Error state ────────────────────────────────────────────────────────────
+  // ── Error / failed state ───────────────────────────────────────────────────
   if (uploadPhase === 'failed') {
+    const title =
+      errorKind === 'upload'     ? 'Upload Failed' :
+      errorKind === 'timeout'    ? 'Processing Timed Out' :
+                                   'Processing Failed';
+    const icon =
+      errorKind === 'timeout' ? 'clock' : 'x';
+    const retryLabel =
+      errorKind === 'upload' ? 'Retry Upload' : 'Try Again';
+
     return (
       <div className="fade-in" style={{ textAlign: 'center', paddingTop: 20 }}>
         <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'center' }}>
@@ -24,7 +35,7 @@ export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId,
             border: '2px solid rgba(245,107,107,0.35)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Ic n="x" size={32} color="var(--red)" />
+            <Ic n={icon} size={32} color="var(--red)" />
           </div>
         </div>
 
@@ -32,7 +43,7 @@ export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId,
           fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700,
           marginBottom: 8, color: 'var(--text-primary)',
         }}>
-          Upload Failed
+          {title}
         </h3>
 
         <div style={{
@@ -53,7 +64,7 @@ export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId,
             <Ic n="left" size={14} color="var(--text-secondary)" /> Back
           </Btn>
           <Btn v="primary" size="md" onClick={onRetry} sx={{ flex: 1, justifyContent: 'center' }}>
-            <Ic n="refresh" size={14} color="#fff" /> Retry Upload
+            <Ic n="refresh" size={14} color="#fff" /> {retryLabel}
           </Btn>
         </div>
       </div>
@@ -79,6 +90,22 @@ export function ProcessingStep({ procStep, uploadPhase, uploadError, documentId,
             ? 'Uploading your PDF securely…'
             : 'Chunking content · Scheduling sessions · Building quizzes'}
       </p>
+
+      {/* Stale warning — shown after ~60 s of polling with no resolution */}
+      {isStale && !done && (
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 10,
+          background: 'rgba(234,179,8,0.08)',
+          border: '1px solid rgba(234,179,8,0.3)',
+          borderRadius: 'var(--radius-md)',
+          padding: '10px 14px', marginBottom: 16, textAlign: 'left',
+        }}>
+          <Ic n="clock" size={14} color="#ca8a04" />
+          <span style={{ fontSize: 13, color: '#ca8a04', lineHeight: 1.5 }}>
+            This is taking longer than usual. Still working — hang tight, or you can go back and retry if it seems stuck.
+          </span>
+        </div>
+      )}
 
       <Card sx={{ textAlign: 'left', marginBottom: 24 }}>
         {PROC_STEPS.map((item, i) => (

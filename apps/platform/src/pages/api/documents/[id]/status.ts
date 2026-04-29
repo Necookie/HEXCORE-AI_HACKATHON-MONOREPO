@@ -45,12 +45,43 @@ export const GET: APIRoute = async ({ request, cookies, params }) => {
 
   const { data, error } = await supabase
     .from('documents')
-    .select('status, error_message')
+    .select('status, error_message, created_at')
     .eq('id', id)
     .eq('user_id', user.id)
     .single();
 
   if (error || !data) return json({ error: 'Document not found' }, 404);
+
+  // ── Stuck-workflow detection ───────────────────────────────────────────────
+  // If n8n fails without updating the DB, the status stays 'processing' forever.
+  // We detect this by checking: still processing after 5 min with no sessions created.
+  if (data.status === 'processing') {
+    const ageMs = Date.now() - new Date(data.created_at).getTime();
+    const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+    if (ageMs > TIMEOUT_MS) {
+      // Check whether any study_sessions were created for this document
+      const { count } = await supabase
+        .from('study_sessions')
+        .select('id', { count: 'exact', head: true })
+        .eq('document_id', id)
+        .eq('user_id', user.id);
+
+      if (!count || count === 0) {
+        // Persist the error state so subsequent polls return quickly
+        await supabase
+          .from('documents')
+          .update({ status: 'error', error_message: 'Processing timed out. The AI workflow did not complete.' })
+          .eq('id', id)
+          .eq('user_id', user.id);
+
+        return json({
+          status: 'error',
+          errorMessage: 'Processing timed out. The AI workflow did not complete.',
+        }, 200);
+      }
+    }
+  }
 
   return json({ status: data.status, errorMessage: data.error_message ?? null }, 200);
 };

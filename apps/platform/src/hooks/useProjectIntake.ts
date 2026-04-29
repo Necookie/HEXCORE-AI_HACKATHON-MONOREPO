@@ -5,7 +5,8 @@ import { projectService } from '../services/project.service';
 
 const POLL_INTERVAL_MS  = 3_000;   // check n8n status every 3 s
 const VISUAL_STEP_MS    = 8_000;   // advance progress visually every 8 s
-const MAX_POLL_ATTEMPTS = 200;     // ~10 min timeout
+const MAX_POLL_ATTEMPTS = 60;      // ~3 min timeout (was 10 min)
+const STALE_AFTER       = 20;      // 60 s of polling → show "taking longer" warning
 
 export function useProjectIntake() {
   const [step,        setStep]        = useState(1);
@@ -19,6 +20,9 @@ export function useProjectIntake() {
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>('idle');
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [documentId,  setDocumentId]  = useState<string | null>(null);
+  const [isStale,     setIsStale]     = useState(false);
+  // 'upload' = file send failed, 'processing' = n8n/AI failed, 'timeout' = gave up waiting
+  const [errorKind,   setErrorKind]   = useState<'upload' | 'processing' | 'timeout'>('processing');
 
   // Refs used inside intervals so closures always see latest values
   const pollAttemptsRef = useRef(0);
@@ -38,6 +42,7 @@ export function useProjectIntake() {
     (async () => {
       setUploadPhase('pending');
       setProcStep(0);
+      setIsStale(false);
       pollAttemptsRef.current = 0;
 
       try {
@@ -62,11 +67,19 @@ export function useProjectIntake() {
           if (cancelled) { clearTimers(); return; }
 
           pollAttemptsRef.current += 1;
+
+          // Show "taking longer than expected" warning after STALE_AFTER polls
+          if (pollAttemptsRef.current >= STALE_AFTER && !cancelled) {
+            setIsStale(true);
+          }
+
           if (pollAttemptsRef.current > MAX_POLL_ATTEMPTS) {
             clearTimers();
             if (!cancelled) {
+              setIsStale(false);
+              setErrorKind('timeout');
               setUploadPhase('failed');
-              setUploadError('Processing timed out. Please try again.');
+              setUploadError('Processing timed out — the AI workflow may have encountered an error. Please try again.');
             }
             return;
           }
@@ -76,10 +89,15 @@ export function useProjectIntake() {
 
             if (status === 'ready') {
               clearTimers();
-              if (!cancelled) setProcStep(PROC_STEPS.length); // all steps → done
+              if (!cancelled) {
+                setIsStale(false);
+                setProcStep(PROC_STEPS.length); // all steps → done
+              }
             } else if (status === 'error') {
               clearTimers();
               if (!cancelled) {
+                setIsStale(false);
+                setErrorKind('processing');
                 setUploadPhase('failed');
                 setUploadError(errorMessage ?? 'AI processing failed. Please try again.');
               }
@@ -92,6 +110,8 @@ export function useProjectIntake() {
 
       } catch (err: unknown) {
         if (!cancelled) {
+          setIsStale(false);
+          setErrorKind('upload');
           setUploadPhase('failed');
           setUploadError(
             err instanceof Error ? err.message : 'Upload failed. Please try again.',
@@ -130,6 +150,8 @@ export function useProjectIntake() {
     setUploadError(null);
     setUploadPhase('idle');
     setProcStep(0);
+    setIsStale(false);
+    setErrorKind('processing');
     setDocumentId(null);
     // Flip 3 → 2 → 3 via microtask to re-trigger the useEffect
     setStep(2);
@@ -149,6 +171,8 @@ export function useProjectIntake() {
     uploadPhase,
     uploadError,
     documentId,
+    isStale,
+    errorKind,
     goToStep2,
     goToStep3,
     retryUpload,
