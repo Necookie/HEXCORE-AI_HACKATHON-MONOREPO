@@ -5,12 +5,11 @@ import type { DocumentSummary, TodaySession, DashboardStats } from '../types/pro
 
 // ── Bear rank thresholds ──────────────────────────────────────────────────────
 export const BEAR_RANKS = [
-  { name: 'Cub',         emoji: '🐾', min: 0,    max: 199,      color: '#C89B7B' },
-  { name: 'Panda',       emoji: '🐼', min: 200,  max: 499,      color: '#4ADE80' },
-  { name: 'Grizzly',     emoji: '🐻', min: 500,  max: 999,      color: '#CD7F32' },
-  { name: 'Polar',       emoji: '❄️', min: 1000, max: 1749,     color: '#60A5FA' },
-  { name: 'Kodiak',      emoji: '🏔️', min: 1750, max: 2999,     color: '#9D82FF' },
-  { name: 'Spirit Bear', emoji: '✨', min: 3000, max: Infinity,  color: '#F0A030' },
+  { name: 'Cub',         img: '/sb-rank-cub.png',     min: 0,    max: 199,      color: '#C89B7B' },
+  { name: 'Panda',       img: '/sb-rank-panda.png',   min: 200,  max: 499,      color: '#4ADE80' },
+  { name: 'Grizzly',     img: '/sb-rank-grizzly.png', min: 500,  max: 999,      color: '#CD7F32' },
+  { name: 'Polar',       img: '/sb-rank-polar.png',   min: 1000, max: 2999,     color: '#60A5FA' },
+  { name: 'Spirit Bear', img: '/sb-rank-spirit.png',  min: 3000, max: Infinity,  color: '#F0A030' },
 ] as const;
 
 function getRank(elo: number) {
@@ -388,7 +387,7 @@ export default function LearningDashboard({ userName = 'Scholar' }: { userName?:
             return (
               <Card>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                  <span style={{ fontSize: 22, lineHeight: 1 }}>{rank.emoji}</span>
+                  <img src={rank.img} alt={rank.name} style={{ width: 36, height: 36, objectFit: 'contain', flexShrink: 0 }} />
                   <div>
                     <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{rank.name} Rank</div>
                     <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>

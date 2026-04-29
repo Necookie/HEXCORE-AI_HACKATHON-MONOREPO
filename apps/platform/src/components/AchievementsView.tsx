@@ -5,12 +5,11 @@ import type { DashboardStats } from '../types/project.types';
 // ── Bear rank system ──────────────────────────────────────────────────────────
 
 const BEAR_RANKS = [
-  { name: 'Cub',         emoji: '🐾', min: 0,    max: 199,     color: '#C89B7B', bg: 'rgba(200,155,123,0.14)', border: 'rgba(200,155,123,0.3)',  desc: 'Just getting started'    },
-  { name: 'Panda',       emoji: '🐼', min: 200,  max: 499,     color: '#4ADE80', bg: 'rgba(74,222,128,0.14)',  border: 'rgba(74,222,128,0.3)',   desc: 'Building good habits'    },
-  { name: 'Grizzly',     emoji: '🐻', min: 500,  max: 999,     color: '#CD7F32', bg: 'rgba(205,127,50,0.14)', border: 'rgba(205,127,50,0.3)',   desc: 'Serious scholar'         },
-  { name: 'Polar',       emoji: '❄️', min: 1000, max: 1749,    color: '#60A5FA', bg: 'rgba(96,165,250,0.14)', border: 'rgba(96,165,250,0.3)',   desc: 'Cool under pressure'     },
-  { name: 'Kodiak',      emoji: '🏔️', min: 1750, max: 2999,    color: '#9D82FF', bg: 'rgba(157,130,255,0.14)',border: 'rgba(157,130,255,0.3)', desc: 'Formidable student'      },
-  { name: 'Spirit Bear', emoji: '✨', min: 3000, max: Infinity, color: '#F0A030', bg: 'rgba(240,160,48,0.14)', border: 'rgba(240,160,48,0.3)',  desc: 'Legendary status'        },
+  { name: 'Cub',         img: '/sb-rank-cub.png',     min: 0,    max: 199,     color: '#C89B7B', bg: 'rgba(200,155,123,0.10)', border: 'rgba(200,155,123,0.25)', desc: 'Just getting started'    },
+  { name: 'Panda',       img: '/sb-rank-panda.png',   min: 200,  max: 499,     color: '#4ADE80', bg: 'rgba(74,222,128,0.10)',  border: 'rgba(74,222,128,0.25)',  desc: 'Building good habits'    },
+  { name: 'Grizzly',     img: '/sb-rank-grizzly.png', min: 500,  max: 999,     color: '#CD7F32', bg: 'rgba(205,127,50,0.10)', border: 'rgba(205,127,50,0.25)',  desc: 'Serious scholar'         },
+  { name: 'Polar',       img: '/sb-rank-polar.png',   min: 1000, max: 2999,    color: '#60A5FA', bg: 'rgba(96,165,250,0.10)', border: 'rgba(96,165,250,0.25)',  desc: 'Cool under pressure'     },
+  { name: 'Spirit Bear', img: '/sb-rank-spirit.png',  min: 3000, max: Infinity, color: '#F0A030', bg: 'rgba(240,160,48,0.10)', border: 'rgba(240,160,48,0.25)', desc: 'Legendary status'        },
 ] as const;
 
 function getRank(elo: number) {
@@ -193,142 +192,176 @@ export default function AchievementsView() {
           Achievements
         </h1>
         <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '5px 0 0' }}>
-          {loading ? 'Loading…' : `${unlockedCount} of ${BADGES.length} badges unlocked · ${rank.emoji} ${rank.name} · ${elo} ELO`}
+          {loading ? 'Loading…' : `${unlockedCount} of ${BADGES.length} badges unlocked · ${rank.name} · ${elo} ELO`}
         </p>
       </div>
 
       {/* ── Hero rank card ────────────────────────────────────────────────────── */}
       <div style={{
-        borderRadius: 20,
-        background: `linear-gradient(135deg, ${rank.bg} 0%, var(--bg-card) 60%)`,
-        border: `1.5px solid ${rank.border}`,
-        padding: '28px 32px',
+        background: 'var(--bg-card)',
+        border: `1px solid var(--border)`,
+        borderTop: `3px solid ${rank.color}`,
+        borderRadius: 14,
+        padding: '24px 28px',
         display: 'flex', alignItems: 'center', gap: 24,
-        position: 'relative', overflow: 'hidden',
       }}>
-        {/* Decorative glow */}
-        <div style={{
-          position: 'absolute', top: -60, right: -60,
-          width: 200, height: 200, borderRadius: '50%',
-          background: rank.color, opacity: 0.06, pointerEvents: 'none',
-        }} />
+        {/* Rank badge image */}
+        <img
+          src={rank.img}
+          alt={rank.name}
+          style={{ width: 96, height: 96, objectFit: 'contain', flexShrink: 0, imageRendering: 'auto' }}
+        />
 
-        {/* Rank emoji */}
-        <div style={{
-          width: 88, height: 88, borderRadius: 22, flexShrink: 0,
-          background: rank.bg, border: `2px solid ${rank.border}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 42,
-        }}>
-          {rank.emoji}
-        </div>
+        {/* Divider */}
+        <div style={{ width: 1, height: 76, background: 'var(--border)', flexShrink: 0 }} />
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: rank.color, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 4 }}>
+          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: rank.color, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 5 }}>
             Current Rank
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 4 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 3 }}>
             {rank.name}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
             {rank.desc}
           </div>
 
-          {/* Progress to next */}
           {nextRank ? (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 7 }}>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  {loading ? '—' : `${elo} ELO`}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                  {loading ? '—' : `${elo.toLocaleString()} ELO`}
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  {nextRank.emoji} {nextRank.name} at {nextRank.min.toLocaleString()} ELO
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                  {nextRank.name} at {nextRank.min.toLocaleString()} ELO
                 </span>
               </div>
-              <Bar val={loading ? 0 : barPct} color={rank.color} h={8} />
-              <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 7 }}>
-                {loading ? '…' : `${eloToNext.toLocaleString()} ELO to ${nextRank.emoji} ${nextRank.name}`}
+              <Bar val={loading ? 0 : barPct} color={rank.color} h={6} />
+              <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 6 }}>
+                {loading ? '…' : `${eloToNext.toLocaleString()} ELO until ${nextRank.name}`}
               </div>
             </>
           ) : (
-            <div style={{ fontSize: 13, color: rank.color, fontWeight: 700 }}>✨ Maximum rank achieved!</div>
+            <div style={{ fontSize: 13, color: rank.color, fontWeight: 700 }}>Maximum rank achieved</div>
           )}
         </div>
 
-        {/* ELO number */}
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 48, fontWeight: 800, color: rank.color, lineHeight: 1 }}>
+        {/* ELO badge */}
+        <div style={{
+          flexShrink: 0, textAlign: 'center',
+          background: 'var(--bg-elevated)', border: `1px solid var(--border)`,
+          borderRadius: 12, padding: '14px 20px',
+        }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 36, fontWeight: 800, color: rank.color, lineHeight: 1 }}>
             {loading ? '—' : elo.toLocaleString()}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>ELO Rating</div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 5, textTransform: 'uppercase', letterSpacing: '0.08em' }}>ELO Rating</div>
         </div>
       </div>
 
       {/* ── Rank progression track ────────────────────────────────────────────── */}
-      <div style={{
-        background: 'var(--bg-card)', border: '1px solid var(--border)',
-        borderRadius: 16, padding: '20px 24px',
-      }}>
-        <div style={{ fontSize: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
-          Bear Rank Journey
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-          {BEAR_RANKS.map((r, i) => {
-            const reached  = elo >= r.min;
-            const isCurrent = getRank(elo).name === r.name;
-            const isLast   = i === BEAR_RANKS.length - 1;
-            return (
-              <div key={r.name} style={{ display: 'flex', alignItems: 'center', flex: isLast ? 0 : 1 }}>
-                {/* Node */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, position: 'relative' }}>
-                  <div style={{
-                    width: isCurrent ? 52 : 40, height: isCurrent ? 52 : 40,
-                    borderRadius: isCurrent ? 14 : 12,
-                    background: reached ? r.bg : 'var(--bg-elevated)',
-                    border: `${isCurrent ? 2.5 : 1.5}px solid ${reached ? r.border : 'var(--border)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isCurrent ? 26 : 20,
-                    transition: 'all 0.3s ease',
-                    boxShadow: isCurrent ? `0 0 20px ${r.color}40` : 'none',
-                    flexShrink: 0,
-                  }}>
-                    {reached ? r.emoji : <span style={{ fontSize: isCurrent ? 20 : 14, filter: 'grayscale(1)', opacity: 0.35 }}>{r.emoji}</span>}
-                  </div>
-                  <div style={{ textAlign: 'center', minWidth: 52 }}>
-                    <div style={{ fontSize: 10, fontFamily: 'var(--font-heading)', fontWeight: isCurrent ? 700 : 500, color: reached ? r.color : 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                      {r.name}
+      {(() => {
+        const n          = BEAR_RANKS.length;
+        const rankIdx    = BEAR_RANKS.findIndex(r => getRank(elo).name === r.name);
+        const rankBarPct = nextRank ? (elo - rank.min) / (nextRank.min - rank.min) : 1;
+        const fillFrac   = Math.min((rankIdx + rankBarPct) / (n - 1), 1);
+        // Line spans between centers of first and last grid cells: 1/(2n) → (2n-1)/(2n)
+        const lineLeftPct  = 100 / (2 * n);
+        const lineTotalPct = 100 - 2 * lineLeftPct;
+        const fillWidthPct = fillFrac * lineTotalPct;
+        // YOU-pill reserved area (20px) + gap (10px) + half node (26px) = 56
+        const lineTopPx = 56;
+
+        return (
+          <div style={{
+            background: 'var(--bg-card)', border: '1px solid var(--border)',
+            borderRadius: 14, padding: '20px 24px',
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <span style={{ fontSize: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                Rank Progression
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                {loading ? '—' : `${elo.toLocaleString()} ELO`}
+              </span>
+            </div>
+
+            {/* Track */}
+            <div style={{ position: 'relative' }}>
+              {/* Base line */}
+              <div style={{
+                position: 'absolute', top: lineTopPx, height: 2, borderRadius: 2,
+                left: `${lineLeftPct}%`, right: `${lineLeftPct}%`,
+                background: 'var(--border)',
+              }} />
+              {/* Fill line */}
+              <div style={{
+                position: 'absolute', top: lineTopPx, height: 2, borderRadius: 2,
+                left: `${lineLeftPct}%`, width: `${fillWidthPct}%`,
+                background: rank.color, transition: 'width 0.5s ease',
+              }} />
+
+              {/* Rank nodes — equal-width grid so no overflow */}
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${n}, 1fr)`, position: 'relative', zIndex: 1 }}>
+                {BEAR_RANKS.map((r, i) => {
+                  const reached   = elo >= r.min;
+                  const isCurrent = rankIdx === i;
+                  return (
+                    <div key={r.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                      {/* YOU pill — reserved height so grid rows stay aligned */}
+                      <div style={{ height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {isCurrent && (
+                          <span style={{
+                            background: r.color, color: '#0a0b18',
+                            fontSize: 8, fontFamily: 'var(--font-heading)', fontWeight: 800,
+                            padding: '2px 8px', borderRadius: 5, letterSpacing: '0.1em',
+                          }}>YOU</span>
+                        )}
+                      </div>
+
+                      {/* Badge image */}
+                      <div style={{
+                        width: 52, height: 52, borderRadius: 13,
+                        border: `${isCurrent ? 2 : 1}px solid ${reached ? (isCurrent ? r.color : r.border) : 'var(--border)'}`,
+                        background: reached ? r.bg : 'var(--bg-elevated)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: 7, flexShrink: 0,
+                      }}>
+                        <img
+                          src={r.img}
+                          alt={r.name}
+                          style={{
+                            width: '100%', height: '100%', objectFit: 'contain',
+                            opacity: reached ? 1 : 0.2,
+                            filter: reached ? 'none' : 'grayscale(1)',
+                          }}
+                        />
+                      </div>
+
+                      {/* Labels */}
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{
+                          fontSize: 10, fontFamily: 'var(--font-heading)',
+                          fontWeight: isCurrent ? 700 : 500,
+                          color: reached ? (isCurrent ? r.color : 'var(--text-secondary)') : 'var(--text-muted)',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {r.name}
+                        </div>
+                        <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
+                          {r.min === 0 ? '0' : r.min.toLocaleString()}
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: 1 }}>
-                      {r.min === 0 ? '0' : `${r.min.toLocaleString()}`}
-                    </div>
-                  </div>
-                  {isCurrent && (
-                    <div style={{
-                      position: 'absolute', top: -8,
-                      background: r.color, color: '#fff',
-                      fontSize: 8, fontFamily: 'var(--font-heading)', fontWeight: 700,
-                      padding: '2px 6px', borderRadius: 6, whiteSpace: 'nowrap',
-                      letterSpacing: '0.05em',
-                    }}>YOU</div>
-                  )}
-                </div>
-                {/* Connector */}
-                {!isLast && (
-                  <div style={{
-                    flex: 1, height: 3, borderRadius: 3, margin: '0 4px', marginBottom: 26,
-                    background: elo >= BEAR_RANKS[i + 1].min
-                      ? `linear-gradient(90deg, ${r.color}, ${BEAR_RANKS[i + 1].color})`
-                      : elo > r.min
-                        ? `linear-gradient(90deg, ${r.color}, var(--border))`
-                        : 'var(--border)',
-                  }} />
-                )}
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Quick stats ───────────────────────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
@@ -363,104 +396,87 @@ export default function AchievementsView() {
 
       {/* ── Badges ────────────────────────────────────────────────────────────── */}
       <div>
-        <div style={{ fontSize: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
+        <div style={{ fontSize: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
           Badges — {unlockedCount} / {BADGES.length} Earned
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 6 }}>
           {BADGES.map((b, i) => {
-            const unlocked  = stats ? b.check(stats) : false;
-            const prog      = stats ? b.progress(stats) : null;
-            const progPct   = prog ? Math.round((prog.current / prog.target) * 100) : 0;
-            const catColor  = CATEGORY_COLORS[b.category];
+            const unlocked = stats ? b.check(stats) : false;
+            const prog     = stats ? b.progress(stats) : null;
+            const progPct  = prog ? Math.round((prog.current / prog.target) * 100) : 0;
+            const catColor = CATEGORY_COLORS[b.category];
 
             return (
               <div key={i} style={{
-                background:   unlocked ? `color-mix(in srgb, ${b.colorHex} 6%, var(--bg-card))` : 'var(--bg-card)',
-                border:       `1.5px solid ${unlocked ? `color-mix(in srgb, ${b.colorHex} 35%, transparent)` : 'var(--border)'}`,
-                borderRadius: 16,
-                padding:      '16px',
-                display:      'flex', flexDirection: 'column', gap: 12,
-                position:     'relative', overflow: 'hidden',
-                transition:   'border-color 0.2s, background 0.2s',
-                boxShadow:    unlocked ? `0 0 24px ${b.colorHex}18` : 'none',
+                background:   'var(--bg-card)',
+                border:       `1px solid ${unlocked ? `color-mix(in srgb, ${b.colorHex} 22%, transparent)` : 'var(--border)'}`,
+                borderLeft:   `3px solid ${unlocked ? b.colorHex : 'var(--border)'}`,
+                borderRadius: 10,
+                padding:      '11px 13px',
+                display:      'flex',
+                alignItems:   'center',
+                gap:          11,
+                opacity:      unlocked ? 1 : 0.55,
+                transition:   'opacity 0.2s',
               }}>
-                {/* Glow blob behind icon */}
-                {unlocked && (
-                  <div style={{
-                    position: 'absolute', top: -20, left: -20,
-                    width: 80, height: 80, borderRadius: '50%',
-                    background: b.colorHex, opacity: 0.08, pointerEvents: 'none',
-                  }} />
-                )}
 
-                {/* Top row: icon + category + unlock checkmark */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: 12,
-                    background: unlocked
-                      ? `color-mix(in srgb, ${b.colorHex} 18%, transparent)`
-                      : 'var(--bg-elevated)',
-                    border: `1.5px solid ${unlocked ? `color-mix(in srgb, ${b.colorHex} 35%, transparent)` : 'var(--border)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0,
-                  }}>
-                    {unlocked
-                      ? <Ic n={b.icon} size={20} color={b.colorHex} />
-                      : <Ic n="lock"   size={18} color="var(--text-muted)" />}
-                  </div>
+                {/* Icon */}
+                <div style={{
+                  width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+                  background: unlocked ? `color-mix(in srgb, ${b.colorHex} 12%, transparent)` : 'var(--bg-elevated)',
+                  border: `1px solid ${unlocked ? `color-mix(in srgb, ${b.colorHex} 22%, transparent)` : 'var(--border)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {unlocked
+                    ? <Ic n={b.icon} size={16} color={b.colorHex} />
+                    : <Ic n="lock"   size={14} color="var(--text-muted)" />}
+                </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                {/* Body */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {/* Name row */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
                     <span style={{
-                      fontSize: 9, fontFamily: 'var(--font-heading)', fontWeight: 700,
-                      padding: '2px 7px', borderRadius: 6,
-                      background: `color-mix(in srgb, ${catColor} 14%, transparent)`,
-                      color: catColor, letterSpacing: '0.06em', textTransform: 'uppercase',
+                      fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12,
+                      color: unlocked ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {b.name}
+                    </span>
+                    <span style={{
+                      fontSize: 8, fontFamily: 'var(--font-heading)', fontWeight: 700, flexShrink: 0,
+                      padding: '1px 5px', borderRadius: 4,
+                      background: `color-mix(in srgb, ${catColor} 12%, transparent)`,
+                      color: catColor, letterSpacing: '0.05em', textTransform: 'uppercase',
                     }}>
                       {CATEGORY_LABELS[b.category]}
                     </span>
-                    {unlocked && (
-                      <div style={{
-                        width: 20, height: 20, borderRadius: '50%',
-                        background: 'rgba(74,222,128,0.18)',
-                        border: '1.5px solid rgba(74,222,128,0.4)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        <Ic n="check" size={11} color="#4ADE80" sw={2.5} />
-                      </div>
-                    )}
                   </div>
-                </div>
 
-                {/* Badge name + description */}
-                <div>
-                  <div style={{
-                    fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13,
-                    color: unlocked ? 'var(--text-primary)' : 'var(--text-secondary)',
-                    marginBottom: 4,
-                  }}>
-                    {b.name}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {/* Description */}
+                  <div style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.4, marginBottom: prog ? 7 : 0 }}>
                     {b.desc}
                   </div>
-                </div>
 
-                {/* Progress bar */}
-                {!loading && prog && (
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                        {unlocked ? 'Completed' : `${typeof prog.current === 'number' && prog.current % 1 !== 0 ? prog.current.toFixed(1) : prog.current} / ${prog.target}`}
-                      </span>
-                      <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: unlocked ? '#4ADE80' : b.colorHex, fontWeight: 600 }}>
-                        {progPct}%
-                      </span>
+                  {/* Progress */}
+                  {!loading && prog && (
+                    <div>
+                      <Bar val={progPct} color={unlocked ? '#4ADE80' : b.colorHex} h={3} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                        <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                          {unlocked
+                            ? 'Completed'
+                            : `${typeof prog.current === 'number' && prog.current % 1 !== 0 ? prog.current.toFixed(1) : prog.current} / ${prog.target}`}
+                        </span>
+                        <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', fontWeight: 600, color: unlocked ? '#4ADE80' : b.colorHex }}>
+                          {progPct}%
+                        </span>
+                      </div>
                     </div>
-                    <Bar val={progPct} color={unlocked ? '#4ADE80' : b.colorHex} h={4} />
-                  </div>
-                )}
-                {loading && <Shimmer w="100%" h={4} />}
+                  )}
+                  {loading && <Shimmer w="100%" h={3} r={4} />}
+                </div>
               </div>
             );
           })}
