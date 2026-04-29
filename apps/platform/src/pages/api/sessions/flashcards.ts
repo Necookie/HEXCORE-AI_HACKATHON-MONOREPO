@@ -170,11 +170,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
   }
 
   // ── 2. Generate ───────────────────────────────────────────────────────────
-  // import.meta.env is build-time only on Cloudflare Workers — fall back to
-  // the runtime env binding (locals.runtime.env) for secrets set in the dashboard.
-  const groqKey = import.meta.env.GROQ_API_KEY
-    || (locals as { runtime?: { env?: { GROQ_API_KEY?: string } } }).runtime?.env?.GROQ_API_KEY
-    || '';
+  // groqApiKey is injected by middleware from the Cloudflare runtime env binding.
+  const groqKey = (locals as { groqApiKey?: string }).groqApiKey || '';
 
   try {
     const deck = await generateFlashcards(body, groqKey);

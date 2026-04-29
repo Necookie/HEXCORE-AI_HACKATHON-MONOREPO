@@ -4,6 +4,13 @@ import type { User } from '@supabase/supabase-js';
 declare namespace App {
   interface Locals {
     user: User;
+    groqApiKey: string;
+    runtime?: {
+      env?: {
+        GROQ_API_KEY?: string;
+        [key: string]: string | undefined;
+      };
+    };
   }
 }
 
