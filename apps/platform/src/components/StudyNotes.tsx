@@ -274,6 +274,33 @@ interface StudyNotesProps {
   subtopics?: string[];
 }
 
+// ── localStorage cache helpers ────────────────────────────────────────────────
+
+function cacheKey(id: string | undefined, t: string) {
+  return `sb_notes_${id ?? t.slice(0, 60)}`;
+}
+function readCache(key: string): NotesResult | null {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as NotesResult) : null;
+  } catch { return null; }
+}
+function writeCache(key: string, notes: NotesResult) {
+  try { localStorage.setItem(key, JSON.stringify(notes)); } catch { /* quota */ }
+}
+
+// ── Friendly error message ────────────────────────────────────────────────────
+
+function friendlyError(raw: string): string {
+  if (raw.includes('429') || raw.toLowerCase().includes('rate limit'))
+    return 'Groq rate limit hit — please wait a moment then try again.';
+  if (raw.includes('GROQ_API_KEY'))
+    return 'Groq API key is not configured. Add GROQ_API_KEY to your .env file.';
+  return raw;
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function StudyNotes({
   sessionId, title, summary, learningObjectives, subtopics,
 }: StudyNotesProps) {
@@ -283,6 +310,17 @@ export default function StudyNotes({
   const [retryN,  setRetryN]  = useState(0);
 
   useEffect(() => {
+    const key = cacheKey(sessionId, title);
+
+    // ── 1. Check localStorage first — zero network calls on repeat visits ─────
+    const cached = readCache(key);
+    if (cached) {
+      setNotes(cached);
+      setLoading(false);
+      return;
+    }
+
+    // ── 2. Fetch from API ─────────────────────────────────────────────────────
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -298,8 +336,9 @@ export default function StudyNotes({
         const data = await res.json() as { notes?: NotesResult; error?: string };
         if (!cancelled) {
           if (!res.ok || data.error) {
-            setError(data.error ?? 'Failed to generate notes.');
+            setError(friendlyError(data.error ?? 'Failed to generate notes.'));
           } else {
+            writeCache(key, data.notes!); // save so next visit skips the API
             setNotes(data.notes!);
           }
         }
@@ -311,14 +350,19 @@ export default function StudyNotes({
     })();
 
     return () => { cancelled = true; };
-  }, [sessionId, title, retryN]); // re-run when session changes or user retries
+  }, [sessionId, title, retryN]);
 
   if (loading) return <NotesSkeleton />;
 
   if (error) return (
     <NotesError
       message={error}
-      onRetry={() => { setNotes(null); setRetryN(n => n + 1); }}
+      onRetry={() => {
+        // Clear localStorage so retry actually calls the API again
+        try { localStorage.removeItem(cacheKey(sessionId, title)); } catch { /* ignore */ }
+        setNotes(null);
+        setRetryN(n => n + 1);
+      }}
     />
   );
 

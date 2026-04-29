@@ -149,8 +149,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   if (!body.title?.trim()) return json({ error: 'title is required' }, 400);
 
-  // ── 1. Check cache ─────────────────────────────────────────────────────────
-  const isRealSession = body.sessionId && UUID_RE.test(body.sessionId);
+  // ── 1. Check DB cache (only for real UUID session IDs) ────────────────────
+  const isRealSession = !!body.sessionId && UUID_RE.test(body.sessionId);
 
   if (isRealSession) {
     const { data: row } = await supabase
@@ -164,6 +164,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return json({ notes: row.notes as NotesResult, cached: true });
     }
   }
+  // Note: for mock/non-UUID sessions the client uses localStorage as its cache,
+  // so the API is only called once per browser session regardless.
 
   // ── 2. Generate ────────────────────────────────────────────────────────────
   try {
