@@ -246,13 +246,17 @@ export default function SessionView({ sessionId }: Props) {
         {/* Learning objectives — collapsible accordion */}
         <section style={{ marginBottom: 32 }}>
           {/* Header row — click to toggle */}
-          <button
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => setObjectivesOpen(o => !o)}
+            onKeyDown={e => e.key === 'Enter' && setObjectivesOpen(o => !o)}
             style={{
               display: 'flex', alignItems: 'center', gap: 9,
-              width: '100%', background: 'none', border: 'none',
-              padding: 0, cursor: 'pointer', marginBottom: objectivesOpen ? 14 : 0,
+              width: '100%', cursor: 'pointer',
+              marginBottom: objectivesOpen ? 14 : 0,
               transition: 'margin 0.25s',
+              userSelect: 'none',
             }}
           >
             <div style={{
@@ -282,7 +286,7 @@ export default function SessionView({ sessionId }: Props) {
             }}>
               <Ic n="chevronDown" size={16} color="var(--text-muted)" />
             </div>
-          </button>
+          </div>
 
           {/* Collapsible body */}
           <div style={{
