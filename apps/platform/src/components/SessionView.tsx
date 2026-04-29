@@ -508,16 +508,12 @@ export default function SessionView({ sessionId }: Props) {
               textAlign: 'center',
             }}
           >
-            {/* Icon */}
-            <div style={{
-              width: 56, height: 56, borderRadius: '50%',
-              background: 'rgba(123,92,245,0.12)',
-              border: '2px solid rgba(123,92,245,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: 20,
-            }}>
-              <Ic n="trophy" size={26} color="#9D82FF" />
-            </div>
+            {/* Mascot */}
+            <img
+              src="/sb-take-quiz.png"
+              alt="StudyBearer mascot"
+              style={{ width: 100, height: 100, objectFit: 'contain', marginBottom: 16 }}
+            />
 
             {/* Heading */}
             <h2 style={{
