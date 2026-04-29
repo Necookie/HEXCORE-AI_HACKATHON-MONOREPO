@@ -199,21 +199,21 @@ export default function SessionView({ sessionId }: Props) {
         }}
       >
         {/* Back nav */}
-        <button
-          onClick={() => window.history.back()}
+        <a
+          href="/platform/roadmap"
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: 'var(--text-secondary)', fontSize: 13, padding: 0,
-            marginBottom: 24, fontFamily: 'var(--font-heading)',
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            color: 'var(--text-muted)', fontSize: 12,
+            textDecoration: 'none', marginBottom: 22,
+            fontFamily: 'var(--font-heading)',
             transition: 'color 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
         >
-          <Ic n="left" size={15} color="currentColor" />
-          Back to Roadmap
-        </button>
+          <Ic n="left" size={13} color="currentColor" />
+          Roadmap
+        </a>
 
         {/* Session header */}
         <div style={{ marginBottom: 28 }}>
