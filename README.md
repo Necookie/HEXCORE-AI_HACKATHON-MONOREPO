@@ -6,16 +6,16 @@ StudyBearer is an AI-powered educational workflow application designed to eradic
 - **Landing:** [sb.necookie.dev](https://sb.necookie.dev)
 - **Platform:** [app.sb.necookie.dev](https://app.sb.necookie.dev)
 - **Status:** [Astro SSR on Cloudflare Pages]
-- **Last Updated:** 2026-04-25 21:05 (Force Redeploy)
+- **Last Updated:** 2026-05-03 23:45 (Feature Sync)
 
 ## Features
 - **n8n Nervous System:** Orchestrates all complex logic, AI agent routing, and third-party integrations (Google Calendar, Discord).
 - **Automated AI Orchestration:** Upload a PDF and let n8n chunk your curriculum into daily learning objectives based on your specific availability and goals.
 - **Google Calendar Sync:** Your AI-generated study roadmap is pushed directly to your Google Calendar as timed events.
-- **RAG Chatbot:** Instant answers about the product and your study materials via Retrieval-Augmented Generation.
+- **RAG Chatbot:** Instant intelligence via Retrieval-Augmented Generation (Gemini 1.5 Pro/Flash + 3072d Vector Store) for product and study material context.
 - **Gamified Study Sessions:** Dynamic quizzes (MCQ, Enumeration, ID) and flashcards are generated for every session.
 - **Competitive Progression:** Earn Elo, build streaks, and climb the ranks from Cub to Spirit Bear.
-- **Business Monitoring:** Real-time Discord webhooks for registrations, logins, and account activity to assist business management.
+- **Business Monitoring:** Real-time Discord webhooks for registrations, logins, and account activity to assist platform management and user conversion.
 
 ## Tech Stack
 - **Frontend:** Astro & React (Islands architecture)

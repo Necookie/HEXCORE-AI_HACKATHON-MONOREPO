@@ -30,7 +30,7 @@
 | Score / Grade | ELO / Points |
 | Levels | Ranks |
 
-**Rank ladder (low → high):** Iron → Bronze → Silver → Gold → Platinum → Diamond → Master → Mythic
+**Rank ladder (low → high):** Cub → Panda → Grizzly → Polar → Spirit Bear
 
 ---
 

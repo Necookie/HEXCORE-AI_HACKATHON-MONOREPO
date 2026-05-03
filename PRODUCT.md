@@ -35,7 +35,7 @@ We don't just provide another document reader. We provide an **Automated Learnin
 *   **Cognitive Offloading:** We shift the burden of "planning" and "scheduling" to AI. 
 *   **Seamless Integration:** By pushing roadmaps directly to Google Calendar, we meet the student where they already live.
 *   **Gamified Retention:** We turn studying into a competitive sport with Elo ranks, streaks, and dynamic rewards, transforming passive dread into active engagement.
-*   **Centralized Intelligence:** A RAG-powered nervous system that knows your materials better than you do.
+*   **Centralized Intelligence:** A RAG-powered nervous system utilizing Gemini 1.5 and a high-dimensional vector store (3072d) that knows your materials better than you do.
 
 ## User Guide: Navigating the Pipeline
 
@@ -44,7 +44,7 @@ This section serves as the definitive manual for both human users and the RAG As
 ### 1. Authentication: Joining the Pipeline
 *   **Sign Up:** Click the "Sign Up" button on the landing page. Provide your email, a secure password, and a unique username. 
 *   **Login:** Access your dashboard by entering your credentials at the login portal. 
-*   **Authentication Events:** Every signup and login is monitored by our business nervous system via Discord webhooks to ensure platform security and support.
+*   **Authentication Events:** Every signup, login, and deletion is monitored by our business nervous system via Discord webhooks, providing real-time operational transparency.
 
 ### 2. Initialization: The Intake Phase
 To start your learning journey, you must feed the pipeline:
@@ -96,7 +96,7 @@ The RAG-powered chatbot is accessible throughout the platform. You can:
 ### 1. User Side (Learning Experience)
 The user side focus is on frictionless learning and cognitive offloading.
 
-*   **RAG-Powered Personal Assistant:** A dedicated chatbot (Retrieval-Augmented Generation) that allows users to ask specific questions about the product, their materials, or study techniques and receive immediate, context-aware answers.
+*   **RAG-Powered Personal Assistant:** A dedicated chatbot (Retrieval-Augmented Generation) utilizing Gemini 1.5 Pro/Flash and Supabase Vector (3072 dimensions) that allows users to ask specific questions about the product, their materials, or study techniques and receive immediate, context-aware answers.
 *   **n8n "Nervous System":** The entire backend logic is orchestrated by n8n, acting as the central nervous system that coordinates between the user's files, the AI models, and external services.
 *   **Automated Study Roadmap:** 
     *   **Intake:** Users upload study materials (PDFs) and define their target goals (e.g., "Master Data Structures by May 20th").

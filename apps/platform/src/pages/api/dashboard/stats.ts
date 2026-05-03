@@ -64,7 +64,7 @@ function computeStreak(sessions: Array<{ start_time: string }>): number {
 }
 
 // ── ELO constants ─────────────────────────────────────────────────────────────
-// 45 ELO per quiz passed. Iron → Bronze at 500.
+// 45 ELO per quiz passed. Cub → Panda at 200.
 export const ELO_PER_QUIZ = 45;
 
 export interface DashboardStats {
